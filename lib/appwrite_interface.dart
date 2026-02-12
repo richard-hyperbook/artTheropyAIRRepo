@@ -224,6 +224,7 @@ Future<void> loadConstraisMatrix() async {
     constraintsMatrix = await listConstraintsList();
   }*/
 }
+
 TablesDB? tablesDB;
 void initAppwrite() {
   print('(AAT30)');
@@ -235,7 +236,6 @@ void initAppwrite() {
   account = Account(client!);
   tablesDB = TablesDB(client!);
   print('(AAT31)${client},,,,${account}++++${tablesDB}');
-
 }
 
 @JsonSerializable()
@@ -387,19 +387,15 @@ Future<models.Document> getDocument({
       '(N2011A)${databaseRef.path}<<<<${collection!.path}++++${document!.path}');
   models.Document? doc;
   try {
-
     doc = await tablesDB!.getRow(
       databaseId: databaseRef.path!,
       tableId: collection!.path!,
       rowId: document!.path!,
       queries: [],
     ) as models.Document;
-  }
-  on AppwriteException catch (e) {
-    print(
-        '(AAT42)${e.type}****${e.message}');
+  } on AppwriteException catch (e) {
+    print('(AAT42)${e.type}****${e.message}');
     //   toast(context, 'Login failure: ${e.message}', ToastKind.error);
-
   }
   print('(N2011B)${doc!.$id}');
   return doc;
@@ -409,7 +405,7 @@ Future<models.Row> getRow({
   DocumentReference? collection,
   DocumentReference? document,
 }) async {
- // appwriteDatabases = Databases(client!);
+  // appwriteDatabases = Databases(client!);
   print(
       '(N2011A)${databaseRef.path}<<<<${collection!.path}++++${document!.path}');
   models.Row? row;
@@ -420,12 +416,9 @@ Future<models.Row> getRow({
       rowId: document!.path!,
       queries: [],
     );
-  }
-  on AppwriteException catch (e) {
-    print(
-        '(AAT52)${e.type}****${e.message}');
+  } on AppwriteException catch (e) {
+    print('(AAT52)${e.type}****${e.message}');
     //   toast(context, 'Login failure: ${e.message}', ToastKind.error);
-
   }
   print('(N2011B)${row!.$id}');
   return row;
@@ -436,7 +429,7 @@ Future<void> updateDocument({
   DocumentReference? document,
   Map<String, dynamic>? data,
 }) async {
-  appwriteDatabases = Databases(client!);
+  // appwriteDatabases = Databases(client!);
   //>print('(N2011C)${data}////${collection!.path}++++${document!.path}');688c919e8a6d84adb201
   models.Document doc = await appwriteDatabases!.updateDocument(
     databaseId: databaseRef.path!,
@@ -444,6 +437,27 @@ Future<void> updateDocument({
     documentId: document!.path!,
     data: data,
   );
+  // //>print('(N2021D)${document.path}');
+  return;
+}
+
+Future<void> updateRow({
+  DocumentReference? collection,
+  DocumentReference? document,
+  Map<String, dynamic>? data,
+}) async {
+  // appwriteDatabases = Databases(client!);
+  //>print('(N2011C)${data}////${collection!.path}++++${document!.path}');688c919e8a6d84adb201
+  try {
+    models.Row row = await tablesDB!.updateRow(
+      databaseId: databaseRef.path!,
+      tableId: collection!.path!,
+      rowId: document!.path!,
+      data: data,
+    );
+  } on AppwriteException catch (e) {
+    print('(ND6)${e.message}&&&&${e.code}====${e.code}');
+  }
   // //>print('(N2021D)${document.path}');
   return;
 }
@@ -459,6 +473,25 @@ Future<void> deleteDocument({
       databaseId: databaseRef.path!,
       collectionId: collection!.path!,
       documentId: document!.path!,
+    );
+  } on AppwriteException catch (e) {
+    print('(ND6)${e.message}&&&&${e.code}====${e.code}');
+  }
+  //>print('(ND5)');
+  return;
+}
+
+Future<void> deleteRow({
+  required DocumentReference? collection,
+  required DocumentReference? document,
+}) async {
+  // appwriteDatabases = Databases(client!);
+  //>print('(ND4)${collection!.path}++++${document!.path}');
+  try {
+    await tablesDB!.deleteRow(
+      databaseId: databaseRef.path!,
+      tableId: collection!.path!,
+      rowId: document!.path!,
     );
   } on AppwriteException catch (e) {
     //>print('(ND6)${e.message}&&&&${e.code}====${e.code}');
@@ -509,6 +542,50 @@ Future<models.DocumentList> listDocumentsWithOneQueryDocumentReference({
   //   //>print('(N9)${docs.documents.length}>>>>${docs.documents.first.$id}<<<<${docs.documents.first.data.entries}');
   // }
   return docs;
+}
+
+Future<models.RowList> listRowsWithOneQueryDocumentReference({
+  DocumentReference? collection,
+  String attribute = '',
+  DocumentReference? value,
+  String? orderByAttribute,
+}) async {
+  // appwriteDatabases = Databases(client!);
+  models.RowList rows = models.RowList(total: 0, rows: []);
+//>  print(
+  //>   '(N7A)${attribute}&&&&${value!.path}////${databaseRef.path}ÅÅÅÅ${collection!.path}',
+  // );
+  //>print('(N7ZA)${appwriteDatabases}>>>>${collection}<<<<${value}');
+  try {
+    if (orderByAttribute == null) {
+      rows = await tablesDB!.listRows(
+        databaseId: databaseRef.path!,
+        tableId: collection!.path!,
+        queries: [
+          Query.equal(attribute, value!.path),
+          Query.limit(kLimitDatabaseListDocuments),
+        ],
+      );
+    } else {
+      rows = await tablesDB!.listRows(
+        databaseId: databaseRef.path!,
+        tableId: collection!.path!,
+        queries: [
+          Query.equal(attribute, value!.path),
+          Query.limit(kLimitDatabaseListDocuments),
+          Query.orderAsc(orderByAttribute),
+        ],
+      );
+    }
+  } on AppwriteException  catch (e) {
+    print('(N8A)${e.message}&&&&${e.code}====${e.code}');
+    print('(N8B)${e}');
+  }
+  // //>print('(N9A)${docs.documents.length}');
+  // if(docs.documents.length > 0) {
+  //   //>print('(N9)${docs.documents.length}>>>>${docs.documents.first.$id}<<<<${docs.documents.first.data.entries}');
+  // }
+  return rows;
 }
 
 Future<models.DocumentList> listDocumentsWithTwoQueryDocumentReferences({
@@ -668,10 +745,9 @@ Future<UsersRecord> createUser({
 }
 
 Future<UsersRecord> getUser({DocumentReference? document}) async {
-  models.Row row =
-      await getRow(collection: usersRef, document: document);
+  models.Row row = await getRow(collection: usersRef, document: document);
   print(
-      '(M1)${row.data}&&&&${row.data['chapterColorInts'].runtimeType}****${row.data['chapterColorInts']}');
+      '(M1)${row.data}****${row.data['chapterColorInts']}');
   List<int> colorInts = [];
   print('(M1A)${row.data['displayName']}');
   UsersRecord u = UsersRecord(

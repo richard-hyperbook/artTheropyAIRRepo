@@ -395,8 +395,11 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
       ],
     );
 
+
+
+
     return Title(
-        title: 'hyperbook_display',
+        title: 'session_display',
         color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
         child: Scaffold(
             key: scaffoldKey,
@@ -501,7 +504,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                                 onPressed: () async {
                       print(('AAT1'));
                                 },
-                                text: 'Create hyperbook',
+                                text: 'Create session',
                                 options: FFButtonOptions(
                                   //width: 200.0,
                                   height: 30.0,
@@ -682,13 +685,19 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                         padding: const EdgeInsetsDirectional.fromSTEB(
                             20.0, 0.0, 20.0, 0.0),
                         child: Container(
-                          child: ListView.builder(
+                          child:
+
+
+
+                          ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
                             padding: EdgeInsets.zero,
                             shrinkWrap: true,
                             itemCount: 2, //#cachedHyperbookList.length,
                             itemBuilder:
                                 (BuildContext context, int listViewIndex) {
+
+
                      /*         final HyperbooksRecord listViewHyperbooksRecord =
                                   localDB.hyperbookFromIndex(listViewIndex);*/
                               //#cachedHyperbookList[listViewIndex].hyperbook!;
