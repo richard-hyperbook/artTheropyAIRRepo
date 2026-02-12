@@ -15,7 +15,7 @@ import 'flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow/flutter_flow_util.dart';
 import 'flutter_flow/internationalization.dart';
 import 'index.dart';
-import 'package:hyperbook/custom_code/widgets/get_hyperbooks.dart';
+// import 'package:hyperbook/custom_code/widgets/get_hyperbooks.dart';
 import '/custom_code/actions/index.dart' as actions;
 import 'package:scroll_to_hide/scroll_to_hide.dart';
 import 'package:flutter/rendering.dart';
@@ -314,7 +314,7 @@ class _NavBarPageState extends State<NavBarPage> {
       'login': const LoginWidget(),
       'profilePage': const ProfilePageWidget(),
       'hyperbook_display':
-          const /* GetHyperbooks(), */ HyperbookDisplayWidget(),
+          const /* GetHyperbooks(), */ SessionDisplayWidget(),
     };
     final int currentIndex = tabs.keys.toList().indexOf(_currentPageName);
 

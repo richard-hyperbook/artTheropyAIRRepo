@@ -19,7 +19,7 @@ import 'package:hyperbook/custom_code/widgets/toast.dart';
 import 'package:hyperbook/appwrite_interface.dart';
 import 'package:hyperbook/app_state.dart';
 import 'package:hyperbook/appwrite_interface.dart';
-import '../custom_code/widgets/appwrite_realtime_subscribe.dart';
+// import '../custom_code/widgets/appwrite_realtime_subscribe.dart';
 import 'package:number_inc_dec/number_inc_dec.dart';
 import 'package:appwrite/models.dart' as models;
 import 'package:hyperbook/custom_code/widgets/email_sender.dart';
@@ -27,13 +27,13 @@ import '../menu.dart';
 import '../appwrite_interface.dart';
 import '../localDB.dart';
 import 'package:hyperbook/login/login_widget.dart';
-import 'package:hyperbook/hyperbook_display/hyperbook_display_widget.dart';
+import 'package:hyperbook/session_display/session_display_widget.dart';
 // import 'package:hyperbook/map_display/map_display_widget.dart';
 import 'package:hyperbook/paypal/paypal_widget.dart';
 export 'hyperbook_edit_model.dart';
 
 String _enteredEmail = '';
-String _chosenRoleForNonMembers = kRoleNone;
+String _chosenRoleForNonMembers = kRoleNotLoggedIn;
 
 class HyperbookEditWidget extends StatefulWidget {
   const HyperbookEditWidget({
@@ -65,7 +65,7 @@ class _HyperbookEditWidgetState extends State<HyperbookEditWidget> {
   String emailAddress = '';
   TextEditingController roleController = TextEditingController();
   TextEditingController numberInputTextController = TextEditingController();
-  String chosenRole = kRoleNone;
+  String chosenRole = kRoleNotLoggedIn;
 
   // Intro? intro;
   _HyperbookEditWidgetState() {
@@ -126,7 +126,7 @@ class _HyperbookEditWidgetState extends State<HyperbookEditWidget> {
     if (!hyperbookEditIsSubscribed) {
       /*#    currentCachedHyperbookIndex = getCurrentCachedHyperbookIndex(
           hyperbook: getCurrentHyperbook().reference!);*/
-      hyperbookEditSubscribe(externalSetState);
+      // hyperbookEditSubscribe(externalSetState);
       hyperbookEditIsSubscribed = true;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
@@ -596,7 +596,7 @@ class _HyperbookEditWidgetState extends State<HyperbookEditWidget> {
               type: kStandardPageTransitionType,
               duration: kStandardTransitionTime,
               reverseDuration: kStandardReverseTransitionTime,
-              child: HyperbookDisplayWidget(),
+              child: SessionDisplayWidget(),
             ));
       },
       (context) {

@@ -11,7 +11,7 @@ import 'package:page_transition/page_transition.dart';
 import '../../index.dart';
 import '../../main.dart';
 import 'serialization_util.dart';
-import 'package:hyperbook/custom_code/widgets/get_hyperbooks.dart';
+// import 'package:hyperbook/custom_code/widgets/get_hyperbooks.dart';
 import 'package:hyperbook/appwrite_interface.dart';
 export 'package:go_router/go_router.dart';
 
@@ -345,7 +345,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
               path: 'hyperbookDisplay',
               builder: (context, params) {
                 //>print('(N810)${params.isEmpty}');
-                return HyperbookDisplayWidget();
+                return SessionDisplayWidget();
                   /*
                   true *//*params.isEmpty*//*
                     ? NavBarPage(initialPage: 'hyperbook_display')

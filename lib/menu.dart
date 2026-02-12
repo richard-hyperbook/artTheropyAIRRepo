@@ -15,7 +15,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 ///import 'flutter_flow_icon_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hyperbook/custom_code/widgets/appwrite_realtime_subscribe.dart';
+// import 'package:hyperbook/custom_code/widgets/appwrite_realtime_subscribe.dart';
 import 'package:dotted_border/dotted_border.dart';
 import '../../custom_code/widgets/toast.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';

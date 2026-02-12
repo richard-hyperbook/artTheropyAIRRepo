@@ -7,8 +7,8 @@ export '/chapter_edit/chapter_edit_widget.dart' show ChapterEditWidget;
 export '/chapter_read/chapter_read_widget.dart' show ChapterReadWidget;
 export '/create_account/create_account_widget.dart' show CreateAccountWidget;
 export '/edit_profile/edit_profile_widget.dart' show EditProfileWidget;
-export '/hyperbook_display/hyperbook_display_widget.dart'
-    show HyperbookDisplayWidget;
+export '/session_display/session_display_widget.dart'
+    show SessionDisplayWidget;
 export '/hyperbook_edit/hyperbook_edit_widget.dart' show HyperbookEditWidget;
 export '/introduction/introduction_widget.dart' show IntroductionWidget;
 export '/login/login_widget.dart' show LoginWidget;

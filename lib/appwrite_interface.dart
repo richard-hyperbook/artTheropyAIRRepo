@@ -12,7 +12,7 @@ import 'package:date_format/date_format.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 
 import 'app_state.dart';
-import 'custom_code/widgets/get_hyperbooks.dart';
+// import 'custom_code/widgets/get_hyperbooks.dart';
 import 'custom_code/widgets/permissions.dart';
 
 import 'package:json_annotation/json_annotation.dart';
@@ -28,7 +28,7 @@ import 'flutter_flow/flutter_flow_util.dart';
 import 'flutter_flow/random_data_util.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import 'localDB.dart';
-import '../hyperbook_display/hyperbook_display_widget.dart';
+import '../session_display/session_display_widget.dart';
 import 'dart:async';
 // import 'dart:html' as html show window;
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -224,14 +224,18 @@ Future<void> loadConstraisMatrix() async {
     constraintsMatrix = await listConstraintsList();
   }*/
 }
-
+TablesDB? tablesDB;
 void initAppwrite() {
+  print('(AAT30)');
   client = Client()
       .setEndpoint(endpoint)
       .setProject(project)
       .setDevKey(devKey)
       .setSelfSigned();
   account = Account(client!);
+  tablesDB = TablesDB(client!);
+  print('(AAT31)${client},,,,${account}++++${tablesDB}');
+
 }
 
 @JsonSerializable()
@@ -381,14 +385,50 @@ Future<models.Document> getDocument({
   appwriteDatabases = Databases(client!);
   print(
       '(N2011A)${databaseRef.path}<<<<${collection!.path}++++${document!.path}');
-  models.Document doc = await appwriteDatabases!.getDocument(
-    databaseId: databaseRef.path!,
-    collectionId: collection!.path!,
-    documentId: document!.path!,
-    queries: [],
-  );
-  print('(N2011B)${doc.$id}');
+  models.Document? doc;
+  try {
+
+    doc = await tablesDB!.getRow(
+      databaseId: databaseRef.path!,
+      tableId: collection!.path!,
+      rowId: document!.path!,
+      queries: [],
+    ) as models.Document;
+  }
+  on AppwriteException catch (e) {
+    print(
+        '(AAT42)${e.type}****${e.message}');
+    //   toast(context, 'Login failure: ${e.message}', ToastKind.error);
+
+  }
+  print('(N2011B)${doc!.$id}');
   return doc;
+}
+
+Future<models.Row> getRow({
+  DocumentReference? collection,
+  DocumentReference? document,
+}) async {
+ // appwriteDatabases = Databases(client!);
+  print(
+      '(N2011A)${databaseRef.path}<<<<${collection!.path}++++${document!.path}');
+  models.Row? row;
+  try {
+    row = await tablesDB!.getRow(
+      databaseId: databaseRef.path!,
+      tableId: collection!.path!,
+      rowId: document!.path!,
+      queries: [],
+    );
+  }
+  on AppwriteException catch (e) {
+    print(
+        '(AAT52)${e.type}****${e.message}');
+    //   toast(context, 'Login failure: ${e.message}', ToastKind.error);
+
+  }
+  print('(N2011B)${row!.$id}');
+  return row;
 }
 
 Future<void> updateDocument({
@@ -628,25 +668,21 @@ Future<UsersRecord> createUser({
 }
 
 Future<UsersRecord> getUser({DocumentReference? document}) async {
-  models.Document doc =
-      await getDocument(collection: usersRef, document: document);
+  models.Row row =
+      await getRow(collection: usersRef, document: document);
   print(
-      '(M1)${doc.data}&&&&${doc.data['chapterColorInts'].runtimeType}****${doc.data['chapterColorInts']}');
+      '(M1)${row.data}&&&&${row.data['chapterColorInts'].runtimeType}****${row.data['chapterColorInts']}');
   List<int> colorInts = [];
-  List<dynamic> dyn = doc.data['chapterColorInts'] as List<dynamic>;
-  for (var x in dyn) {
-    colorInts.add(x as int);
-  }
-  print('(M1A)${doc.data['displayName']}');
+  print('(M1A)${row.data['displayName']}');
   UsersRecord u = UsersRecord(
     reference: document,
-    email: (doc.data[kUserEmail]) as String,
-    displayName: (doc.data[kUserDisplayName]) as String,
-    phoneNumber: ((doc.data[kUserPhoneNumber]) ?? '') as String,
-    role: (doc.data[kUserRole]) as String,
-    userMessage: (doc.data[kUserUserMessage] as String?),
+    email: (row.data[kUserEmail]) as String,
+    displayName: (row.data[kUserDisplayName]) as String,
+    phoneNumber: ((row.data[kUserPhoneNumber]) ?? '') as String,
+    role: (row.data[kUserRole]) as String,
+    userMessage: (row.data[kUserUserMessage] as String?),
   );
-  //>print('(N2005)${u}');
+  print('(N2005)${u}');
   return u;
 }
 
@@ -777,24 +813,24 @@ Future<UsersRecord?> appwriteLogin(
     BuildContext context, String email, String password) async {
   models.User? user;
   models.Session? session;
-  //>print('(N91A)${email}****${password}');
+  print('(N91A)${email}****${password}');
   try {
     session = await account!.createEmailPasswordSession(
       email: email,
       password: password,
     );
   } on AppwriteException catch (e) {
-    //>print('(N91B)${e.type}****${e.message}');
+    print('(N91B)${e.type}****${e.message}');
     if (e.message!.startsWith('Creation of a session is prohibited')) {
-      //>print('(N91C)${email}****${password}');
+      print('(N91C)${email}****${password}');
 
       try {
         await appwriteLogout();
       } on AppwriteException catch (e) {
-        //>print('(N91D)${e.type}****${e.message}');
+        print('(N91D)${e.type}****${e.message}');
         toast(context, 'Error on logging in 1', ToastKind.error);
       }
-      //>print('(N91E)${email}****${password}');
+      print('(N91E)${email}****${password}');
       loggedIn = false;
       try {
         session = await account!.createEmailPasswordSession(
@@ -802,7 +838,7 @@ Future<UsersRecord?> appwriteLogin(
           password: password,
         );
       } on AppwriteException catch (e) {
-        //>print('(N91F)${e.type}****${e.message}');
+        print('(N91FA)${e.type}****${e.message}');
         toast(context, 'Error on logging in 2', ToastKind.error);
       }
     }
@@ -811,7 +847,7 @@ Future<UsersRecord?> appwriteLogin(
   try {
     user = await account!.get();
   } on AppwriteException catch (e) {
-    //>print('(N91F)${e.type}****${e.message}');
+    print('(N91FB)${e.type}****${e.message}');
     toast(context, 'Error on logging in 3', ToastKind.error);
   }
 
@@ -819,8 +855,8 @@ Future<UsersRecord?> appwriteLogin(
     toast(context, 'Error on logging in 4', ToastKind.error);
   }
 
-  //>print('(N91G)${user}');
-  //>print('(N91H)${user!.name}++++${user!.$id}');
+  print('(N91G)${user}');
+  print('(N91H)${user!.name}++++${user!.$id}');
 
   //setState(() {
   loggedInUser = user;
@@ -885,7 +921,7 @@ bool canUserSeeSession(DocumentReference? user, SessionsRecord? session) {
   if (currentUser!.reference == null) return false;
   if (session == null) return false;
   final String role = currentUser!.role!;
-  if ((role == null) || (role == '') || (role == kRoleNone)) {
+  if ((role == null) || (role == '') || (role == kRoleNotLoggedIn)) {
     //>print('(N404R)${role}');
     return false;
   } else {
@@ -1039,16 +1075,19 @@ setupTutorialUser(BuildContext context) async {
   loggedIn = true;
   // localDB.hyperbooklocalDBValid = false;
   // await localDB.loadLocalDB(user: currentUser!.reference);
+  print('(RW1)');
   // await localDB.dumpLocalDB();
   if (kIsWeb) {
+    print('(RW2)${currentUser}');
     String? message = currentUser!.userMessage;
+    print('(RW3)');
     bool showMessage = ((message != null) && (message != ''));
-    print('(RW1)${message}....${showMessage}````${versionNumber}');
+    print('(RW4)${message}....${showMessage}````${versionNumber}');
     if (showMessage) {
       List<String> splitMessage = message.split(kMessageSpitCharacter);
       if (message.contains(kMessageSpitCharacter)) {
         int? versiontoUpgradeTo = int.tryParse(splitMessage[1]);
-        print('(RW2)${versiontoUpgradeTo}');
+        print('(RW5)${versiontoUpgradeTo}');
         if (versiontoUpgradeTo != null) {
           if (versionNumber < versiontoUpgradeTo) {
             await html.window.caches!.delete('flutter-app-manifest');

@@ -39,7 +39,7 @@ import 'package:chiclet/chiclet.dart';
 import '../../menu.dart';
 import '../../localDB.dart';
 import 'package:hyperbook/login/login_widget.dart';
-import 'package:hyperbook/hyperbook_display/hyperbook_display_widget.dart';
+import 'package:hyperbook/session_display/session_display_widget.dart';
 import 'package:hyperbook/chapter_display/chapter_display_widget.dart';
 // import 'package:hyperbook/map_display/map_display_widget.dart';
 
@@ -54,7 +54,7 @@ class HtmlEditorClass extends StatefulWidget {
     this.hyperbook,
     this.hyperbookTitle,
     this.authorDisplayName,
-    required this.hyperbookBlurb,
+    this.hyperbookBlurb,
   });
 
   final double? width;
@@ -1291,7 +1291,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
               type: kStandardPageTransitionType,
               duration: kStandardTransitionTime,
               reverseDuration: kStandardReverseTransitionTime,
-              child: HyperbookDisplayWidget(),
+              child: SessionDisplayWidget(),
             ));
       },
       (context) {

@@ -7,7 +7,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'verify_phone_model.dart';
-import 'package:hyperbook/hyperbook_display/hyperbook_display_widget.dart';
+import '../../session_display/session_display_widget.dart';
 
 
 export 'verify_phone_model.dart';
@@ -205,7 +205,7 @@ class _VerifyPhoneWidgetState extends State<VerifyPhoneWidget> {
                                 type: kStandardPageTransitionType,
                                 duration:kStandardTransitionTime,
                                 reverseDuration: kStandardReverseTransitionTime,
-                                child: HyperbookDisplayWidget(
+                                child: SessionDisplayWidget(
                                 ),
                               ));
                         },

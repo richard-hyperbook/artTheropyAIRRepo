@@ -12,7 +12,7 @@ import 'flutter_flow/flutter_flow_theme.dart';
 import 'dart:math';
 import 'appwrite_interface.dart';
 
-final int versionNumber = 5;
+final int versionNumber = 6;
 
 late SharedPreferences globalSharedPrefs;
 DocumentReference? _introductionHyperbook;
@@ -516,14 +516,14 @@ enum HyperbookVisibiliy {
   TitleAndBlurbVisible
 }
 
-const kRoleNone = 'None';
+const kRoleNotLoggedIn = 'Not Logged In';
 const kRoleClient = 'Client';
 const kRoleTherapist = 'Therapist';
 const kRoleSupervisor = 'Supervisor';
 const kRoleAdministrator = 'Administrator';
 
 const List<String> kRoleListWithoutAdministrator = [
-  kRoleNone,
+  kRoleNotLoggedIn,
   kRoleClient,
   kRoleTherapist,
   kRoleSupervisor,

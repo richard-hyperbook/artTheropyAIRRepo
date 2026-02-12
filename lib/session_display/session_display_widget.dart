@@ -13,19 +13,19 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'hyperbook_display_model.dart';
+import 'session_display_model.dart';
 import 'package:hyperbook/app_state.dart';
 import '/app_state.dart';
 // import 'package:flutter_intro/flutter_intro.dart';
 import '/custom_code/widgets/permissions.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hyperbook/hyperbook_edit/hyperbook_edit_widget.dart';
-export 'hyperbook_display_model.dart';
+export 'session_display_model.dart';
 import 'dart:math';
 import 'package:hyperbook/appwrite_interface.dart';
 // import 'package:appwrite/appwrite.dart' as appwrite;
 import 'package:appwrite/models.dart' as models;
-import '/../custom_code/widgets/appwrite_realtime_subscribe.dart';
+// import '/../custom_code/widgets/appwrite_realtime_subscribe.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../menu.dart';
 import '../../localDB.dart';
@@ -39,20 +39,20 @@ int _count = 0;
 bool _iHaveRequests = false;
 List<DocumentReference?> _hyperbookListRequesting = [];
 
-class HyperbookDisplayWidget extends StatefulWidget {
-  const HyperbookDisplayWidget({super.key});
+class SessionDisplayWidget extends StatefulWidget {
+  const SessionDisplayWidget({super.key});
 
   @override
-  _HyperbookDisplayWidgetState createState() => _HyperbookDisplayWidgetState();
+  _SessionDisplayWidgetState createState() => _SessionDisplayWidgetState();
 }
 
-class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
-  late HyperbookDisplayModel _model;
+class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
+  late SessionDisplayModel _model;
 
   TextEditingController? enteredHyperbookTitleController;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   // Intro? intro;
-  _HyperbookDisplayWidgetState() {
+  _SessionDisplayWidgetState() {
     //%//>print('(XI3)');
 /*    intro = Intro(
       borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -92,16 +92,16 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
 
   @override
   void initState() {
-    print('(XXDI-1)${hyperbookDisplayIsSubscribed}');
+    print('(XXDI-1)${hyperbookDisplayIsSubscribed}....${currentUser}');
     super.initState();
-    _model = createModel(context, () => HyperbookDisplayModel());
+    _model = createModel(context, () => SessionDisplayModel());
     enteredHyperbookTitleController = TextEditingController();
     enteredHyperbookTitleController.text = '';
     // hyperbookDisplayscrollController = ScrollController();
     // WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
     if (!hyperbookDisplayIsSubscribed) {
       //>print('(XXDI-2)${hyperbookDisplayIsSubscribed}');
-      hyperbookDisplaySubscribe(externalSetState);
+      // hyperbookDisplaySubscribe(externalSetState);
       hyperbookDisplayIsSubscribed = true;
     }
 
@@ -255,7 +255,8 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
 
   @override
   Widget build(BuildContext context) {
-
+    print('(AAT20)${currentUser}');
+    print('(AAT21)${currentUser!.email}');
     // for(int i = 0; i < currentCachedConnectedUsers.length; i++){
     //   //>print('(MS6)${i}++++${currentCachedConnectedUsers[i].displayName}____${currentCachedConnectedUsers[i].reference!.path}');
     // }
@@ -405,7 +406,7 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
               backgroundColor: FlutterFlowTheme.of(context).primary,
               automaticallyImplyLeading: false,
               title: Text(
-                'Hyperbooks',
+                'Sessions',
                 style: FlutterFlowTheme.of(context).headlineMedium.override(
                       fontFamily: 'Rubik',
                       color: Colors.white,
@@ -527,7 +528,7 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
                                 ),
                               ),
                             ),
-                            (currentUser!.userLevel! >= kUserLevelSupervisor)
+                            (currentUser!.role! == kRoleAdministrator)
                                 ? Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: FFButtonWidget(
@@ -639,7 +640,7 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
                                     ),
                                   )
                                 : Container(),
-                            (currentUser!.userLevel! >= kUserLevelSupervisor)
+                            (currentUser!.role! == kUserLevelSupervisor)
                                 ? Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: FFButtonWidget(

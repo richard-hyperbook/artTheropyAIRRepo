@@ -5,11 +5,11 @@ export 'button_create_chapter_with_link_title.dart'
 export 'button_create_chapter_with_link_title.dart'
     show showCommentDialog;
 //export 'display_chapter_author.dart' show DisplayChapterAuthor;
-export 'display_chapter_html.dart' show DisplayChapterHtml;
+// export 'display_chapter_html.dart' show DisplayChapterHtml;
 export 'display_hyperbook_moderator.dart' show DisplayHyperbookModerator;
 // export 'draw_map.dart' show DrawMap;
 // export 'draw_map3.dart' show DrawMap3;
-export 'get_chapters.dart' show GetChapters;
+// export 'get_chapters.dart' show GetChapters;
 export 'html_editor_class.dart' show HtmlEditorClass;
 export 'icon_button_chapter_read.dart' show IconButtonChapterRead;
 export 'icon_button_tooltip_map.dart' show IconButtonTooltipMap;

@@ -21,7 +21,7 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '../menu.dart';
 import '../appwrite_interface.dart';
 import '../localDB.dart';
-import 'package:hyperbook/hyperbook_display/hyperbook_display_widget.dart';
+import 'package:hyperbook/session_display/session_display_widget.dart';
 import 'package:hyperbook/profile_page/profile_page_widget.dart';
 // import 'package:hyperbook/map_display/map_display_widget.dart';
 import 'package:hyperbook/change_password/change_password_widget.dart';
@@ -94,7 +94,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               type: kStandardPageTransitionType,
               duration: kStandardTransitionTime,
               reverseDuration: kStandardReverseTransitionTime,
-              child: HyperbookDisplayWidget(),
+              child: SessionDisplayWidget(),
             ));
         // context.goNamedAuth('hyperbook_display', context.mounted);
       },
@@ -628,7 +628,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             // currentUser =
                                             // await getUser(document: user!.reference);
                                             print(
-                                                '(N91-C)${loggedInUser}%%%%${_model.emailAddressController.text}++++${_model.passwordController.text}');
+                                                '(N91-C)${user}....${loggedInUser}%%%%${_model.emailAddressController.text}++++${_model.passwordController.text}');
                                             // //>print('(N230-3B)${loggedInUser!.email}');
                                             print(
                                                 '(N91-D)${user!.reference!.path}');
@@ -669,7 +669,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   type: kStandardPageTransitionType,
                                                   duration: kStandardTransitionTime,
                                                   reverseDuration: kStandardReverseTransitionTime,
-                                                  child: HyperbookDisplayWidget(),
+                                                  child: SessionDisplayWidget(),
                                                 ));
 
 
@@ -896,7 +896,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   reverseDuration:
                                                       kStandardReverseTransitionTime,
                                                   child:
-                                                      HyperbookDisplayWidget(),
+                                                  SessionDisplayWidget(),
                                                 ));
                                           },
                                           text: 'Continue as Guest',

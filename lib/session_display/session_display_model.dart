@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:hyperbook/appwrite_interface.dart';
 
-class HyperbookDisplayModel extends FlutterFlowModel {
+class SessionDisplayModel extends FlutterFlowModel {
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - Create Document] action in ButtonCreateHyperbook widget.

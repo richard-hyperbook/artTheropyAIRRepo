@@ -17,11 +17,11 @@ import 'package:hyperbook/custom_code/widgets/permissions.dart';
 import 'package:hyperbook/custom_code/widgets/toast.dart';
 import 'package:hyperbook/app_state.dart';
 import 'package:hyperbook/appwrite_interface.dart';
-import 'package:hyperbook/custom_code/widgets/appwrite_realtime_subscribe.dart';
+// import 'package:hyperbook/custom_code/widgets/appwrite_realtime_subscribe.dart';
 import 'package:hyperbook/custom_code/widgets/button_change_chapter_state.dart';
 import '../../menu.dart';
 import 'package:hyperbook/login/login_widget.dart';
-import 'package:hyperbook/hyperbook_display/hyperbook_display_widget.dart';
+import 'package:hyperbook/session_display/session_display_widget.dart';
 // import 'package:hyperbook/map_display/map_display_widget.dart';
 import 'package:hyperbook/chapter_edit/chapter_edit_widget.dart';
 import 'package:hyperbook/chapter_read/chapter_read_widget.dart';
@@ -83,7 +83,7 @@ class _ChapterDisplayWidgetState extends State<ChapterDisplayWidget> {
   @override
   void dispose() {
     _model.dispose();
-    chapterUnsubscribe();
+    // chapterUnsubscribe();
     chapterReadPageChapterAppIsSubscribed = false;
     //>print('(DC1)');
 
@@ -105,7 +105,7 @@ class _ChapterDisplayWidgetState extends State<ChapterDisplayWidget> {
         hyperbook: localDB.getWorkingHyperbook().reference,//#widget.hyperbook!,
         user: currentUser!.reference);*/
     if (!chapterReadPageChapterAppIsSubscribed) {
-      chapterSubscribe(externalSetState);
+      // chapterSubscribe(externalSetState);
       chapterReadPageChapterAppIsSubscribed = true;
     }
     //>print('(NC1)${localDB.workingChapterList().length}');
@@ -146,7 +146,7 @@ class _ChapterDisplayWidgetState extends State<ChapterDisplayWidget> {
             type: kStandardPageTransitionType,
             duration:kStandardTransitionTime,
             reverseDuration: kStandardReverseTransitionTime,
-            child: HyperbookDisplayWidget(),));
+            child: SessionDisplayWidget(),));
       },
       (context) {
 /*        context.pushNamed(
