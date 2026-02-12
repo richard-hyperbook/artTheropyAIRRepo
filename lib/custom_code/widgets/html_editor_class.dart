@@ -78,7 +78,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
   String? dropDownValue;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  ChaptersRecord? chapterToLinkTo;
+
   bool isMediaUploading = false;
   String uploadedFileUrl = '';
   late ChapterEditModel _model;
@@ -152,7 +152,6 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
   }
 
   Future<void> saveText() async {
-    FFAppState().currentChapter = localDB.getWorkingChapter()!.reference;
     FFAppState().currentBody = await hTMLController.getText();
     FFAppState().currentChapterTitle = titleController.text;
     // localDB.setWorkingChapter(widget.chapter!);
@@ -172,14 +171,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
     //await FFAppState().currentChapter!.update(chaptersUpdateData);
     //>//>print('(CH100)${localDB.getWorkingChapter()!.reference!.path}');
     // //>//>print('(CH101)${chapterToLinkTo!.reference!.path!}++++${FFAppState().currentBody}');
-    localDB.updateChapter(
-        cp: kAttChapterBody,
-        value: FFAppState().currentBody,
-        contextualSetState: setState);
-    localDB.updateChapter(
-        cp: kAttChapterTitle,
-        value: FFAppState().currentChapterTitle,
-        contextualSetState: setState);
+
     setState(() {});
     /*# await updateDocument(
         collection: chaptersRef,
@@ -193,7 +185,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
     chapterHasBeenEdited = true;
     toast(
         context,
-        'Chapter "${FFAppState().currentChapterTitle}" of hyperbook "${localDB.getWorkingChapter()!.title}" saved',
+      'XX3',//  'Chapter "${FFAppState().currentChapterTitle}" of hyperbook "${localDB.getWorkingChapter()!.title}" saved',
         ToastKind.success);
     //£ String? token = await FirebaseMessaging.instance.getToken();
     //%//>//>print('(N401)${token}');
@@ -282,9 +274,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                     parent: localDB.getWorkingHyperbook().reference,
                     authorDisplayName: currentUser!.displayName,
                   );*/
-                        chapterToLinkTo = await localDB.createLocalDBChapter(
-                            title: linkTonewChapterTitleControllerD.text,
-                            hyperbook: localDB.getWorkingHyperbook().reference);
+
                         /*            await createReadReferenceX(
                       chapter: chapterToLinkTo!.reference,
                       hyperbook: localDB.getWorkingHyperbook().reference,
@@ -295,32 +285,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                         /*  DocumentReference doc =
                       ChaptersRecord.createDoc(FFAppState().currentHyperbook!);
                   await doc.set(chaptersCreateData);*/
-                        String linkText = linkNewChapterControllerC.text;
-                        print(
-                            '(LC1)${linkNewChapterControllerC.text.length}....${linkNewChapterControllerC.text};;;;${chapterToLinkTo!.title!}');
-                        if (linkNewChapterControllerC.text.length == 0) {
-                          linkText = chapterToLinkTo!.title!;
-                        }
-                        //>//>print('(N29A)${await hTMLController.getText()}');
-                        hTMLController.insertHtml(before +
-                            chapterToLinkTo!.reference!.path! +
-                            middle +
-                            linkText +
-                            after);
-                        //>//>print('(N29B)${await hTMLController.getText()}');
-                        await localDB.updateChapter(
-                          cp: kAttChapterBody,
-                          value: await hTMLController.getText(),
-                          contextualSetState: setState,
-                        );
-                        await localDB.updateChapter(
-                          cp: kAttChapterTitle,
-                          value: FFAppState().currentChapterTitle,
-                          contextualSetState: setState,
-                        );
-                        localDB.hyperbooklocalDBValid = false;
-                        // await localDB.loadLocalDB(user: currentUser!.reference);
-                        localDB.dumpLocalDB();
+
                         /*#await updateDocument(
                       collection: chaptersRef,
                       document: widget.chapter,
@@ -434,17 +399,14 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                     '(N81)${FFAppState().currentChapterTitle}%%%%%${FFAppState().currentChapter}');
                 //await FFAppState().currentChapter!.update(chaptersUpdateData);
 
-                localDB.updateChapter(
-                    cp: kAttChapterTitle,
-                    value: newChapterTitleControllerA.text,
-                    contextualSetState: setState);
+
 /*                await updateDocument(
                     collection: chaptersRef,
                     document: FFAppState().currentChapter,
                     data: {'title': newChapterTitleController.text});*/
                 toast(
                     context,
-                    'Chapter ${FFAppState().currentChapterTitle} of hyperbook ${localDB.getWorkingHyperbook().title} saved',
+                    'xx4',//'Chapter ${FFAppState().currentChapterTitle} of hyperbook ${localDB.getWorkingHyperbook().title} saved',
                     ToastKind.success);
                 setState(() {});
                 //%//>//>print('(N33)${controller.getText()}');
@@ -485,16 +447,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
               onPressed: () async {
 
                 String linkText = linkExistingChapterControllerB.text;
-                if (linkExistingChapterControllerB.text == '') {
-                  linkText = chapterToLinkTo!.title!;
-                }
-                hTMLController.insertHtml(before +
-                    chapterToLinkTo!.reference!.path! +
-                    middle +
-                    linkText +
-                    after);
-                print(
-                    '(D29-3)${chapterToLinkTo!.reference!.path!}++++${await hTMLController.getText()}');
+
                 context.pop();
               },
               child: const Text('Insert link to existing chapter',
@@ -552,13 +505,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
       TextEditingController();
 
   Widget dropdownWidget() {
-    List<DropdownMenuEntry<ChaptersRecord>> listOfEntries = [];
-    for (var chapter in localDB.getWorkingHyperbookLocalDB().chapterList) {
-      listOfEntries.add(DropdownMenuEntry(
-        value: chapter,
-        label: chapter.title!,
-      ));
-    }
+    List<DropdownMenuEntry<String>> listOfEntries = [];
     return PointerInterceptor(
         child: DropdownMenu(
       inputDecorationTheme: InputDecorationTheme(
@@ -570,9 +517,9 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
           )),
       //key: GlobalKey(),
       dropdownMenuEntries: listOfEntries,
-      onSelected: (ChaptersRecord? value) {
+      onSelected: ( value) {
         setState(() {
-          chapterToLinkTo = value;
+          print('AAT3');
         });
       },
     ));
@@ -806,7 +753,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
 
   void showSettingsDialog(String currentChapterTitle) async {
     String chapterBody = await hTMLController.getText();
-    showDialog<ChaptersRecord>(
+    showDialog<String>(
         context: context,
         builder: (context) {
           bool chapterCreateRequested = false;
@@ -894,7 +841,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
 
         String chapterBody = await hTMLController.getText();
 
-        showDialog<ChaptersRecord>(
+        showDialog<String>(
             context: context,
             builder: (context) {
               bool chapterCreateRequested = false;
@@ -1220,12 +1167,12 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
       print(file.size); //size in bytes
       print(file.extension); //file extension (eg jpeg or mp4)
       //#setCurrentCachedChapterIndex(chapter: widget.chapter!);
-      DocumentReference chapter = localDB.getWorkingChapter()!.reference!;
+      // DocumentReference chapter = localDB.getWorkingChapter()!.reference!;
       /*#   cachedHyperbookList[currentCachedHyperbookIndex!]
               .chapterList[currentCachedChapterIndex!]
               .reference!;*/
       String? url = await createStorageImageFile(
-          chapter: chapter,
+          chapter: null,
           user: currentUser!.reference,
           path: '',
           name: file.name,
@@ -1278,12 +1225,12 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
       print(file.extension); //file extension (eg jpeg or mp4)
       //# setCurrentCachedChapterIndex(chapter: widget.chapter!);
 
-      DocumentReference chapter = localDB.getWorkingChapter()!.reference!;
+      // DocumentReference chapter = localDB.getWorkingChapter()!.reference!;
       /*cachedHyperbookList[currentCachedHyperbookIndex!]
               .chapterList[currentCachedChapterIndex!]
               .reference!;*/
       String? url = await createStorageImageFile(
-          chapter: chapter,
+          chapter: null,
           user: currentUser!.reference,
           path: '',
           name: file.name,
@@ -1453,7 +1400,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
             /*# cachedHyperbookList[currentCachedHyperbookIndex!]
                 .chapterList[currentCachedChapterIndex!]
                 .title!,*/
-            localDB.getWorkingChapter()!.title!,
+            'XXX6',
         style: FlutterFlowTheme.of(context).headlineMedium.override(
               fontFamily: 'Rubik',
               color: Colors.white,
@@ -1550,9 +1497,9 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
 
     //>//>print('(D1)');
     // setHtmlText('This is some text');
-    FFAppState().currentChapter = localDB.getWorkingChapter()!.reference;
+    // FFAppState().currentChapter = localDB.getWorkingChapter()!.reference;
     // setCurrentCachedChapterIndex(chapter: widget.chapter!);
-    titleController.text = localDB.getWorkingChapter()!.title!;
+    // titleController.text = localDB.getWorkingChapter()!.title!;
 
     /*#cachedHyperbookList[currentCachedHyperbookIndex!]
         .chapterList[currentCachedChapterIndex!]
@@ -1566,9 +1513,9 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
 
     //>//>print('(CH111)${hasJustLoaded}');
     // hTMLController.getText().then((value) {//>//>print('(CH112)${value}');});
-    if (localDB.getWorkingChapter() == null) {
+   /* if (localDB.getWorkingChapter() == null) {
       toast(context, 'Error in Chapter selection', ToastKind.error);
-    }
+    }*/
     return Title(
         title: 'chapterEdit',
         color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
@@ -1609,7 +1556,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                               /*# cachedHyperbookList[currentCachedHyperbookIndex!]
                                   .chapterList[currentCachedChapterIndex!]
                                   .body,*/
-                              localDB.getWorkingChapter()!.body!,
+                           'XXX7',//   localDB.getWorkingChapter()!.body!,
                           autoAdjustHeight: true,
                           spellCheck: true,
                           // filePath: "assets/summernote.html",
@@ -1659,8 +1606,8 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                           onEnter: () {
                             if (hasJustLoaded) {
                               hTMLController.clear();
-                              hTMLController.insertHtml(
-                                  localDB.getWorkingChapter()!.body!);
+                             /* hTMLController.insertHtml(
+                                  localDB.getWorkingChapter()!.body!);*/
                               hasJustLoaded = false;
                             }
                             //>//>print('(CH114)${hasJustLoaded}');
@@ -1669,17 +1616,17 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                             //%//>//>print('html before change is $currentHtml');
                           },
                           onChangeContent: (String? changed) async {
-                            if (await hTMLController.getText() !=
+                            // if (await hTMLController.getText() !=
                                 /*#    cachedHyperbookList[
                                         currentCachedHyperbookIndex!]
                                     .chapterList[currentCachedChapterIndex!]
                                     .body*/
-                                localDB.getWorkingChapter()!.body!) {
+                         /*       localDB.getWorkingChapter()!.body!) {
                               // print(
                               //     '(PH1)$changed****${await hTMLController.getText()}++++${currentCachedChapterList[currentCachedChapterIndex!].body}');
                               hasChanged = true;
                               print('(IU9)${changed}');
-                            }
+                            }*/
                           },
 
                             onImageLinkInsert:(String? link){

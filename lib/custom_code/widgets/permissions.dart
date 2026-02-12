@@ -128,8 +128,6 @@ const String kRWA1 = 'Yes';
 const String kRWA2 = 'No';
 
 //List<HyperbooksRecord> hyperbookList = <HyperbooksRecord>[];
-HyperbooksRecord? currentHyperbook;
-List<ChaptersRecord> chapterList = <ChaptersRecord>[];
 //£ List<ReadReferencesRecord> readReferenceList = <ReadReferencesRecord>[];
 //List<ReadReferencesRecord> readReferenceListCurrentHyperbook = <ReadReferencesRecord>[];
 
@@ -139,7 +137,5 @@ const String middle =
     '" target="_blank"style="background-color:black;color:white;padding:2px;border:2px solid grey;border-radius:5px">';
 const String after = '</a>&nbsp;';
 Map<DocumentReference, int> introductionReadStateIndex = <DocumentReference, int>{};
-List<ConnectedUsersRecord> connectedUsersList = <ConnectedUsersRecord>[];
-ConnectedUsersRecord? currentConnectedUsersRecord;
 DocumentReference? hyperbookTutorialReference;
 

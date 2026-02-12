@@ -75,8 +75,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
-    print(
-        '(NP1)${currentUser!.chapterColorInts}&&&&${currentUser!.reference!.path}');
+
     return
         SingleChildScrollView(
       child: Column(
@@ -202,8 +201,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                     height: 50.0,
                     label: 'Not seen',
                     index: 0,
-                    usersColorsInts:
-                        currentUser?.chapterColorInts!.toList() ?? <int>[],
+
                     stateIndex: 0,
                     icon: const Icon(
                       FFIcons.keyeSlash,
@@ -222,8 +220,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                     height: 50.0,
                     label: 'Visited',
                     index: 1,
-                    usersColorsInts:
-                        currentUser?.chapterColorInts!.toList() ?? <int>[],
+
                     stateIndex: 1,
                     icon: const Icon(
                       FFIcons.kprogressOne,
@@ -242,8 +239,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                     height: 50.0,
                     label: 'Partially read',
                     index: 2,
-                    usersColorsInts:
-                        currentUser?.chapterColorInts!.toList() ?? <int>[],
+
                     stateIndex: 2,
                     icon: const Icon(
                       FFIcons.kprogressTwo,
@@ -262,8 +258,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                     height: 50.0,
                     label: 'Fully read',
                     index: 3,
-                    usersColorsInts:
-                        currentUser?.chapterColorInts!.toList() ?? <int>[],
+
                     stateIndex: 3,
                     icon: const Icon(
                       FFIcons.kprogressFull,
@@ -282,8 +277,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                     height: 50.0,
                     label: 'Highlighted',
                     index: 4,
-                    usersColorsInts:
-                        currentUser?.chapterColorInts!.toList() ?? <int>[],
+
                     stateIndex: 4,
                     icon: const Icon(
                       FFIcons.khighlight,
@@ -302,8 +296,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                     height: 50.0,
                     label: 'Depreciated',
                     index: 5,
-                    usersColorsInts:
-                        currentUser?.chapterColorInts!.toList() ?? <int>[],
+
                     stateIndex: 5,
                     icon: const Icon(
                       FFIcons.kthumbsDown,
@@ -328,20 +321,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                                 });*/
 
                         currentUser!.displayName = _model.textController.text;
-                        currentUser!.chapterColorInts = functions
-                            .setCChosenColorsDatabaseFieldFromLocalState(
-                                FFAppState().chosenColors.toList());
-                        print(
-                            '(NG3)${currentUser!.chapterColorInts}++++${_model.textController.text}');
+
+
                         if (currentUser!.userLevel == kUserLevelNotLoggedIn) {
                           String colorString = '';
-                          for (int i = 0;
-                              i < currentUser!.chapterColorInts!.length;
-                              i++) {
-                            colorString = colorString +
-                                currentUser!.chapterColorInts![i].toString() +
-                                ',';
-                          }
+
                           globalSharedPrefs.setString(
                               currentUser!.reference!.path! +
                                   '.' +
@@ -353,7 +337,6 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                             collection: usersRef,
                             document: currentUser!.reference,
                             data: {
-                              'chapterColorInts': currentUser!.chapterColorInts,
                               'displayName': _model.textController.text
                             },
                           );

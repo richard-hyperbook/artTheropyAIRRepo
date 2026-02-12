@@ -138,9 +138,8 @@ class _ButtonChangeChapterStateState extends State<ButtonChangeChapterState> {
         message: widget.tooltipMessage,
         child: FlutterFlowIconButton(
             tooltipMessage: widget.tooltipMessage,
-            fillColor: /*FFAppState().chosenColors*/
-                Color(currentUser!.chapterColorInts![widget.newState!]),
-            borderRadius: 20,
+
+               borderRadius: 20,
             borderWidth: 1,
             buttonSize: 40,
             //color: Colors.amber, //FFAppState().chosenColors[widget.newState!],
@@ -164,9 +163,6 @@ class _ButtonChangeChapterStateState extends State<ButtonChangeChapterState> {
                 context: context,
                 builder: (BuildContext alertDialogContext) {
                   return AlertDialog(
-                    backgroundColor:
-                        /*FFAppState().chosenColors[widget.newState!]*/ Color(
-                            currentUser!.chapterColorInts![widget.newState!]),
                     title: Text(
                         'Chapter state now = ${kChapterStateList[widget.newState!]}'),
                     actions: <Widget>[
@@ -198,10 +194,10 @@ Future<void> changeChapterState(
   int finalState = newState!;
   print('(D231)$newState?$chapter£$ifExistNoChange***+$ifReadNewChapter');
   // bool isNewState = false;
-  ChaptersRecord? chapterRecord;
+
   DocumentReference? localReadReference = readReference;;
   if (readReference == null) {
-    chapterRecord = localDB.getChapterRecordFromWorkingList(chapter!);
+
     /*localReadReference = await localDB.createLocalDBReadReference(chapter: chapter,
         hyperbook: hyperbook,
         readStateIndex: kNotVisitedIndex,
@@ -219,12 +215,7 @@ Future<void> changeChapterState(
       globalSharedPrefs.setInt(
           localReadReference!.path! + '.' + kConectedUserReadStateIndexPrefLabel,
           finalState);
-      await localDB.updateReadReference(
-        readReferenceIndex: localDB.getReadReferenceIndex(localReadReference),
-        rp: kAttrReadReferenceReadStateIndex,
-        value: existingState,
-        contextualSetState: localSetState,
-      );
+
       chapterHasBeenEdited = true;
       /*# await updateDocument(
           collection: readReferencesRef,
@@ -234,13 +225,8 @@ Future<void> changeChapterState(
           }
       );*/
     } else {
-      print('(SC2)${finalState}****${existingState}>>>>${localDB.getReadReferenceIndex(localReadReference!)}!!!!${localReadReference.path}');
-      await localDB.updateReadReference(
-        readReferenceIndex: localDB.getReadReferenceIndex(localReadReference!),
-        rp: kAttrReadReferenceReadStateIndex,
-        value: finalState,
-        contextualSetState: localSetState,
-      );
+     // print('(SC2)${finalState}****${existingState}>>>>${localDB.getReadReferenceIndex(localReadReference!)}!!!!${localReadReference.path}');
+
 
       /*#await updateDocument(
       collection: readReferencesRef,

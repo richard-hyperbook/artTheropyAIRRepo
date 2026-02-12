@@ -8,9 +8,9 @@ class HyperbookDisplayModel extends FlutterFlowModel {
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - Create Document] action in ButtonCreateHyperbook widget.
-  HyperbooksRecord? createdHyperbook;
+  // HyperbooksRecord? createdHyperbook;
   // Stores action output result for [Backend Call - Create Document] action in ButtonCreateHyperbook widget.
-  ChaptersRecord? createdIntroductionChapter;
+  // ChaptersRecord? createdIntroductionChapter;
 
   /// Initialization and disposal methods.
 

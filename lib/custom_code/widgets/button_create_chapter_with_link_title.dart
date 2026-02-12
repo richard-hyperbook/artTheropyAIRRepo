@@ -109,14 +109,8 @@ void showCommentDialog(
       body: newBody,
     );
     await sourceChapter!.update(chaptersUpdateData);*/
-    print('(R0)${sourceChapter!.path}++++${newBody},,,,${targetChapter.path};;;;${localDB.getWorkingChapter()!.reference!.path}');
-    localDB.updateChapter(
-      hyperbookIndex: localDB.workingHyperbookIndex,
-      chapterIndex: localDB.getWorkingChapterIndex(),
-      cp: kAttChapterBody,
-      value: newBody,
-      contextualSetState: setState,
-    );
+
+    //);
 
    /*# updateDocument(
       collection: chaptersRef,
@@ -141,36 +135,16 @@ void showCommentDialog(
                 onPressed: () async {
                   // //>//>print('(N85)${titleController!.text}');
 
-                  ChaptersRecord chapterJustCreated = await localDB.createLocalDBChapter(
-                    title: titleController!.text,
-                    body: '',
-                    xCoord: random_data.randomDouble(
-                        kMinRandomXCoord, kMaxRandomXCoord),
-                    yCoord: random_data.randomDouble(
-                        kMinRandomYCoord, kMaxRandomXCoord),
-                    // author: currentUser!.reference,
-                    // createdTime: DateTime.now(),
-                    // modifiedTime: DateTime.now(),
-                    hyperbook: hyperbook,
-                    // authorDisplayName: currentUser!.displayName,
-                  );
 
-                  setState(() => FFAppState().currentChapter =
-                      chapterJustCreated.reference);
-                  await addLinkFromChapter(
-                    chapter,
-                    body,
-                    chapterJustCreated.reference,
-                    hyperbook,
-                    titleController!.text,
-                  );
+
+
                   //>//>print('(R3)${chapter!.path}++++${body}');
                   //%print(
                   //  '(N94)${chapterJustCreated.title}=${chaptersCreateData}');
 
                  //invalidateHyperbookCache();
                   //>//>print('(CH80)${chapterJustCreated.title}++++${localDB.getWorkingHyperbookLocalDB().workingChapterIndex}');
-                  localDB.setWorkingChapter(chapterJustCreated.reference!);
+                  // localDB.setWorkingChapter(chapterJustCreated.reference!);
                   //>//>print('(CH81)${chapterJustCreated.title}++++${localDB.getWorkingHyperbookLocalDB().workingChapterIndex}');
                   await Navigator.push(
                     context,
@@ -179,7 +153,7 @@ void showCommentDialog(
                       duration: kStandardTransitionTime,
                       reverseDuration: kStandardReverseTransitionTime,
                       child: ChapterEditWidget(
-                        chapter: chapterJustCreated.reference,
+                        chapter: null,//chapterJustCreated.reference,
                         title: titleController!.text,
                         body: ' ',
                         hyperbook: hyperbook,

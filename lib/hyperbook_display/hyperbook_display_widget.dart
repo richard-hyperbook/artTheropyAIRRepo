@@ -140,14 +140,8 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
     return foundExisitingHyperbookTitle;
   }*/
   bool hyperbookTitleExists(String title) {
-    HyperbookLocalDB? h =
-        localDB.selectHyperbookDB(hsp: kAttHyperbookTitle, param: title);
-    bool found = (h != null);
-    if (found) {
-      toast(context, 'Hyperbook exists, please choose alternative title',
-          ToastKind.warning);
-    }
-    return found;
+
+    return false;
   }
 
   BackupFileDetail? chosenFileDetail;
@@ -155,7 +149,7 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
   Future<void> restoreHyperbookBackup({
     models.File? chosenHyperbookFile,
   }) async {
-    Map<String, dynamic>? hyperbookMap;
+ /*   Map<String, dynamic>? hyperbookMap;
     HyperbooksRecord? hyperbook;
     List<Map<String, dynamic>> connectedUsersMapList = [];
     List<Map<String, dynamic>> chaptersMapList = [];
@@ -181,7 +175,7 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
       //   return;
       // }
 
-      /*await createHyperbook(
+      *//*await createHyperbook(
           moderator: hyperbook!.moderator,
           title: hyperbook.title,
           blurb: hyperbook.blurb,
@@ -191,15 +185,15 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
           id: hyperbook.reference!.path!,
           createdTime: hyperbook.createdTime,
           modifiedTime: hyperbook.modifiedTime);
-      */
+      *//*
 
       localDB.updateHyperbook(
           hp: kAttHyperbookStartChapter, value: hyperbook.startChapter!);
-      /*#await updateDocument(
+      *//*#await updateDocument(
           collection: hyperbooksRef,
           document: hyperbook.reference,
           data: {'startChapter': hyperbook.startChapter!.path});
-      */
+      *//*
       //>print('(NW15B)${hyperbook.title}');
       List<dynamic> connectedUsersListJSON =
           cachedHyperbookMap[kAttrBackupConnectedUserList] as List<dynamic>;
@@ -211,14 +205,14 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
         if (connectedUser.nodeSize == null) {
           connectedUser.nodeSize = kDefaultNodeSize;
         }
-        /*     await createConnectedUserX(
+        *//*     await createConnectedUserX(
             user: connectedUser.user,
             status: connectedUser.status,
             displayName: connectedUser.displayName,
             requesting: connectedUser.requesting,
             parent: connectedUser.parent,
             id: connectedUser.reference!.path!,
-            nodeSize: connectedUser.nodeSize);*/
+            nodeSize: connectedUser.nodeSize);*//*
         int connectedUserIndex =
             await localDB.createLocalDBConnectedUserReturnIndex(
                 user: connectedUser.user,
@@ -252,65 +246,16 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
     } catch (e) {
       //>print('(NW2)${e}');
       toast(context, 'Error in restoring hyperbook', ToastKind.error);
-    }
+    }*/
     //createDocument(collection: hyperbooksRef, data: hyperbookMap);
   }
 
-  void gotoEditHyperbook(HyperbooksRecord listViewHyperbooksRecord) async {
-    FFAppState().update(() {
-      FFAppState().currentHyperbook = listViewHyperbooksRecord.reference;
-    });
-    //%print(
-    //    '(N62)$listViewHyperbooksRecord');
-    //#await loadCachedChaptersReadReferencesCachedHyperbookIndex(
-    //#    hyperbook: listViewHyperbooksRecord!.reference, user: currentUser);
-    await localDB.setWorkingHyperbookAndConnectedUser(
-        hyperbook: listViewHyperbooksRecord.reference!,
-        user: currentUser!.reference);
-    Navigator.push(
-        context,
-        PageTransition(
-            type: kStandardPageTransitionType,
-            duration: kStandardTransitionTime,
-            reverseDuration: kStandardReverseTransitionTime,
-            child: HyperbookEditWidget()));
-
-    /* context.pushNamed(
-      'hyperbook_edit',
-      queryParameters: <String, String?>{
-        'hyperbook': serializeParam(
-          listViewHyperbooksRecord.reference,
-          ParamType.DocumentReference,
-        ),
-        'hyperbookTitle': serializeParam(
-          listViewHyperbooksRecord.title,
-          ParamType.String,
-        ),
-        'hyperbookBlurb': serializeParam(
-          listViewHyperbooksRecord.blurb,
-          ParamType.String,
-        ),
-        'nonMemberRole': serializeParam(
-          listViewHyperbooksRecord.nonMemberRole,
-          ParamType.String,
-        ),
-        'startChapter': serializeParam(
-          listViewHyperbooksRecord.startChapter,
-          ParamType.DocumentReference,
-        ),
-        'moderator': serializeParam(
-          listViewHyperbooksRecord.moderator,
-          ParamType.DocumentReference,
-        ),
-      }.withoutNulls,
-    );*/
-  }
 
   List<BackupFileDetail> backupFileDetailList = [];
 
   @override
   Widget build(BuildContext context) {
-    print('(XXDB)${localDB.getWorkingHyperbook()}');
+
     // for(int i = 0; i < currentCachedConnectedUsers.length; i++){
     //   //>print('(MS6)${i}++++${currentCachedConnectedUsers[i].displayName}____${currentCachedConnectedUsers[i].reference!.path}');
     // }
@@ -329,8 +274,8 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
     String requestedRole = '';
     _hyperbookListRequesting.clear();
     _iHaveRequests = false;
-    void showRoleRequestDialog(
-        HyperbooksRecord listViewHyperbooksRecord, String currentRole) async {
+    void showRoleRequestDialog(){
+  /*      HyperbooksRecord listViewHyperbooksRecord, String currentRole) async {
       requestedRole = currentRole;
       localDB.setWorkingHyperbookAndConnectedUser(
           hyperbook: listViewHyperbooksRecord.reference,
@@ -381,31 +326,31 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
                         //>print('(N3900A)${listViewHyperbooksRecord.moderator}');
                         UsersRecord moderator = await getUser(
                             document: listViewHyperbooksRecord.moderator!);
-                        /*updateConnectedUsersWithRequestedRole(
+                        *//*updateConnectedUsersWithRequestedRole(
                           context,
                           listViewHyperbooksRecord.reference,
                           chosenRole,
                           listViewHyperbooksRecord.title,
                           listViewHyperbooksRecord.moderator!,
-                          moderator.displayName.toString());*/
+                          moderator.displayName.toString());*//*
 
-                        /*#ConnectedUsersRecord currentConnectedUser =
+                        *//*#ConnectedUsersRecord currentConnectedUser =
                             await getRelevantConnectedUsersRecord(
                           hyperbook: listViewHyperbooksRecord,
                           user: currentUser!.reference,
                           displayName: currentUser!.displayName,
-                        );*/
+                        );*//*
 
                         print(
                             '(N99)${localDB.workingHyperbookIndex}----${requestedRole}');
                         await localDB.updateConnectedUser(
                             cp: kAttConnectedUserRequesting,
                             value: requestedRole);
-                        /*#await updateDocument(
+                        *//*#await updateDocument(
                           collection: connectedUsersRef,
                           document: currentConnectedUser.reference,
                           data: {'requesting': requestedRole},
-                        );*/
+                        );*//*
                         await sendEmail(
                             emailType: EmailType.roleRequest,
                             senderDisplayName: currentUser!.displayName!,
@@ -423,7 +368,7 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
                     ),
                   ]);
             });
-          });
+          });*/
     }
 
     int infoCount = 0;
@@ -468,17 +413,17 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
                     ),
               ),
               actions: [
-                insertOutstandingRequestsButton(context),
+                // insertOutstandingRequestsButton(context),
                 insertMenu(context, hyperbookDisplayMenuDetails, setState),
                 GestureDetector(
                   onTap: () async {
                     //# await loadCachedChaptersReadReferencesCachedHyperbookIndex(
                     //#     hyperbook: tutorialHyperbook, user: currentUser);
-                    localDB.setTutorialAsWorkingHyperbook();
+                    // localDB.setTutorialAsWorkingHyperbook();
                     toast(context, 'Please wait while Hyperbook Tutorial loads',
                         ToastKind.success);
 
-                    localDB.setTutorialAsWorkingHyperbook();
+                    // localDB.setTutorialAsWorkingHyperbook();
                     /* context.pushNamed(
                       'map_display',
                       queryParameters: <String, String?>{
@@ -543,242 +488,7 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
                             Container(),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: FFButtonWidget(
-                                // key: intro!.keys[0],
-                                tooltipMessage:
-                                    'Click to restore a hyperbook from backup store',
-                                onPressed: () async {
-                                  models.FileList? fileList =
-                                      await listStorageFiles(
-                                          bucketId: backupStorageRef.path);
-                                  List<HyperbooksRecord> hyperbookList =
-                                      await listHyperbookList(
-                                          justCurrentUserAsModerator: true);
-                                  //>print('(RB1)${hyperbookList.length}');
-                                  final bool confirmDialogResponse =
-                                      await showDialog<bool>(
-                                            context: context,
-                                            builder: (BuildContext
-                                                alertDialogContext) {
-                                              List<models.File> listOfFiles =
-                                                  fileList!.files;
-                                              print(
-                                                  '(RB2)${listOfFiles.length}');
-
-                                              List<BackupFileDetail>
-                                                  filletedListOfFiles = [];
-
-                                              print(
-                                                  '(RB3)${filletedListOfFiles.length}');
-
-                                              for (int i = 0;
-                                                  i < listOfFiles.length;
-                                                  i++) {
-                                                String filename =
-                                                    listOfFiles[i].name;
-                                                //>print('(RB4)${filename}');
-                                                List<String> splitFilename =
-                                                    filename.split('-');
-                                                bool found = false;
-                                                print(
-                                                    '(RB5)${splitFilename.length}');
-
-                                                for (int j = 0;
-                                                    j < hyperbookList.length;
-                                                    j++) {
-                                                  print(
-                                                      '(RB6)${j}****${hyperbookList[j].reference!.path}');
-                                                  if (hyperbookList[j]
-                                                          .reference!
-                                                          .path ==
-                                                      splitFilename.first) {
-                                                    found = true;
-                                                    List<String>
-                                                        versionNumberSplit =
-                                                        splitFilename.last
-                                                            .split('.');
-                                                    int versionNumber =
-                                                        int.tryParse(
-                                                                versionNumberSplit
-                                                                    .first) ??
-                                                            0;
-                                                    print(
-                                                        '(RB7)${splitFilename.first}****${hyperbookList[j].reference!.path}');
-                                                    filletedListOfFiles.add(
-                                                        BackupFileDetail(
-                                                            hyperbookList[j]
-                                                                .title,
-                                                            versionNumber,
-                                                            DocumentReference(
-                                                                path:
-                                                                    splitFilename
-                                                                        .first),
-                                                            listOfFiles[i]));
-                                                    break;
-                                                  }
-                                                }
-                                              }
-                                              if (filletedListOfFiles
-                                                  .isNotEmpty) {
-                                                chosenFileDetail =
-                                                    filletedListOfFiles.first;
-                                              } else {
-                                                return AlertDialog(
-                                                    title: const Text(
-                                                        'No backups available'),
-                                                    actions: <Widget>[
-                                                      TextButton(
-                                                        onPressed: () =>
-                                                            Navigator.pop(
-                                                                alertDialogContext,
-                                                                false),
-                                                        child: const Text(
-                                                            'Cancel'),
-                                                      ),
-                                                    ]);
-                                              }
-                                              return StatefulBuilder(builder:
-                                                  (context,
-                                                      StateSetter
-                                                          localSetState) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      'Restore hyperbook'),
-                                                  content: (filletedListOfFiles
-                                                              .length <
-                                                          1)
-                                                      ? Text(
-                                                          'No hyperbook backups available')
-                                                      : DropdownButton<
-                                                          BackupFileDetail>(
-                                                          key: ValueKey(widget),
-                                                          value:
-                                                              chosenFileDetail,
-                                                          hint: const Text(
-                                                              'Please select hyperbook backkup file'),
-                                                          items: filletedListOfFiles.map<
-                                                                  DropdownMenuItem<
-                                                                      BackupFileDetail>>(
-                                                              (BackupFileDetail
-                                                                  item) {
-                                                            return DropdownMenuItem<
-                                                                BackupFileDetail>(
-                                                              value: item,
-                                                              child: Text(
-                                                                  '${item.hyperbookName}, version: ${item.versionNumber.toString()}'),
-                                                            );
-                                                          }).toList(),
-                                                          elevation: 2,
-                                                          onChanged: (value) {
-                                                            setState(() {
-                                                              chosenFileDetail =
-                                                                  value;
-                                                            });
-                                                            localSetState(() {
-                                                              chosenFileDetail =
-                                                                  value;
-                                                            });
-                                                          },
-                                                          isExpanded: true,
-                                                          focusColor: Colors
-                                                              .transparent,
-                                                        ),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      onPressed: () =>
-                                                          Navigator.pop(
-                                                              alertDialogContext,
-                                                              false),
-                                                      child:
-                                                          const Text('Cancel'),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        String hyperbookname =
-                                                            chosenFileDetail!
-                                                                .hyperbookName!;
-                                                        print(
-                                                            '(BU10)${hyperbookname}++++${chosenFileDetail!.hyperbookReference.path}////${chosenFileDetail!.file!.name}####${chosenFileDetail!.file!.bucketId}');
-
-                                                        /*                List<String>
-                                                            hyperbookFilenameSpit =
-                                                            hyperbookFilename
-                                                                .split('-');
-                                                        DocumentReference
-                                                            hyperbook =
-                                                            DocumentReference(
-                                                                path:
-                                                                    hyperbookFilenameSpit
-                                                                        .first);*/
-                                                        // print(
-                                                        //     '(RB20)${chosenFileDetail!.file}@@@@${chosenFileDetail!.versionNumber}____${chosenFileDetail!.hyperbookName}~~~~${chosenFileDetail!.hyperbookReference!.path}');
-                                                        /*##            currentCachedHyperbookIndex =
-                                                            getCurrentCachedHyperbookIndex(
-                                                                hyperbook:
-                                                                    chosenFileDetail!
-                                                                        .hyperbookReference);*/
-                                                        int hyperbookIndex = localDB
-                                                            .getHyperbookIndex(
-                                                                chosenFileDetail!
-                                                                    .hyperbookReference)!;
-                                                        if (localDB
-                                                                .hyperbooklocalDBList[
-                                                                    hyperbookIndex]
-                                                                .hyperbook!
-                                                                .startChapter!
-                                                                .path ==
-                                                            '') {
-                                                          restoreHyperbookBackup(
-                                                              chosenHyperbookFile:
-                                                                  chosenFileDetail!
-                                                                      .file);
-                                                          //>print('(NW50)');
-                                                        } else {
-                                                          toast(
-                                                              context,
-                                                              'The current version of this hyperbook must be deleted before restoring backup',
-                                                              ToastKind
-                                                                  .warning);
-                                                        }
-                                                        Navigator.pop(
-                                                            alertDialogContext,
-                                                            true);
-                                                      },
-                                                      child:
-                                                          const Text('Confirm'),
-                                                    ),
-                                                  ],
-                                                );
-                                              });
-                                            },
-                                          ) ??
-                                          false;
-                                },
-                                text: 'Restore hyperbook',
-                                options: FFButtonOptions(
-                                  width: 200.0,
-                                  height: 50.0,
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 0.0, 0.0, 0.0),
-                                  iconPadding:
-                                      const EdgeInsetsDirectional.fromSTEB(
-                                          0.0, 0.0, 0.0, 0.0),
-                                  color: FlutterFlowTheme.of(context).primary,
-                                  textStyle: FlutterFlowTheme.of(context)
-                                      .titleSmall
-                                      .override(
-                                        fontFamily: 'Rubik',
-                                        color: Colors.white,
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                  elevation: 2.0,
-                                  borderSide: const BorderSide(
-                                    color: Colors.transparent,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
+                              child: Text('XXX1'),
                             ),
                             SizedBox(width: 20),
                             Padding(
@@ -788,264 +498,32 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
                                 tooltipMessage:
                                     'Click to create a new hyperbook',
                                 onPressed: () async {
-                                  bool oKToProceed =
-                                      await isOKToCreateHyperbook();
-                                  if (oKToProceed) {
-                                    List<HyperbooksRecord> listOfMyHyperbooks =
-                                        await listHyperbookList(
-                                            justCurrentUserAsModerator: true);
-                                    List<String> proUserList =
-                                        await getPayPalListOfActiveSubs();
-
-                                    final bool confirmDialogResponse =
-                                        await showDialog<bool>(
-                                              context: context,
-                                              builder: (BuildContext
-                                                  alertDialogContext) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      'Create new hyperbook'),
-                                                  content: TextFormField(
-                                                    // key: intro!.keys[0],
-                                                    onChanged: (text) {
-                                                      //>print('(N2020)${text}');
-                                                    },
-                                                    controller:
-                                                        enteredHyperbookTitleController,
-                                                    decoration: InputDecoration(
-                                                      labelText:
-                                                          'Hyperbook title',
-                                                      labelStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .override(
-                                                                fontFamily:
-                                                                    'Rubik',
-                                                                color: const Color(
-                                                                    0xFF95A1AC),
-                                                              ),
-                                                      hintText: 'Title',
-                                                      hintStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .override(
-                                                                fontFamily:
-                                                                    'Rubik',
-                                                                color: const Color(
-                                                                    0xFF95A1AC),
-                                                              ),
-                                                      enabledBorder:
-                                                          OutlineInputBorder(
-                                                        borderSide:
-                                                            const BorderSide(
-                                                          color:
-                                                              Color(0xFFDBE2E7),
-                                                          width: 2.0,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                      ),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                        borderSide:
-                                                            const BorderSide(
-                                                          color:
-                                                              Color(0x00000000),
-                                                          width: 2.0,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                      ),
-                                                      errorBorder:
-                                                          OutlineInputBorder(
-                                                        borderSide:
-                                                            const BorderSide(
-                                                          color:
-                                                              Color(0x00000000),
-                                                          width: 2.0,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                      ),
-                                                      focusedErrorBorder:
-                                                          OutlineInputBorder(
-                                                        borderSide:
-                                                            const BorderSide(
-                                                          color:
-                                                              Color(0x00000000),
-                                                          width: 2.0,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                      ),
-                                                      filled: true,
-                                                      fillColor:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .white,
-                                                      contentPadding:
-                                                          const EdgeInsetsDirectional
-                                                              .fromSTEB(16.0,
-                                                              24.0, 0.0, 24.0),
-                                                    ),
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          fontFamily: 'Rubik',
-                                                          color: const Color(
-                                                              0xFF2B343A),
-                                                        ),
-                                                  ),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      onPressed: () =>
-                                                          Navigator.pop(
-                                                              alertDialogContext,
-                                                              false),
-                                                      child:
-                                                          const Text('Cancel'),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () =>
-                                                          Navigator.pop(
-                                                              alertDialogContext,
-                                                              true),
-                                                      child:
-                                                          const Text('Confirm'),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            ) ??
-                                            false;
-                                    if (confirmDialogResponse) {
-                                      /*final DocumentReference
-                                        hyperbooksRecordReference =
-                                        HyperbooksRecord.collection.doc();*/
-                                      //>print('CH10');
-                                      String newTitle =
-                                          enteredHyperbookTitleController.text;
-                                      if (hyperbookTitleExists(newTitle)) {
-                                        return;
-                                      }
-                                      if (newTitle == '') {
-                                        newTitle = getRandomString(20);
-                                      }
-
-                                      HyperbookLocalDB createdLocalDBHyperbook =
-                                          await localDB
-                                              .createLocalDBHyperbook(newTitle);
-
-                                      /*£    createReadReference(
-                                      hyperbooksRecordReference,
-                                      //   _model.createdIntroductionChapter!);
-
-                                      _model
-                                          .createdIntroductionChapter!.reference,
-                                      _model.createdIntroductionChapter!.author,
-                                      _model.createdIntroductionChapter!.xCoord,
-                                      _model.createdIntroductionChapter!.yCoord,
-                                    );*/
-                                      // invalidateHyperbookCache();
-
-                                      setState(() {});
-                                      if ((createdLocalDBHyperbook
-                                                  .hyperbook!.nonMemberRole ==
-                                              null) ||
-                                          (createdLocalDBHyperbook
-                                                  .hyperbook!.nonMemberRole ==
-                                              '')) {
-                                        createdLocalDBHyperbook.hyperbook!
-                                            .nonMemberRole = kRoleNone;
-                                      }
-                                      /*#  hyperbookCacheValid = false;
-                                  await loadCachedHyperbookLists(
-                                      currentUser!.reference!);*/
-                                      await localDB
-                                          .setWorkingHyperbookAndConnectedUser(
-                                              // createdLocalDBHyperbook.hyperbook!.reference!);
-                                              hyperbook: createdLocalDBHyperbook
-                                                  .hyperbook!.reference!,
-                                              user: currentUser!.reference);
-
-                                      localDB.dumpLocalDB();
-                                      Navigator.push(
-                                          context,
-                                          PageTransition(
-                                              type: kStandardPageTransitionType,
-                                              duration: kStandardTransitionTime,
-                                              reverseDuration:
-                                                  kStandardReverseTransitionTime,
-                                              child: HyperbookEditWidget()));
-                                    }
-                                  } else {
-                                    await showDialog<bool>(
-                                        context: context,
-                                        builder:
-                                            (BuildContext alertDialogContext) {
-                                          return AlertDialog(
-                                            title:
-                                                const Text('Upgrade to Pro?'),
-                                            content: Text(
-                                                'You have reached the limit of hyperbooks that you can create'),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () => Navigator.pop(
-                                                    context, false),
-                                                child: const Text('Cancel'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () async {
-                                                  Navigator.push(
-                                                      context,
-                                                      PageTransition(
-                                                        type:
-                                                            kStandardPageTransitionType,
-                                                        duration:
-                                                            kStandardTransitionTime,
-                                                        reverseDuration:
-                                                            kStandardReverseTransitionTime,
-                                                        child: PayPalWidget(),
-                                                      ));
-                                                // context.pop();
-                                                },
-                                                child: const Text('Upgrade'),
-                                              ),
-                                            ],
-                                          );
-                                        });
-                                  }
+                      print(('AAT1'));
                                 },
                                 text: 'Create hyperbook',
                                 options: FFButtonOptions(
-                                  width: 200.0,
-                                  height: 50.0,
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 0.0, 0.0, 0.0),
-                                  iconPadding:
-                                      const EdgeInsetsDirectional.fromSTEB(
-                                          0.0, 0.0, 0.0, 0.0),
-                                  color: FlutterFlowTheme.of(context).primary,
+                                  //width: 200.0,
+                                  height: 30.0,
+                                  padding: const EdgeInsetsDirectional
+                                      .fromSTEB(10.0, 0.0, 10.0, 0.0),
+                                  iconPadding: const EdgeInsetsDirectional
+                                      .fromSTEB(0.0, 0.0, 0.0, 0.0),
+                                  color: FlutterFlowTheme.of(context)
+                                      .primary,
                                   textStyle: FlutterFlowTheme.of(context)
                                       .titleSmall
                                       .override(
-                                        fontFamily: 'Rubik',
-                                        color: Colors.white,
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    fontFamily: 'Rubik',
+                                    color: Colors.white,
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                   elevation: 2.0,
                                   borderSide: const BorderSide(
                                     color: Colors.transparent,
                                   ),
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderRadius:
+                                  BorderRadius.circular(8.0),
                                 ),
                               ),
                             ),
@@ -1146,17 +624,17 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
                                         textStyle: FlutterFlowTheme.of(context)
                                             .titleSmall
                                             .override(
-                                              fontFamily: 'Rubik',
-                                              color: Colors.white,
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                          fontFamily: 'Rubik',
+                                          color: Colors.white,
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                         elevation: 2.0,
                                         borderSide: const BorderSide(
                                           color: Colors.transparent,
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(8.0),
+                                        BorderRadius.circular(8.0),
                                       ),
                                     ),
                                   )
@@ -1167,9 +645,7 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
                                     child: FFButtonWidget(
                                       text: 'loadDB',
                                       onPressed: () async {
-                                        await localDB.loadLocalDB(
-                                            user: currentUser!.reference);
-                                        await localDB.dumpLocalDB();
+
                                       },
                                       options: FFButtonOptions(
                                         //width: 200.0,
@@ -1209,745 +685,29 @@ class _HyperbookDisplayWidgetState extends State<HyperbookDisplayWidget> {
                             physics: NeverScrollableScrollPhysics(),
                             padding: EdgeInsets.zero,
                             shrinkWrap: true,
-                            itemCount: localDB
-                                .getHyperbookLocalDBlength(), //#cachedHyperbookList.length,
+                            itemCount: 2, //#cachedHyperbookList.length,
                             itemBuilder:
                                 (BuildContext context, int listViewIndex) {
-                              final HyperbooksRecord listViewHyperbooksRecord =
-                                  localDB.hyperbookFromIndex(listViewIndex);
+                     /*         final HyperbooksRecord listViewHyperbooksRecord =
+                                  localDB.hyperbookFromIndex(listViewIndex);*/
                               //#cachedHyperbookList[listViewIndex].hyperbook!;
-                              bool ifUserCanSeeHyperbook = canUserSeeHyperbook(
+                          /*    bool ifUserCanSeeHyperbook = canUserSeeHyperbook(
                                   currentUser!.reference,
-                                  listViewHyperbooksRecord);
+                                  listViewHyperbooksRecord);*/
 
-                              String s =
+                             /* String s =
                                   jsonEncode(listViewHyperbooksRecord.toJson());
+*/
 
-                              print(
-                                  '(N231)${ifUserCanSeeHyperbook}@@@@${localDB.getWorkingHyperbook().title}%%%${localDB.hyperbooklocalDBList.length}£££${listViewIndex}');
 
-                              bool iHaveConnectedUser = false;
-                              String? currentRole =
-                                  listViewHyperbooksRecord.nonMemberRole;
-                              String? currentRequesting = '';
-                              String moderatorRoleRequestingString = '';
-                              if (listViewHyperbooksRecord.moderator ==
-                                  currentUser!.reference) {
-                                iHaveConnectedUser = true;
-                                moderatorRoleRequestingString =
-                                    'Moderator: ${listViewHyperbooksRecord.moderatorDisplayName}';
-                              } else {
-                                for (ConnectedUsersRecord c
-                                    in localDB.getConnectedUserList(
-                                        listViewHyperbooksRecord
-                                            .reference!) /*#cachedHyperbookList[listViewIndex]
-                                        .connectedUserList*/
-                                    ) {
-                                  print(
-                                      '(HD1)${c.user!.path}....${currentUser!.reference!.path},,,,${c.displayName}');
-                                  if (c.user!.path ==
-                                      currentUser!.reference!.path) {
-                                    iHaveConnectedUser = true;
-                                    currentRole = c.status;
-                                    currentRequesting = c.requesting;
-                                    moderatorRoleRequestingString =
-                                        'Moderator: ${listViewHyperbooksRecord.moderatorDisplayName}, my role: ${currentRole}';
-                                    if (currentRequesting != '') {
-                                      moderatorRoleRequestingString =
-                                          moderatorRoleRequestingString +
-                                              ',requesting: ${currentRequesting}';
-                                    }
-                                    break;
-                                  }
-                                }
+                              // infoCount++;
+
+                                return Container(child:Text('XXX2'));
                               }
-                              bool iAmModerator =
-                                  (listViewHyperbooksRecord.moderator!.path ==
-                                      currentUser!.reference!.path);
-                              List<ConnectedUsersRecord> connectedUserList = [];
-                              print(
-                                  '(N3100)${iAmModerator}%%%%${listViewHyperbooksRecord.reference}');
-                              if (iAmModerator) {
-                                for (HyperbookLocalDB /*#CachedHyperbook*/ v
-                                    in localDB
-                                        .hyperbooklocalDBList /*#cachedHyperbookList*/) {
-                                  if (v.hyperbook!.reference ==
-                                      listViewHyperbooksRecord.reference) {
-                                    //>print('(N3110)${v.hyperbook!.title}');
-                                    connectedUserList = v.connectedUserList!;
-                                    //>  print(
-                                    //> '(N3120)${v.connectedUserList!.length}////${v.connectedUserList}');
-                                    for (ConnectedUsersRecord c
-                                        in v.connectedUserList!) {
-                                      print(
-                                          '(N3130)${c.status}%%%${c.requesting}¤¤¤¤${c}');
-                                      if (c.requesting != '') {
-                                        _iHaveRequests = true;
-                                        _hyperbookListRequesting
-                                            .add(v.hyperbook!.reference);
-                                        break;
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-
-                              infoCount++;
-                              if (true /*iHaveConnectedUser*/) {
-                                return ifUserCanSeeHyperbook
-                                    ? Material(
-                                        color: Colors.transparent,
-                                        elevation: 5.0,
-                                        child: Container(
-                                          margin: EdgeInsets.all(5),
-                                          padding: EdgeInsets.all(5),
-                                          width:
-                                              MediaQuery.sizeOf(context).width *
-                                                  1.0,
-                                          height: 165.0,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5)),
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                blurRadius: 4.0,
-                                                color: Color(0x33000000),
-                                                offset: Offset(0.0, 2.0),
-                                              )
-                                            ],
-                                            border: Border.all(
-                                              width: 2.0,
-                                            ),
-                                          ),
-                                          child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                SingleChildScrollView(
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  // key: infoCount == 1
-                                                  // ? intro!.keys[2]
-                                                  // : UniqueKey(),
-                                                  child: Text(
-                                                    'Title: ${listViewHyperbooksRecord.title!}',
-                                                    softWrap: false,
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .bodyMedium,
-                                                  ),
-                                                ),
-                                                SingleChildScrollView(
-                                                  // key: infoCount == 1
-                                                  //     ? intro!.keys[3]
-                                                  //     : UniqueKey(),
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  child: Text(
-                                                    softWrap: false,
-                                                    'Blurb: ${listViewHyperbooksRecord.blurb}',
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .bodyMedium,
-                                                  ),
-                                                ),
-                                                SingleChildScrollView(
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  child: Row(
-                                                    // key: infoCount == 1
-                                                    //     ? intro!.keys[4]
-                                                    //     : UniqueKey(),
-                                                    children: <Widget>[
-                                                      Text(
-                                                        moderatorRoleRequestingString,
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodyMedium,
-                                                      ),
-
-                                                      /*custom_widgets
-                                                      .DisplayHyperbookModerator(
-                                                    moderator:
-                                                        listViewHyperbooksRecord
-                                                            .moderator,
-                                                  ),*/
-                                                    ],
-                                                  ),
-                                                ),
-                                                Row(children: [
-                                                  FlutterFlowIconButton(
-                                                    caption: 'Map',
-                                                    enabled: (canUserReadHyperbook(
-                                                        currentUser!.reference,
-                                                        listViewHyperbooksRecord)),
-                                                    // key: infoCount == 1
-                                                    //     ? intro!.keys[6]
-                                                    //     : UniqueKey(),
-                                                    tooltipMessage:
-                                                        'Go to hyperbook map',
-                                                    borderColor:
-                                                        Colors.transparent,
-                                                    borderRadius: 0.0,
-                                                    borderWidth: 1.0,
-                                                    buttonSize: 40.0,
-                                                    icon: kIconHyperbookMap,
-                                                    onPressed: () async {
-                                                      FFAppState().update(() {
-                                                        FFAppState()
-                                                                .currentHyperbook =
-                                                            listViewHyperbooksRecord
-                                                                .reference;
-                                                      });
-                                                      /*£await createMissingReadReferences(
-                                                                listViewHyperbooksRecord,
-                                                                false,
-                                                                false);*/
-                                                      for (int i = 0;
-                                                          i <
-                                                              /*cachedHyperbookList[
-                                                                      listViewIndex]*/
-                                                              localDB
-                                                                  .hyperbooklocalDBList[
-                                                                      listViewIndex]
-                                                                  .connectedUserList
-                                                                  .length;
-                                                          i++) {}
-                                                      /*#  await loadCachedChaptersReadReferencesCachedHyperbookIndex(
-                                                          hyperbook:
-                                                              listViewHyperbooksRecord
-                                                                  .reference,
-                                                          user: currentUser);
-
-                                                      int? index =
-                                                          await getCurrentConnectedUserIndexOrCreate(
-                                                              listViewHyperbooksRecord
-                                                                  .reference!);
-                                                      for (int i = 0;
-                                                          i <
-                                                              cachedHyperbookList[
-                                                                      listViewIndex]
-                                                                  .connectedUserList
-                                                                  .length;
-                                                          i++) {
-                                                        print(
-                                                            '(MS8)${i}++++${cachedHyperbookList[listViewIndex].connectedUserList[i].displayName}____${cachedHyperbookList[listViewIndex].connectedUserList[i].reference!.path}');
-                                                      }*/
-                                                      await localDB
-                                                          .setWorkingHyperbookAndConnectedUser(
-                                                              //listViewHyperbooksRecord.reference!);
-                                                              hyperbook:
-                                                                  listViewHyperbooksRecord
-                                                                      .reference!,
-                                                              user: currentUser!
-                                                                  .reference);
-
-                                                      localDB.setWorkingConnectedUserFromHyperbook(
-                                                          hyperbook:
-                                                              listViewHyperbooksRecord
-                                                                  .reference,
-                                                          user: currentUser!
-                                                              .reference);
-                                                      print(
-                                                          '<LD60A>${listViewHyperbooksRecord.reference!.path}****${localDB.workingHyperbookIndex}');
-                                                      print(
-                                                          '<LD60B>${localDB.getWorkingConnectedUser()}');
-                                                      /* context.pushNamed(
-                                                        'map_display',
-                                                        queryParameters:
-                                                            <String, String?>{
-                                                          'hyperbook':
-                                                              serializeParam(
-                                                            listViewHyperbooksRecord
-                                                                .reference,
-                                                            ParamType
-                                                                .DocumentReference,
-                                                          ),
-                                                          'hyperbookTitle':
-                                                              serializeParam(
-                                                            listViewHyperbooksRecord
-                                                                .title,
-                                                            ParamType.String,
-                                                          ),
-                                                          'startChapter':
-                                                              serializeParam(
-                                                            listViewHyperbooksRecord
-                                                                .startChapter,
-                                                            ParamType
-                                                                .DocumentReference,
-                                                          ),
-                                                          'hyperbookBlurb':
-                                                              serializeParam(
-                                                            listViewHyperbooksRecord
-                                                                .blurb,
-                                                            ParamType.String,
-                                                          ),
-                                                        }.withoutNulls,
-                                                      );*/
-                                                      Navigator.push(
-                                                          context,
-                                                          PageTransition(
-                                                            type:
-                                                                kStandardPageTransitionType,
-                                                            duration:
-                                                                kStandardTransitionTime,
-                                                            reverseDuration:
-                                                                kStandardReverseTransitionTime,
-                                                            child:
-                                                                LoginWidget(),
-                                                          ));
-                                                    },
-                                                  ),
-                                                  FlutterFlowIconButton(
-                                                    caption: 'List',
-                                                    enabled: canUserReadHyperbook(
-                                                        currentUser!.reference,
-                                                        listViewHyperbooksRecord),
-                                                    // key: infoCount == 1
-                                                    //     ? intro!.keys[7]
-                                                    //     : UniqueKey(),
-                                                    tooltipMessage:
-                                                        'Go to list of chapters of this hyperbook',
-                                                    borderColor:
-                                                        Colors.transparent,
-                                                    borderRadius: 0.0,
-                                                    borderWidth: 1.0,
-                                                    buttonSize: 40.0,
-                                                    icon: kIconList,
-                                                    onPressed: () async {
-                                                      FFAppState().update(() {
-                                                        FFAppState()
-                                                                .currentHyperbook =
-                                                            listViewHyperbooksRecord
-                                                                .reference;
-                                                      });
-                                                      /*£      await createMissingReadReferences(
-                                                                listViewHyperbooksRecord,
-                                                                false,
-                                                                false);*/
-                                                      /*# await loadCachedChaptersReadReferencesCachedHyperbookIndex(
-                                                          hyperbook:
-                                                              listViewHyperbooksRecord!
-                                                                  .reference,
-                                                          user: currentUser);*/
-                                                      /*#int? index =*/
-                                                      /*# await getCurrentConnectedUserIndexOrCreate(
-                                                              listViewHyperbooksRecord!
-                                                                  .reference!);*/
-                                                      await localDB
-                                                          .setWorkingHyperbookAndConnectedUser(
-                                                              //listViewHyperbooksRecord.reference!);
-                                                              hyperbook:
-                                                                  listViewHyperbooksRecord
-                                                                      .reference!,
-                                                              user: currentUser!
-                                                                  .reference);
-
-                                                      Navigator.push(
-                                                          context,
-                                                          PageTransition(
-                                                              type:
-                                                                  kStandardPageTransitionType,
-                                                              duration:
-                                                                  kStandardTransitionTime,
-                                                              reverseDuration:
-                                                                  kStandardReverseTransitionTime,
-                                                              child:
-                                                                  ChapterDisplayWidget()));
-                                                      /*context.pushNamed(
-                                                        'chapter_display',
-                                                        queryParameters:
-                                                            <String, String?>{
-                                                          'hyperbook':
-                                                              serializeParam(
-                                                            listViewHyperbooksRecord
-                                                                .reference,
-                                                            ParamType
-                                                                .DocumentReference,
-                                                          ),
-                                                          'hyperbookTitle':
-                                                              serializeParam(
-                                                            listViewHyperbooksRecord
-                                                                .title,
-                                                            ParamType.String,
-                                                          ),
-                                                          'authorDisplayName':
-                                                              serializeParam(
-                                                            listViewHyperbooksRecord
-                                                                .moderatorDisplayName,
-                                                            ParamType.String,
-                                                          ),
-                                                        }.withoutNulls,
-                                                      );*/
-                                                    },
-                                                  ),
-                                                  FlutterFlowIconButton(
-                                                    caption: 'Settings',
-                                                    enabled: (isUserTheModerator(
-                                                        currentUser!.reference!,
-                                                        listViewHyperbooksRecord)),
-                                                    // key: infoCount == 1
-                                                    //     ? intro!.keys[5]
-                                                    //     : UniqueKey(),
-                                                    tooltipMessage:
-                                                        'Hyperbook settings',
-                                                    borderColor:
-                                                        Colors.transparent,
-                                                    borderRadius: 30.0,
-                                                    borderWidth: 1.0,
-                                                    buttonSize: 40.0,
-                                                    icon: kIconSettings,
-                                                    onPressed: () async {
-                                                      gotoEditHyperbook(
-                                                          listViewHyperbooksRecord);
-                                                    },
-                                                  ),
-                                                ]),
-                                                Row(
-                                                  children: <Widget>[
-                                                    /*isUserTheModerator(
-                                                          currentUser!.reference!,
-                                                          listViewHyperbooksRecord)
-                                                      ? */
-
-                                                    FlutterFlowIconButton(
-                                                      caption: 'Delete',
-                                                      enabled: iAmModerator,
-                                                      // key: infoCount == 1
-                                                      //     ? intro!.keys[8]
-                                                      //     : UniqueKey(),
-                                                      tooltipMessage:
-                                                          'Delete this hyperbook',
-                                                      borderColor:
-                                                          Colors.transparent,
-                                                      borderRadius: 0.0,
-                                                      borderWidth: 1.0,
-                                                      buttonSize: 40.0,
-                                                      icon: kIconDelete,
-                                                      onPressed: () async {
-                                                        final bool
-                                                            confirmDialogResponse =
-                                                            await showDialog<
-                                                                    bool>(
-                                                                  context:
-                                                                      context,
-                                                                  builder:
-                                                                      (BuildContext
-                                                                          alertDialogContext) {
-                                                                    return AlertDialog(
-                                                                      title: const Text(
-                                                                          'Delete Hyperbook?'),
-                                                                      actions: <Widget>[
-                                                                        TextButton(
-                                                                          onPressed: () => Navigator.pop(
-                                                                              alertDialogContext,
-                                                                              false),
-                                                                          child:
-                                                                              const Text('Cancel'),
-                                                                        ),
-                                                                        TextButton(
-                                                                          onPressed: () =>
-                                                                              gotoEditHyperbook(listViewHyperbooksRecord),
-                                                                          child:
-                                                                              const Text('Create backup'),
-                                                                        ),
-                                                                        TextButton(
-                                                                          onPressed: () {
-                                                                            print('(DD1)');
-                                                                            Navigator.pop(
-                                                                              alertDialogContext,
-                                                                              true);},
-                                                                          child:
-                                                                              const Text('Confirm'),
-                                                                        ),
-                                                                      ],
-                                                                    );
-                                                                  },
-                                                                ) ??
-                                                                false;
-                                                        if (confirmDialogResponse) {
-                                                          /*#                       List<DocumentReference>
-                                                              chapterList = [];
-                                                          List<DocumentReference>
-                                                              conectedUserList =
-                                                              [];
-                                                          (
-                                                            chapterList,
-                                                            conectedUserList
-                                                          ) = getCachedChapterListConnectedUserListFromHyperbook(
-                                                              hyperbook:
-                                                                  listViewHyperbooksRecord
-                                                                      .reference!);
-                                                          print(
-                                                              '(ND2)${listViewHyperbooksRecord.title}++++${chapterList.length}****${conectedUserList.length}');
-                                                          for (DocumentReference c
-                                                              in chapterList) {
-                                                            await deleteDocument(
-                                                                collection:
-                                                                    chaptersRef,
-                                                                document: c);
-                                                          }
-                                                          for (DocumentReference c
-                                                              in conectedUserList) {
-                                                            await deleteDocument(
-                                                                collection:
-                                                                    connectedUsersRef,
-                                                                document: c);
-                                                          }*/
-
-                                                          // await deleteDocument(
-                                                          //     collection:
-                                                          //         hyperbooksRef,
-                                                          //     document:
-                                                          //         listViewHyperbooksRecord
-                                                          //             .reference!);
-
-                                                          /*#updateDocument(
-                                                              collection:
-                                                                  hyperbooksRef,
-                                                              document:
-                                                                  listViewHyperbooksRecord
-                                                                      .reference!,
-                                                              data: {
-                                                                'startChapter':
-                                                                    ''
-                                                              });*/
-                                                          localDB.setWorkingHyperbookAndConnectedUser(
-                                                              hyperbook:
-                                                                  listViewHyperbooksRecord
-                                                                      .reference,
-                                                              user: currentUser!
-                                                                  .reference);
-                                                          localDB
-                                                              .updateHyperbook(
-                                                            hyperbookIndex: localDB
-                                                                .getHyperbookIndex(
-                                                                    listViewHyperbooksRecord
-                                                                        .reference!),
-                                                            hp: kAttHyperbookStartChapter,
-                                                            value: '',
-                                                          );
-                                                          for (int i = 0;
-                                                              i <
-                                                                  localDB
-                                                                      .getConnectedUserList(
-                                                                          listViewHyperbooksRecord
-                                                                              .reference!)
-                                                                      .length;
-                                                              i++) {
-                                                            deleteDocument(
-                                                                collection:
-                                                                    connectedUsersRef,
-                                                                document: localDB
-                                                                    .getConnectedUserList(
-                                                                        listViewHyperbooksRecord
-                                                                            .reference!)[
-                                                                        i]
-                                                                    .reference);
-                                                          }
-                                                          for (int i = 0;
-                                                              i <
-                                                                  localDB
-                                                                      .getConnectedUserList(
-                                                                          listViewHyperbooksRecord
-                                                                              .reference!)
-                                                                      .length;
-                                                              i++) {
-                                                            await deleteDocument(
-                                                                collection:
-                                                                    connectedUsersRef,
-                                                                document: localDB
-                                                                    .getConnectedUserList(
-                                                                        listViewHyperbooksRecord
-                                                                            .reference!)[
-                                                                        i]
-                                                                    .reference);
-                                                          }
-                                                          for (int i = 0;
-                                                              i <
-                                                                  localDB
-                                                                      .getChapterList(
-                                                                          listViewHyperbooksRecord
-                                                                              .reference!)
-                                                                      .length;
-                                                              i++) {
-                                                            await deleteDocument(
-                                                                collection:
-                                                                    chaptersRef,
-                                                                document: localDB
-                                                                    .getChapterList(
-                                                                        listViewHyperbooksRecord
-                                                                            .reference!)[
-                                                                        i]
-                                                                    .reference);
-                                                          }
-
-                                                          List<UsersRecord>
-                                                              userList =
-                                                              await listUsersListWithEmail(
-                                                                  email: null);
-                                                          for (int i = 0;
-                                                              i <
-                                                                  userList
-                                                                      .length;
-                                                              i++) {
-                                                            List<ReadReferencesRecord>
-                                                                readReferenceList =
-                                                                await listReadReferencsList(
-                                                                    parent: userList[
-                                                                            i]
-                                                                        .reference,
-                                                                    hyperbook:
-                                                                        listViewHyperbooksRecord
-                                                                            .reference);
-                                                            for (int j = 0;
-                                                                j <
-                                                                    readReferenceList
-                                                                        .length;
-                                                                j++) {
-                                                              await deleteDocument(
-                                                                  collection:
-                                                                      readReferencesRef,
-                                                                  document:
-                                                                      readReferenceList[
-                                                                              j]
-                                                                          .reference);
-                                                              setState(() {
-
-                                                              });
-                                                              print(
-                                                                  '(DH1)${i}....${j}++++${readReferenceList[j].reference!.path}');
-                                                            }
-                                                          }
-                                                          /* for (int i = 0;
-                                                              i <
-                                                                  localDB
-                                                                      .getReadReferenceList(
-                                                                          listViewHyperbooksRecord
-                                                                              .reference!)
-                                                                      .length;
-                                                              i++) {
-                                                            await deleteDocument(
-                                                                collection:
-                                                                    readReferencesRef,
-                                                                document: localDB
-                                                                    .getReadReferenceList(
-                                                                        listViewHyperbooksRecord
-                                                                            .reference!)[
-                                                                        i]
-                                                                    .reference);
-                                                          }*/
-                                                          // .reference!)])
-                                                          toast(
-                                                              context,
-                                                              'Hyperbook deleted',
-                                                              ToastKind
-                                                                  .success);
-                                                          //# invalidateHyperbookCache();
-                                                        }
-                                                      },
-                                                    ),
-                                                    FlutterFlowIconButton(
-                                                      caption: 'Notice',
-                                                      enabled: (_iHaveRequests &&
-                                                          (_hyperbookListRequesting
-                                                              .contains(
-                                                                  listViewHyperbooksRecord
-                                                                      .reference))),
-                                                      colorIfEnabled:
-                                                          Colors.yellow,
-                                                      // key: infoCount == 1
-                                                      //     ? intro!.keys[9]
-                                                      //     : UniqueKey(),
-                                                      tooltipMessage:
-                                                          'Enabled if you need to respond to requests',
-                                                      borderColor:
-                                                          Colors.transparent,
-                                                      borderRadius: 0.0,
-                                                      borderWidth: 1.0,
-                                                      buttonSize: 40.0,
-                                                      icon:
-                                                          kIconRequestsOutstanding,
-                                                      onPressed: () async {
-                                                        gotoEditHyperbook(
-                                                            listViewHyperbooksRecord);
-                                                        /*await Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (BuildContext
-                                                                      context) =>
-                                                                  HyperbookEditWidget(
-                                                                hyperbook:
-                                                                    listViewHyperbooksRecord
-                                                                        .reference,
-                                                                hyperbookTitle:
-                                                                    listViewHyperbooksRecord
-                                                                        .title,
-                                                                hyperbookBlurb:
-                                                                    listViewHyperbooksRecord
-                                                                        .blurb,
-                                                                */ /*                                        hyperbookTypeNumber:
-                                                                        listViewHyperbooksRecord
-                                                                            .type,*/ /*
-                                                                startChapter:
-                                                                    listViewHyperbooksRecord
-                                                                        .startChapter,
-                                                                moderator:
-                                                                    listViewHyperbooksRecord
-                                                                        .moderator,
-                                                                nonMemberRole:
-                                                                    listViewHyperbooksRecord
-                                                                        .nonMemberRole,
-                                                              ),
-                                                            ));*/
-                                                      },
-                                                    ),
-                                                    FlutterFlowIconButton(
-                                                      caption: 'Request',
-                                                      tooltipMessage:
-                                                          'Click to request access to this hyperbook',
-                                                      enabled:
-                                                          (canUserRequestHyperbook(
-                                                              currentUser!
-                                                                  .reference,
-                                                              listViewHyperbooksRecord)),
-                                                      // key: infoCount == 1
-                                                      //     ? intro!.keys[10]
-                                                      //     : UniqueKey(),
-                                                      borderColor:
-                                                          Colors.transparent,
-                                                      borderRadius: 0.0,
-                                                      borderWidth: 1.0,
-                                                      buttonSize: 40.0,
-                                                      icon: kIconRequest,
-                                                      onPressed: () async {
-                                                        //  showReadWriteDialogs(listViewHyperbooksRecord);
-                                                        print(
-                                                            '(N41XX)${currentRole}');
-                                                        showRoleRequestDialog(
-                                                            listViewHyperbooksRecord,
-                                                            currentRole!);
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                              ]),
-                                        ),
-                                      )
-                                    : Container();
-                                //  } else {
-                                //    return Container();
-                                //  }
-                              } else {
-                                return Container();
-                              }
-                            },
+                           ),
                           ),
                         ),
-                      ),
+
                     ],
                   ),
                 ),

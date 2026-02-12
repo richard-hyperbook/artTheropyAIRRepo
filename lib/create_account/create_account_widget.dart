@@ -373,9 +373,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                                               path: loggedInUser!
                                                   .$id) );*/
 
-                                      localDB.loadLocalDB(
-                                          user: DocumentReference(
-                                              path: loggedInUser!.$id));
+
                                       /*£ final BaseAuthUser? user =
                                           await authManager
                                               .createAccountWithEmail(
