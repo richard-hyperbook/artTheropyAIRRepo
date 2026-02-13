@@ -13,14 +13,14 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'session_display_model.dart';
+import 'session_step_display_model.dart';
 import 'package:hyperbook/app_state.dart';
 import '/app_state.dart';
 // import 'package:flutter_intro/flutter_intro.dart';
 import '/custom_code/widgets/permissions.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hyperbook/hyperbook_edit/hyperbook_edit_widget.dart';
-export 'session_display_model.dart';
+export 'session_step_display_model.dart';
 import 'dart:math';
 import 'package:hyperbook/appwrite_interface.dart';
 // import 'package:appwrite/appwrite.dart' as appwrite;
@@ -34,26 +34,25 @@ import 'package:hyperbook/login/login_widget.dart';
 import 'package:hyperbook/hyperbook_edit/hyperbook_edit_widget.dart';
 import 'package:hyperbook/chapter_display/chapter_display_widget.dart';
 import 'package:hyperbook/paypal/paypal_widget.dart';
-import '../../session_step_display/session_step_display_widget.dart';
 
 int _count = 0;
 bool _iHaveRequests = false;
 List<DocumentReference?> _hyperbookListRequesting = [];
 
-class SessionDisplayWidget extends StatefulWidget {
-  const SessionDisplayWidget({super.key});
+class SessionStepDisplayWidget extends StatefulWidget {
+  const SessionStepDisplayWidget({super.key});
 
   @override
-  _SessionDisplayWidgetState createState() => _SessionDisplayWidgetState();
+  _SessionStepDisplayWidgetState createState() => _SessionStepDisplayWidgetState();
 }
 
-class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
-  late SessionDisplayModel _model;
+class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
+  late SessionStepDisplayModel _model;
 
   TextEditingController? enteredHyperbookTitleController;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   // Intro? intro;
-  _SessionDisplayWidgetState() {
+  _SessionStepDisplayWidgetState() {
   }
 
   int? externalSetState() {
@@ -62,13 +61,13 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
     return null;
   }
 
-  List<SessionsRecord>? sessions;
+  List<SessionStepsRecord>? sessionSteps;
 
   @override
   void initState()  {
-    print('(XXDI-1)${hyperbookDisplayIsSubscribed}....${currentUser}');
+    print('${currentSession}');
     super.initState();
-    _model = createModel(context, () => SessionDisplayModel());
+    _model = createModel(context, () => SessionStepDisplayModel());
     enteredHyperbookTitleController = TextEditingController();
     enteredHyperbookTitleController.text = '';
     // hyperbookDisplayscrollController = ScrollController();
@@ -89,7 +88,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
     super.dispose();
   }
 
-  Widget displaySession(SessionsRecord session, int index)
+  Widget displaySessionStep(SessionStepsRecord sessionStep, int index)
   {
     return Material(
       color: Colors.transparent,
@@ -128,7 +127,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                 // ? intro!.keys[2]
                 // : UniqueKey(),
                 child: Text(
-                  'Client: ${session.clientDisplayName}',
+                  'Step: ${index.toString()}',
                   softWrap: false,
                   style: FlutterFlowTheme.of(
                       context)
@@ -143,7 +142,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                 Axis.horizontal,
                 child: Text(
                   softWrap: false,
-                  'Date: ${(DateFormat.yMMMd().format(session.$createdAt!))}',
+                  'PhotoId: ${sessionStep.photo!.path}',
                   style: FlutterFlowTheme.of(
                       context)
                       .bodyMedium,
@@ -182,10 +181,8 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                   onPressed: () async {
                     FFAppState().update(() {
 
-
                     });
-                    currentSession = session;
-                    print('(S1)${session.clientId}');
+
                     Navigator.push(
                         context,
                         PageTransition(
@@ -196,7 +193,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                           reverseDuration:
                           kStandardReverseTransitionTime,
                           child:
-                          SessionStepDisplayWidget(),
+                          LoginWidget(),
                         ));
                   },
                 ),
@@ -304,15 +301,9 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print('(AAT20)${currentUser}');
-    print('(AAT21)${currentUser!.email}');
-    String requestedRole = '';
-    _hyperbookListRequesting.clear();
-    _iHaveRequests = false;
-    void showRoleRequestDialog() {
-    }
+    print('(SS2)${currentSession}`}');
+    print('(SS3)${currentSession!.clientDisplayName}');
 
-    int infoCount = 0;
     MenuDetails hyperbookDisplayMenuDetails = MenuDetails(
       menuLabelList: [
         'Login',
@@ -334,10 +325,12 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
         },
       ],
     );
+    print('(SS4)${currentSession}');
+    print('(SS5)${currentSession!.clientDisplayName}');
 
-return
-    FutureBuilder<List<SessionsRecord>>(
-        future: listSessionList(justCurrentUserAsTherapist: true),
+    return
+    FutureBuilder<List<SessionStepsRecord>>(
+        future: listSessionStepList(justCurrentSession: true),
         builder: (BuildContext context, snapshot) {
           if (!snapshot.hasData) {
             // while data is loading:
@@ -345,14 +338,13 @@ return
               child: CircularProgressIndicator(),
             );
           } else {
-            print('(AAT80)${snapshot}');
-            sessions = snapshot.data;
-            print('(AAT81)${sessions}');
-            print('(AAT82)${sessions!.length}....${sessions!.first.clientId!
-                .path}');
+            print('(SS80)${snapshot}');
+            sessionSteps = snapshot.data;
+            print('(SS81)${sessionSteps}');
+            print('(SS82)${sessionSteps!.length}....${sessionSteps!.first.reference!.path}');
 
             return Title(
-                title: 'session_display',
+                title: 'steps_display',
                 color: FlutterFlowTheme
                     .of(context)
                     .primary
@@ -367,7 +359,7 @@ return
                           .primary,
                       automaticallyImplyLeading: false,
                       title: Text(
-                        'Sessions',
+                        'Steps',
                         style: FlutterFlowTheme
                             .of(context)
                             .headlineMedium
@@ -615,13 +607,13 @@ return
                                       physics: NeverScrollableScrollPhysics(),
                                       padding: EdgeInsets.zero,
                                       shrinkWrap: true,
-                                      itemCount: sessions!.length,
+                                      itemCount: sessionSteps!.length,
                                       //#cachedHyperbookList.length,
                                       itemBuilder:
                                           (BuildContext context,
                                           int listViewIndex) {
 
-                                        return displaySession(sessions![listViewIndex] , listViewIndex);
+                                        return displaySessionStep(sessionSteps![listViewIndex] , listViewIndex);
                                       }
                                   ),
                                 ),

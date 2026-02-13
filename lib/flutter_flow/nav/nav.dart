@@ -341,12 +341,24 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
             ),
           ),
           FFRoute(
-              name: 'hyperbook_display',
-              path: 'hyperbookDisplay',
+              name: 'session_display',
+              path: 'sessionDisplay',
               builder: (context, params) {
                 //>print('(N810)${params.isEmpty}');
                 return SessionDisplayWidget();
-                  /*
+                /*
+                  true *//*params.isEmpty*//*
+                    ? NavBarPage(initialPage: 'hyperbook_display')
+                    //    : HyperbookDisplayWidget(),
+                    : GetHyperbooks();*/
+              }),
+          FFRoute(
+              name: 'session_step_display',
+              path: 'sessionStepDisplay',
+              builder: (context, params) {
+                //>print('(N810)${params.isEmpty}');
+                return SessionStepDisplayWidget();
+                /*
                   true *//*params.isEmpty*//*
                     ? NavBarPage(initialPage: 'hyperbook_display')
                     //    : HyperbookDisplayWidget(),

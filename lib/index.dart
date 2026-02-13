@@ -9,6 +9,8 @@ export '/create_account/create_account_widget.dart' show CreateAccountWidget;
 export '/edit_profile/edit_profile_widget.dart' show EditProfileWidget;
 export '/session_display/session_display_widget.dart'
     show SessionDisplayWidget;
+export '/session_step_display/session_step_display_widget.dart'
+    show SessionStepDisplayWidget;
 export '/hyperbook_edit/hyperbook_edit_widget.dart' show HyperbookEditWidget;
 export '/introduction/introduction_widget.dart' show IntroductionWidget;
 export '/login/login_widget.dart' show LoginWidget;

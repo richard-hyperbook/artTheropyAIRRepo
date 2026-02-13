@@ -22,6 +22,7 @@ const kDBcreatedAt = '\$createdAt';
 const kDBupdatedAt = '\$updatedAt';
 const kSessionClientId = 'clientId';
 const kSessionTherapistId = 'therapistId';
+const kSessionStepSessionId= 'sessionId';
 const kSessionStepPhoto= 'photo';
 const kSessionStepAudio= 'audio';
 const kSessionStepCompleted= 'completed';

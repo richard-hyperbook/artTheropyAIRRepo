@@ -107,6 +107,7 @@ final DocumentReference constraintsRef = DocumentReference(
 UsersRecord? currentUser;
 String currentUserDisplayName = '';
 String currentUserEmail = '';
+SessionsRecord? currentSession;
 
 RealtimeSubscription? hyperbookDisplaySubscription;
 RealtimeSubscription? hyperbookEditSubscription;
@@ -252,6 +253,7 @@ class SessionsRecord {
   DocumentReference? reference;
   DocumentReference? clientId;
   DocumentReference? therapistId;
+  String? clientDisplayName;
   DateTime? $createdAt;
   DateTime? $updatedAt;
 
@@ -259,6 +261,7 @@ class SessionsRecord {
     this.reference,
     this.clientId,
     this.therapistId,
+    this.clientDisplayName,
     this.$createdAt,
     this.$updatedAt,
   });
@@ -269,8 +272,9 @@ class SessionsRecord {
 }
 
 @JsonSerializable()
-class SessionsStepsRecord {
+class SessionStepsRecord {
   DocumentReference? reference;
+  DocumentReference? sessionId;
   DocumentReference? photo;
   DocumentReference? audio;
   bool? completed;
@@ -279,8 +283,9 @@ class SessionsStepsRecord {
   DateTime? $createdAt;
   DateTime? $updatedAt;
 
-  SessionsStepsRecord({
+  SessionStepsRecord({
     this.reference,
+    this.sessionId,
     this.photo,
     this.audio,
     this.completed,
@@ -673,7 +678,8 @@ Future<SessionsRecord> createSession({
   return h;
 }
 
-Future<SessionsStepsRecord> createSessionStep({
+Future<SessionStepsRecord> createSessionStep({
+  required DocumentReference? sessionId,
   required DocumentReference? photo,
   required DocumentReference? audio,
   required bool? completed,
@@ -685,6 +691,7 @@ Future<SessionsStepsRecord> createSessionStep({
   models.Document doc = await createDocument(
     collection: sessionsRef,
     data: {
+      kSessionStepSessionId: sessionId,
       kSessionStepPhoto: photo,
       kSessionStepAudio: audio,
       kSessionStepCompleted: completed,
@@ -696,8 +703,9 @@ Future<SessionsStepsRecord> createSessionStep({
     id: id,
   );
   //>print('(NW61)${doc}');
-  SessionsStepsRecord h = SessionsStepsRecord(
+  SessionStepsRecord h = SessionStepsRecord(
     reference: DocumentReference(path: doc.$id),
+    sessionId: sessionId,
     photo: photo,
     audio: audio,
     completed: completed,
@@ -779,13 +787,17 @@ Future<List<SessionsRecord>> listSessionList(
   List<SessionsRecord> hh = [];
   for (models.Document d in docs.documents) {
     //>print('(N1)${d.$id}&&&&${d.data}');
+    UsersRecord clientsRecord = await getUser(document: DocumentReference(path: (d.data[kSessionClientId] as String?)));
+    String clientDisplayName = clientsRecord.displayName!;
     SessionsRecord h = SessionsRecord(
       reference: DocumentReference(path: d.$id),
       clientId: DocumentReference(path: (d.data[kSessionClientId] as String?)),
       therapistId:
-          DocumentReference(path: (d.data[kSessionTherapistId] as String?)),
+      DocumentReference(path: (d.data[kSessionTherapistId] as String?)),
       $createdAt: DateTime.parse(d.$createdAt),
       $updatedAt: DateTime.parse(d.$updatedAt),
+      clientDisplayName: clientDisplayName,
+
     );
     hh.add(h);
   }
@@ -793,15 +805,69 @@ Future<List<SessionsRecord>> listSessionList(
   return hh;
 }
 
+Future<List<SessionStepsRecord>> listSessionStepList(
+    {bool justCurrentSession = true}) async {
+  print('(SS12)${justCurrentSession}');
+  models.DocumentList docs;
+  if (justCurrentSession) {
+    docs = await listDocumentsWithOneQueryDocumentReference(
+        collection: sessionStepsRef,
+        attribute: kSessionStepSessionId,
+        value: currentSession!.reference,
+        orderByAttribute: kSessionStepIndex);
+  } else {
+    docs = await listDocuments(
+        collection: sessionsRef, orderByAttribute: kDBcreatedAt);
+  }
+  print('(SS16)${docs.documents.length}');
+  List<SessionStepsRecord> hh = [];
+  for (models.Document d in docs.documents) {
+    print('(SS13)${d.$id}&&&&${d.data[kSessionStepPhoto]}');
+    SessionStepsRecord h = SessionStepsRecord(
+      reference: DocumentReference(path: d.$id),
+      sessionId: DocumentReference(path: (d.data[kSessionStepSessionId] as String?)),
+      photo: DocumentReference(path: (d.data[kSessionStepPhoto] as String?)),
+      audio: DocumentReference(path: (d.data[kSessionStepAudio] as String?)),
+      completed: d.data[kSessionStepCompleted] as bool,
+      transcription: d.data[kSessionStepTranscription] as String,
+      index: d.data[kSessionStepIndex] as int,
+      );
+    print('(SS40)${hh.length}....${h.photo}');
+    hh.add(h);
+    print('(SS41)${hh.length}');
+  }
+  print('(SS42)${hh.length}');
+  return hh;
+}
+
 Future<SessionsRecord> getSession({DocumentReference? document}) async {
   models.Document d =
-      await getDocument(collection: sessionsRef, document: document);
+  await getDocument(collection: sessionsRef, document: document);
   ////>print('(M1)${doc.data['chapterColorInts'].runtimeType}****${doc.data['chapterColorInts']}');
   SessionsRecord h = SessionsRecord(
     reference: DocumentReference(path: d.$id),
     clientId: DocumentReference(path: (d.data[kSessionClientId] as String?)),
     therapistId:
-        DocumentReference(path: (d.data[kSessionTherapistId] as String?)),
+    DocumentReference(path: (d.data[kSessionTherapistId] as String?)),
+    $createdAt: DateTime.parse(d.$createdAt),
+    $updatedAt: DateTime.parse(d.$updatedAt),
+  );
+  //>print('(N5005)${h}');
+  return h;
+}
+
+Future<SessionStepsRecord> getSessionStep({DocumentReference? document}) async {
+  models.Document d =
+  await getDocument(collection: sessionsRef, document: document);
+  ////>print('(M1)${doc.data['chapterColorInts'].runtimeType}****${doc.data['chapterColorInts']}');
+  SessionStepsRecord h = SessionStepsRecord(
+    reference: DocumentReference(path: d.$id),
+    sessionId: DocumentReference(path: (d.data[kSessionStepSessionId] as String?)),
+    photo: DocumentReference(path: (d.data[kSessionStepPhoto] as String?)),
+    audio: DocumentReference(path: (d.data[kSessionStepAudio] as String?)),
+    completed: d.data[kSessionStepCompleted] as bool,
+    transcription: d.data[kSessionStepTranscription] as String,
+    index: d.data[kSessionStepIndex] as int,
     $createdAt: DateTime.parse(d.$createdAt),
     $updatedAt: DateTime.parse(d.$updatedAt),
   );
