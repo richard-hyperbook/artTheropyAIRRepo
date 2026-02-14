@@ -34,6 +34,8 @@ import '../../login/login_widget.dart';
 import '../../hyperbook_edit/hyperbook_edit_widget.dart';
 import '../../chapter_display/chapter_display_widget.dart';
 import '../../paypal/paypal_widget.dart';
+import '../../audio/audio_player.dart';
+import '../../audio/audio_recorder.dart';
 
 int _count = 0;
 bool _iHaveRequests = false;
@@ -156,12 +158,11 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                   //     ? intro!.keys[4]
                   //     : UniqueKey(),
                   children: <Widget>[
-                    Text(
-                      '',
-                      style:
-                      FlutterFlowTheme.of(
-                          context)
-                          .bodyMedium,
+                    Recorder(
+                      onStop: (path) {
+                        print('Recorded file path: $path');
+                        setState(() => audioPath = path);
+                      },
                     ),
 
                   ],
@@ -298,7 +299,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
   }
 
   List<BackupFileDetail> backupFileDetailList = [];
-
+  String? audioPath;
   @override
   Widget build(BuildContext context) {
     print('(SS2)${currentSession}`}');

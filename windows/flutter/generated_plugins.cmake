@@ -3,10 +3,12 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audioplayers_windows
   desktop_webview_window
   file_selector_windows
   flutter_inappwebview_windows
   flutter_localization
+  record_windows
   url_launcher_windows
   webview_windows
   window_to_front
