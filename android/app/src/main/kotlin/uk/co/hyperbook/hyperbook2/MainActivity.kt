@@ -1,4 +1,4 @@
-package uk.co.hyperbook.hyperbook
+package uk.co.hyperbook.arttherapyair
 
 import io.flutter.embedding.android.FlutterActivity
 

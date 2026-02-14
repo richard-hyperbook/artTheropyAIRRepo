@@ -185,6 +185,8 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
 
                     });
                     currentSession = session;
+                    currentTherapist = await getUser(document: session.therapistId);
+                    currentClient = await getUser(document: session.clientId);
                     print('(S1)${session.clientId}');
                     Navigator.push(
                         context,

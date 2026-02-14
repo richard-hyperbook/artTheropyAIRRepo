@@ -91,7 +91,7 @@ class AudioPlayerState extends State<AudioPlayer> {
                 ),
               ],
             ),
-            Text('${_duration ?? 0.0}'),
+            // Text('${_duration ?? 0.0}'),
           ],
         );
       },
@@ -141,6 +141,7 @@ class AudioPlayerState extends State<AudioPlayer> {
 
     double width = widgetWidth - _controlSize - _deleteBtnSize;
     width -= _deleteBtnSize;
+    print('(AU44)${widgetWidth}....${width}');
 
     return SizedBox(
       width: width,

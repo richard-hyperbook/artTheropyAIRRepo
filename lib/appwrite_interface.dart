@@ -108,6 +108,8 @@ UsersRecord? currentUser;
 String currentUserDisplayName = '';
 String currentUserEmail = '';
 SessionsRecord? currentSession;
+UsersRecord? currentTherapist;
+UsersRecord? currentClient;
 
 RealtimeSubscription? hyperbookDisplaySubscription;
 RealtimeSubscription? hyperbookEditSubscription;
@@ -1098,7 +1100,7 @@ Future<String?> createStorageImageFile({
   // final String preffix = splitFilename.first;
   // final String suffix = splitFilename.last;
   final String truncatedName =
-      (name!.length > 15) ? name.substring(0, 15) : name;
+  (name!.length > 15) ? name.substring(0, 15) : name;
   final String fileId =
       chapter!.path! + kStorageFilenameSpitString + randomFileNumber;
   final String storageFilename =
@@ -1122,6 +1124,38 @@ Future<String?> createStorageImageFile({
   final String url =
       '${head}/${b_id}/files/${f_id}/preview?project=${p_id}&mode=admin';
   //>print('(IS2)${head}££££${url}????');
+
+  return url;
+}
+
+Future<String?> createStorageAudioFile({
+  required DocumentReference? therapistId,
+  required DocumentReference? sessionStepId,
+  required String? localFilePath,
+}) async {
+  final String fileId =
+      'audio' + sessionStepId!.path! ;
+  final String storageFilename =
+      fileId + '.m4a';
+  print('(AU30)${fileId}++++${storageFilename}');
+
+  models.File result = await storage.createFile(
+    bucketId: artTheopyAIRaudiosRef.path!,
+    fileId: fileId,
+    file: InputFile.fromPath(path: localFilePath!),
+  );
+  var file = await storage.getFile(
+      bucketId: artTheopyAIRaudiosRef.path!, fileId: fileId);
+  // String url = file.
+  print('(AU62)${file.toString()}++++${result.name}@@@@${file.name}~~~~');
+
+  const String head = imageFilenameHead;
+  final b_id = artTheopyAIRphotosRef.path!;
+  final f_id = fileId;
+  final p_id = project;
+  final String url =
+      '${head}/${b_id}/files/${f_id}/preview?project=${p_id}&mode=admin';
+  print('(AU63)${head}££££${url}????');
 
   return url;
 }
