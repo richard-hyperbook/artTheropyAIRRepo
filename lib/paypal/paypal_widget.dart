@@ -14,12 +14,12 @@ import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/flutter_flow/upload_data.dart';
 import 'paypal_model.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 import 'package:appwrite/models.dart' as models;
 import 'package:universal_html/html.dart' as html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
-import 'package:hyperbook/conditional.dart';
+import '../../conditional.dart';
 export 'paypal_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:convert';
@@ -29,9 +29,9 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 import '/../custom_code/widgets/toast.dart';
-// import 'package:hyperbook/map_display/map_display_widget.dart';
-import 'package:hyperbook/hyperbook_edit/hyperbook_edit_widget.dart';
-import 'package:hyperbook/chapter_display/chapter_display_widget.dart';
+// import '../../map_display/map_display_widget.dart';
+import '../../hyperbook_edit/hyperbook_edit_widget.dart';
+import '../../chapter_display/chapter_display_widget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 String? _accessToken;

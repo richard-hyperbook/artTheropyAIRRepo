@@ -11,10 +11,10 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/upload_data.dart';
 import 'chapter_edit_model.dart';
-import 'package:hyperbook/appwrite_interface.dart';
-import 'package:hyperbook/custom_code/widgets/html_editor_class.dart';
+import '../../appwrite_interface.dart';
+import '../../custom_code/widgets/html_editor_class.dart';
 import '../../custom_code/widgets/toast.dart';
-// import 'package:hyperbook/custom_code/widgets/quill_editor_class.dart';
+// import '../../custom_code/widgets/quill_editor_class.dart';
 
 export 'chapter_edit_model.dart';
 

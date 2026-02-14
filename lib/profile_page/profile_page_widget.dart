@@ -20,9 +20,9 @@ import '/flutter_flow/form_field_controller.dart';
 export 'profile_page_model.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:flutter_intro/flutter_intro.dart';
-import 'package:hyperbook/login/login_widget.dart';
-import 'package:hyperbook/change_password/change_password_widget.dart';
-import 'package:hyperbook/edit_profile/edit_profile_model.dart';
+import '../../login/login_widget.dart';
+import '../../change_password/change_password_widget.dart';
+import '../../edit_profile/edit_profile_model.dart';
 
 
 

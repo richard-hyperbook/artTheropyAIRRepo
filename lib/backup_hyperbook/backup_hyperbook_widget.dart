@@ -6,7 +6,7 @@ import '/custom_code/widgets/index.dart' as custom_widgets;
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'backup_hyperbook_model.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 import 'dart:io';

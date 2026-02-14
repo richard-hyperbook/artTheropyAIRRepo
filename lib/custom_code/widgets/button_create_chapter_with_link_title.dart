@@ -11,7 +11,7 @@ import '../../chapter_edit/chapter_edit_widget.dart';
 import '../../flutter_flow/flutter_flow_icon_button.dart';
 import '../../flutter_flow/random_data_util.dart' as random_data;
 import 'permissions.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 
 TextEditingController? titleController;
 

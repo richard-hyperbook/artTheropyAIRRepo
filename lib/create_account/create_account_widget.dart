@@ -10,14 +10,14 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'create_account_model.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as models;
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hyperbook/phone_sign_in/phone_sign_in_widget.dart';
-import 'package:hyperbook/profile_page/profile_page_widget.dart';
-import 'package:hyperbook/edit_profile/edit_profile_widget.dart';
-import 'package:hyperbook/login/login_widget.dart';
+import '../../phone_sign_in/phone_sign_in_widget.dart';
+import '../../profile_page/profile_page_widget.dart';
+import '../../edit_profile/edit_profile_widget.dart';
+import '../../login/login_widget.dart';
 
 export 'create_account_model.dart';
 
@@ -83,7 +83,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                         child: Row(
                           children: <Widget>[
                             SvgPicture.asset(
-                              'assets/images/hyperbooklogosvg10.svg',
+                              'assets/images/brush3.svg',
                               width: 100,
                               height: 100,
                             ),
@@ -94,7 +94,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                           padding: const EdgeInsets.all(8.0),
                           child: FittedBox(
                               fit: BoxFit.contain,
-                              child: Text('Hyperbook App',
+                              child: Text('Art Therapy AIR App',
                                   overflow: TextOverflow.fade,
                                   //   style: FlutterFlowTheme.of(context)
                                   //      .headlineMedium,),
@@ -131,7 +131,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                                 children: <Widget>[
                                   Expanded(
                                     child: AutoSizeText(
-                                      'Get Started with Hyperbook',
+                                      'Get Started with Art Therapy AIR',
                                       style: FlutterFlowTheme.of(context)
                                           .displaySmall,
                                     ),
@@ -400,7 +400,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                                       hypebookList =
                                           await queryHyperbooksRecordOnce(
                                         queryBuilder: (Query<Object?>
-                                                HyperbooksRecord) =>
+                                                HyperbooksR ecord) =>
                                             HyperbooksRecord.where('type',
                                                 isEqualTo:
                                                     kHyperbookTutorialTypeNumber),

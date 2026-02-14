@@ -14,7 +14,7 @@ import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/flutter_flow/upload_data.dart';
 import 'edit_profile_model.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 import 'package:appwrite/models.dart' as models;
 
 export 'edit_profile_model.dart';

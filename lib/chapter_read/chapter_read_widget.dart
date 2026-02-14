@@ -17,16 +17,16 @@ import 'chapter_read_model.dart';
 export 'chapter_read_model.dart';
 // import 'package:flutter_intro/flutter_intro.dart';
 // import '/backend/backend.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 import 'package:appwrite/appwrite.dart' as appwrite;
 // import '/custom_code/widgets/appwrite_realtime_subscribe.dart';
 import '../../menu.dart';
 import '../custom_code/widgets/toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hyperbook/login/login_widget.dart';
-import 'package:hyperbook/session_display/session_display_widget.dart';
-// import 'package:hyperbook/map_display/map_display_widget.dart';
-import 'package:hyperbook/chapter_display/chapter_display_widget.dart';
+import '../../login/login_widget.dart';
+import '../../session_display/session_display_widget.dart';
+// import '../../map_display/map_display_widget.dart';
+import '../../chapter_display/chapter_display_widget.dart';
 
 
 class ChapterReadWidget extends StatefulWidget {

@@ -11,9 +11,9 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '../../chapter_read/chapter_read_widget.dart';
 import '../../flutter_flow/flutter_flow_icon_button.dart';
 import 'permissions.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 import '../../flutter_flow/random_data_util.dart' as random_data;
-import 'package:hyperbook/flutter_flow/flutter_flow_theme.dart';
+import '../../flutter_flow/flutter_flow_theme.dart';
 
 class CustomIcons {
   CustomIcons._();

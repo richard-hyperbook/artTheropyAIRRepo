@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 // import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 
 class PopulateChapterStates extends StatefulWidget {
   const PopulateChapterStates({

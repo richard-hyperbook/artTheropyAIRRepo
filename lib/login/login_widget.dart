@@ -10,24 +10,25 @@ import '/custom_code/widgets/index.dart' as custom_widgets;
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'package:hyperbook/custom_code/widgets/permissions.dart';
+import '../../custom_code/widgets/permissions.dart';
 import 'login_model.dart';
 import '/appwrite_interface.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as models;
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hyperbook/custom_code/widgets/toast.dart';
+import '../../custom_code/widgets/toast.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '../menu.dart';
 import '../appwrite_interface.dart';
 import '../localDB.dart';
-import 'package:hyperbook/session_display/session_display_widget.dart';
-import 'package:hyperbook/profile_page/profile_page_widget.dart';
-// import 'package:hyperbook/map_display/map_display_widget.dart';
-import 'package:hyperbook/change_password/change_password_widget.dart';
-import 'package:hyperbook/paypal/paypal_widget.dart';
-import 'package:hyperbook/sales/sales_widget.dart';
-import 'package:hyperbook/conditional.dart';
+import '../../session_display/session_display_widget.dart';
+import '../../profile_page/profile_page_widget.dart';
+// import '../../map_display/map_display_widget.dart';
+import '../../change_password/change_password_widget.dart';
+import '../../paypal/paypal_widget.dart';
+import '../../sales/sales_widget.dart';
+import '../../conditional.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 
 
@@ -53,7 +54,9 @@ class _LoginWidgetState extends State<LoginWidget> {
     _model = createModel(context, () => LoginModel());
     _model.emailAddressController ??= TextEditingController();
     _model.passwordController ??= TextEditingController();
-    listenForMessage();
+    if (kIsWeb) {
+      listenForMessage();
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -170,20 +173,20 @@ class _LoginWidgetState extends State<LoginWidget> {
                             width: MediaQuery.sizeOf(context).width * 0.95,
                             child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Padding(
+                                children: [Container(),
+                                  /*Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: GestureDetector(
                                       onTap: () async {
-                                        /*#await loadCachedChaptersReadReferencesCachedHyperbookIndex(
+                                        *//*#await loadCachedChaptersReadReferencesCachedHyperbookIndex(
                                             hyperbook: tutorialHyperbook,
                                             user: currentUser);
-                                        */
+                                        *//*
                                         toast(
                                             context,
                                             'Please wait while Hyperbook Tutorial loads',
                                             ToastKind.success);
-                                        /*context.pushNamed(
+                                        *//*context.pushNamed(
                                           'map_display',
                                           queryParameters: <String, String?>{
                                             'hyperbook': serializeParam(
@@ -205,7 +208,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               ParamType.String,
                                             ),
                                           }.withoutNulls,
-                                        );*/
+                                        );*//*
                                         Navigator.push(
                                             context,
                                             PageTransition(
@@ -216,17 +219,18 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               child: LoginWidget(),
                                             ));
                                       },
-                                      child:FittedBox(child: Container(color: Colors.amber, child: Text('ArtTheropyAIR App')),)
-                                      /* SvgPicture.asset(
+                                      child: Container(),
+                                      //FittedBox(child: Container(color: Colors.amber, child: Text('ArtTherapyAIR App')),)
+                                      *//* SvgPicture.asset(
                                         'assets/images/brush4.svg',
                                         width: logoSize,
                                         height: logoSize,
-                                      ),*/
+                                      ),*//*
                                     ),
-                                  ),
+                                  ),*/
                                   Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: FittedBox(
+                                      child: Container(),/*FittedBox(
                                           fit: BoxFit.contain,
                                           child: Text(
                                               '\u2B05Click the\n\u2B05logo\n\u2B05to learn about\n\u2B05this app.',
@@ -246,7 +250,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                             ? 12
                                                             : 12)
                                                         : 20,
-                                              )))),
+                                              )))*/),
                                   Expanded(child: Container(width: 50)),
                                   Column(
                                     children: [
@@ -254,7 +258,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                           padding: const EdgeInsets.all(8.0),
                                           child: FittedBox(
                                               fit: BoxFit.contain,
-                                              child: Text('Art Theropy AIR\nApp',
+                                              child: Text('Art Therapy AIR\nApp',
                                                   overflow: TextOverflow.fade,
                                                   //   style: FlutterFlowTheme.of(context)
                                                   //      .headlineMedium,),

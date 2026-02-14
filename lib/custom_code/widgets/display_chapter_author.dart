@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 // import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 
 
 class DisplayChapterAuthor extends StatefulWidget {

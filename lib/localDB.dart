@@ -5,7 +5,7 @@ import 'package:appwrite/models.dart' as models;
 
 import 'custom_code/widgets/permissions.dart';
 import '/flutter_flow/random_data_util.dart' as random_data;
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 
 
 

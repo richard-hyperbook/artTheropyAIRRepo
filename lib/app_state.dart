@@ -5,14 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // import '/backend/backend.dart';
 import 'flutter_flow/flutter_flow_util.dart';
-import 'package:hyperbook/custom_code/widgets/permissions.dart';
+import '../../custom_code/widgets/permissions.dart';
 import '../../flutter_flow/random_data_util.dart' as random_data;
-import 'package:hyperbook/custom_code/widgets/toast.dart';
+import '../../custom_code/widgets/toast.dart';
 import 'flutter_flow/flutter_flow_theme.dart';
 import 'dart:math';
 import 'appwrite_interface.dart';
 
-final int versionNumber = 7;
+final int versionNumber = 8;
 
 late SharedPreferences globalSharedPrefs;
 DocumentReference? _introductionHyperbook;

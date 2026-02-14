@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../flutter_flow/place.dart';
 import '../../flutter_flow/uploaded_file.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 import '../../flutter_flow/lat_lng.dart';
 
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 // import '/ba?ckend/backend.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 
 // Begin custom widget code
 // DO NOT REMOVE OR MODIFY THE CODE ABOVE!

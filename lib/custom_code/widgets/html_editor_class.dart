@@ -23,11 +23,11 @@ import 'package:html_editor_enhanced/html_editor.dart';
 
 export '/chapter_edit/chapter_edit_model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-// import 'package:hyperbook/backend/push_notifications/push_notifications_util.dart';
+// import '../../backend/push_notifications/push_notifications_util.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:flutter_intro/flutter_intro.dart';
-import 'package:hyperbook/custom_code/widgets/toast.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../custom_code/widgets/toast.dart';
+import '../../appwrite_interface.dart';
 // import 'package:fastor_app_ui_widget/fastor_app_ui_widget.dart'
 //     if (dart.library.html) 'dart:ui' as ui;
 
@@ -38,10 +38,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:chiclet/chiclet.dart';
 import '../../menu.dart';
 import '../../localDB.dart';
-import 'package:hyperbook/login/login_widget.dart';
-import 'package:hyperbook/session_display/session_display_widget.dart';
-import 'package:hyperbook/chapter_display/chapter_display_widget.dart';
-// import 'package:hyperbook/map_display/map_display_widget.dart';
+import '../../login/login_widget.dart';
+import '../../session_display/session_display_widget.dart';
+import '../../chapter_display/chapter_display_widget.dart';
+// import '../../map_display/map_display_widget.dart';
 
 class HtmlEditorClass extends StatefulWidget {
   const HtmlEditorClass({

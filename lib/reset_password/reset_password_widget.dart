@@ -8,14 +8,14 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'reset_password_model.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../custom_code/widgets/toast.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 import 'package:window_location_href/window_location_href.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as models;
-import 'package:hyperbook/login/login_widget.dart';
+import '../../login/login_widget.dart';
 
 export 'reset_password_model.dart';
 

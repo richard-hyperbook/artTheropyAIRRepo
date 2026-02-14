@@ -7,8 +7,8 @@ import '../../index.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '../../flutter_flow/flutter_flow_icon_button.dart';
 import '../../main.dart';
-import 'package:hyperbook/appwrite_interface.dart';
-// import 'package:hyperbook/map_display/map_display_widget.dart';
+import '../../appwrite_interface.dart';
+// import '../../map_display/map_display_widget.dart';
 
 class IconButtonTooltipMap extends StatefulWidget {
   const IconButtonTooltipMap(

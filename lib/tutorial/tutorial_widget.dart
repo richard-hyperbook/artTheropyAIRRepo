@@ -8,7 +8,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'tutorial_model.dart';
 import '../../session_display/session_display_widget.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 export 'tutorial_model.dart';
 
 class TutorialWidget extends StatefulWidget {

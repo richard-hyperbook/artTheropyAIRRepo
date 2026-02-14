@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'grant_permissions_bottom_sheet_model.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 
 export 'grant_permissions_bottom_sheet_model.dart';
 

@@ -1,6 +1,6 @@
 // import '/backend/backend.dart';
 import 'package:flutter/material.dart';
-import 'package:hyperbook/appwrite_interface.dart';
+import '../../appwrite_interface.dart';
 
 int convertTypeDropdownToInt(String? dropdownChoice) {
   int? type;
