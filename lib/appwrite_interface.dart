@@ -108,6 +108,7 @@ UsersRecord? currentUser;
 String currentUserDisplayName = '';
 String currentUserEmail = '';
 SessionsRecord? currentSession;
+SessionsStepRecord? currentSessionStep;
 UsersRecord? currentTherapist;
 UsersRecord? currentClient;
 
@@ -615,6 +616,36 @@ Future<models.DocumentList> listDocumentsWithTwoQueryDocumentReferences({
       queries: [
         Query.equal(attribute1, value1!.path),
         Query.equal(attribute2, value2!.path),
+        Query.limit(kLimitDatabaseListDocuments),
+      ],
+    );
+  } /*on AppwriteException */ catch (e) {
+    //  //>print('(N8A)${e.message}&&&&${e.code}====${e.code}');
+    //>print('(NY12${e}');
+  }
+  //>print('(NY13)${docs.documents.length}>>>>${docs.documents}<<<<${docs.total}');
+  return docs;
+}
+Future<models.DocumentList> listDocumentsWithTwoQueries({
+  DocumentReference? collection,
+  String attribute1 = '',
+  dynamic value1,
+  String attribute2 = '',
+  dynamic value2,
+}) async {
+  appwriteDatabases = Databases(client!);
+  models.DocumentList docs = models.DocumentList(total: 0, documents: []);
+  //> print(
+  //>  '(NY10)${attribute1}&&&&${value1!.path}////${databaseRef.path}ÅÅÅÅ${collection!.path}',
+  //> );
+  //>print('(NY11)${appwriteDatabases}>>>>${collection}<<<<${value1}');
+  try {
+    docs = await appwriteDatabases!.listDocuments(
+      databaseId: databaseRef.path!,
+      collectionId: collection!.path!,
+      queries: [
+        Query.equal(attribute1, value1!),
+        Query.equal(attribute2, value2!),
         Query.limit(kLimitDatabaseListDocuments),
       ],
     );

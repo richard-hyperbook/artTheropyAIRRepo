@@ -147,10 +147,10 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                     children: <Widget>[
                       Recorder(
                         onStop: (path) async {
-                          print('(AU60)Recorded file path: $path');
+                          print('(AU60)$path....${currentSessionStep.reference!.path}');
                           await createStorageAudioFile(
                             therapistId: currentTherapist!.reference,
-                            sessionStepId: currentSession!.reference,
+                            sessionStepId: currentSessionStep!.reference,
                             localFilePath: path,
                           );
                           setState(() => audioPath = path);

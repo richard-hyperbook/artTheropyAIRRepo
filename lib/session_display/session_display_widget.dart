@@ -187,7 +187,17 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                     currentSession = session;
                     currentTherapist = await getUser(document: session.therapistId);
                     currentClient = await getUser(document: session.clientId);
-                    print('(S1)${session.clientId}');
+                    models.DocumentList sessionStepList = await listDocumentsWithTwoQueries(
+                      collection: sessionStepsRef,
+                      attribute1: kSessionStepSessionId,
+                      value1: session.reference!.path,
+                      attribute2: kSessionStepIndex,
+                      value2: index,);
+                    if (sessionStepList.documents.length > 0){
+                      currentSessionStep = sessionStepList.documents.first;
+                    }
+
+                      print('(S1)${session.clientId}');
                     Navigator.push(
                         context,
                         PageTransition(
