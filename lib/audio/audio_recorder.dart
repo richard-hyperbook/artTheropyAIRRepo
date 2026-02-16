@@ -8,8 +8,9 @@ import '../../platform/audio_recorder_platform.dart';
 
 class Recorder extends StatefulWidget {
   final void Function(String path) onStop;
+  final Future<bool> Function() carryOn;
 
-  const Recorder({super.key, required this.onStop});
+  const Recorder({super.key, required this.onStop, required this.carryOn});
 
   @override
   State<Recorder> createState() => _RecorderState();
@@ -21,6 +22,7 @@ class _RecorderState extends State<Recorder> with AudioRecorderMixin {
   late final AudioRecorder _audioRecorder;
   StreamSubscription<RecordState>? _recordSub;
   RecordState _recordState = RecordState.stop;
+  bool _askIfOverwrite = false;
   StreamSubscription<Amplitude>? _amplitudeSub;
   Amplitude? _amplitude;
 
@@ -50,20 +52,28 @@ class _RecorderState extends State<Recorder> with AudioRecorderMixin {
           return;
         }
 
-        final devs = await _audioRecorder.listInputDevices();
-        debugPrint(devs.toString());
+        if(await widget.carryOn()) {
+          _askIfOverwrite = false;
+          final devs = await _audioRecorder.listInputDevices();
+          debugPrint(devs.toString());
 
-        const config = RecordConfig(encoder: encoder, numChannels: 1);
+          const config = RecordConfig(encoder: encoder, numChannels: 1);
 
-        // Record to file
-        await recordFile(_audioRecorder, config);
+          // Record to file
+          await recordFile(_audioRecorder, config);
 
-        // Record to stream
-        // await recordStream(_audioRecorder, config);
+          // Record to stream
+          // await recordStream(_audioRecorder, config);
 
-        _recordDuration = 0;
+          _recordDuration = 0;
 
-        _startTimer();
+          _startTimer();
+        }
+      } else {
+        setState(() {
+          _askIfOverwrite = true;
+        });
+
       }
     } catch (e) {
       if (kDebugMode) {
@@ -208,7 +218,9 @@ class _RecorderState extends State<Recorder> with AudioRecorderMixin {
     if (_recordState != RecordState.stop) {
       return _buildTimer();
     }
-
+    if (_askIfOverwrite){
+      return const Text("Overwrite recording?");
+    }
     return const Text("Waiting to record");
   }
 

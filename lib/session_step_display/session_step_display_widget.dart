@@ -162,6 +162,9 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                     //     : UniqueKey(),
                     children: <Widget>[
                       Recorder(
+                        carryOn: () async {
+                          return false;
+                        },
                         onStop: (path) async {
                           print('(AU60)$path....${currentSessionStep!.reference!.path}');
                           await createStorageAudioFile(
