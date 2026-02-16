@@ -89,6 +89,22 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
   }
   String audioPath = '';
 
+  Future<void> setCurrentSessionStepAndIndex(int index) async {
+    models.DocumentList sessionStepList = await listDocumentsWithTwoQueries(
+      collection: sessionStepsRef,
+      attribute1: kSessionStepSessionId,
+      value1: currentSession!.reference!.path,
+      attribute2: kSessionStepIndex,
+      value2: index,);
+    if (sessionStepList.documents.length > 0){
+      currentSessionStep = extractSessionStepRecord(sessionStepList.documents.first);
+    } else {
+      toast(context, 'Error in database', ToastKind.error);
+    }
+
+  }
+
+
   Widget displaySessionStep(SessionStepsRecord sessionStep, int index) {
     return Material(
       color: Colors.transparent,
@@ -147,7 +163,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                     children: <Widget>[
                       Recorder(
                         onStop: (path) async {
-                          print('(AU60)$path....${currentSessionStep.reference!.path}');
+                          print('(AU60)$path....${currentSessionStep!.reference!.path}');
                           await createStorageAudioFile(
                             therapistId: currentTherapist!.reference,
                             sessionStepId: currentSessionStep!.reference,

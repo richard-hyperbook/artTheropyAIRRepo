@@ -108,7 +108,8 @@ UsersRecord? currentUser;
 String currentUserDisplayName = '';
 String currentUserEmail = '';
 SessionsRecord? currentSession;
-SessionsStepRecord? currentSessionStep;
+SessionStepsRecord? currentSessionStep;
+int? currentSessionStepIndex;
 UsersRecord? currentTherapist;
 UsersRecord? currentClient;
 
@@ -872,6 +873,21 @@ Future<List<SessionStepsRecord>> listSessionStepList(
   print('(SS42)${hh.length}');
   return hh;
 }
+SessionStepsRecord extractSessionStepRecord(models.Document d) {
+  print('(SS80)${d.$id}&&&&${d.data[kSessionStepPhoto]}');
+  SessionStepsRecord h = SessionStepsRecord(
+    reference: DocumentReference(path: d.$id),
+    sessionId: DocumentReference(
+        path: (d.data[kSessionStepSessionId] as String?)),
+    photo: DocumentReference(path: (d.data[kSessionStepPhoto] as String?)),
+    audio: DocumentReference(path: (d.data[kSessionStepAudio] as String?)),
+    completed: d.data[kSessionStepCompleted] as bool,
+    transcription: d.data[kSessionStepTranscription] as String,
+    index: d.data[kSessionStepIndex] as int,
+  );
+  return h;
+}
+
 
 Future<SessionsRecord> getSession({DocumentReference? document}) async {
   models.Document d =
