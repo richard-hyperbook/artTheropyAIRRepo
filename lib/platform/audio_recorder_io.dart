@@ -6,6 +6,8 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
+import '../appwrite_interface.dart';
+
 mixin AudioRecorderMixin {
   Future<void> recordFile(AudioRecorder recorder, RecordConfig config) async {
     final path = await _getPath();
@@ -35,12 +37,30 @@ mixin AudioRecorderMixin {
 
   void downloadWebData(String path) {}
 
+  Future<void> setCurrentLocalAudioPath() async {
+    print('(AU0IO)');
+    await _getPath();
+  }
+
   Future<String> _getPath() async {
     final dir = await getApplicationDocumentsDirectory();
-    print('(AU1IO)${dir.path}');
-    return p.join(
+    print('(AU1IO)${dir.path}....${currentSessionStep}');
+    String path =  p.join(
       dir.path,
-      'audio_${DateTime.now().millisecondsSinceEpoch}.m4a',
+      'audio${currentSessionStep!.reference!.path}.m4a',
     );
+    currentLocalAudioPath = path;
+    return path;
   }
+
+  Future<void> deleteLocalFile(String path) async {
+    print('(AU300)${path}');
+    try {
+      File file = File(path);
+      await file.delete();
+    } on Exception catch (e){
+      print('(AU30E)${e}');
+    }
+  }
+
 }

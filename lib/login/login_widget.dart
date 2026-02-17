@@ -613,6 +613,13 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               }
                                               _model.passwordController.text =
                                                   'aaaaaaaa';
+                                            } else {
+                                              if (e.length == 0){
+                                                _model.emailAddressController
+                                                    .text = 't@t.com';
+                                                _model.passwordController.text =
+                                                'aaaaaaaa';
+                                              }
                                             }
                                             models.User? appwriteUser;
                                             print(

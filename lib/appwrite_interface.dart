@@ -17,7 +17,7 @@ import 'custom_code/widgets/permissions.dart';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as dartio;
 import 'package:intl/intl.dart';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
@@ -110,6 +110,7 @@ String currentUserEmail = '';
 SessionsRecord? currentSession;
 SessionStepsRecord? currentSessionStep;
 int? currentSessionStepIndex;
+String? currentLocalAudioPath;
 UsersRecord? currentTherapist;
 UsersRecord? currentClient;
 
@@ -1208,8 +1209,13 @@ Future<String?> createStorageAudioFile({
 }
 
 Future<String?> getStorageFileDownload({
+  String? bucketId,
   models.File? file,
 }) async {
+  String? localBucketId = bucketId;
+  if (bucketId == null){
+    localBucketId =  backupStorageRef.path!;
+  }
   Uint8List bytes = await storage.getFileDownload(
     bucketId: backupStorageRef.path!,
     fileId: file!.$id,
@@ -1219,10 +1225,33 @@ Future<String?> getStorageFileDownload({
   return s;
 }
 
+
+Future<void> copyStorageFiletoLocal({
+  String? bucketId,
+  String? fileId,
+  String? localPath,
+}) async {
+  String? localBucketId = bucketId;
+  if (bucketId == null){
+    localBucketId =  backupStorageRef.path!;
+  }
+  print('(AP70)${localBucketId}....${localPath}');
+  var bytes = await storage.getFileDownload(
+    bucketId: localBucketId!,
+    fileId: fileId!,
+  );
+  print('(AP71)${bytes.length}');
+  var result = await dartio.File(localPath!).writeAsBytes(bytes);
+  print('(AP72)${result}');
+
+}
+
+
+
 Future<String?> readStorageFile(
     {required DocumentReference? user,
-    required String? hyperbookTitle,
-    required int? versionNumber}) async {
+      required String? hyperbookTitle,
+      required int? versionNumber}) async {
   String expandedFilename = user!.path! +
       '_' +
       hyperbookTitle! +
@@ -1236,6 +1265,17 @@ Future<String?> readStorageFile(
   String s = utf8.decode(bytes);
   //>print('(XY10)${expandedFilename}++++${bytes.length}****${s}');
   return s;
+}
+
+Future<void> deleteStorageFile(
+    {required String? bucketId,
+      required String? fileId,
+    }) async {
+  await storage.deleteFile(
+    bucketId: bucketId!,
+    fileId: fileId!,
+  );
+  print('(AU110)${fileId}');
 }
 
 Future<models.FileList> listStorageFiles({String? bucketId}) async {

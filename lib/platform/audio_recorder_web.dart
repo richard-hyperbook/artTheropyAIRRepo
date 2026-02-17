@@ -38,4 +38,14 @@ mixin AudioRecorderMixin {
     anchor.click();
     web.document.body!.removeChild(anchor);
   }
+
+
+  Future<void> setCurrentLocalAudioPath() async {
+    print('(AU0WEB)');
+  }
+
+  Future<void> deleteLocalFile(String path) async {
+    print('(AU300WEB)${path}');
+  }
+
 }

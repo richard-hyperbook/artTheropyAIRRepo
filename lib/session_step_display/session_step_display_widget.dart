@@ -36,6 +36,8 @@ import '../../chapter_display/chapter_display_widget.dart';
 import '../../paypal/paypal_widget.dart';
 import '../../audio/audio_player.dart';
 import '../../audio/audio_recorder.dart';
+import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart' as models;
 
 int _count = 0;
 bool _iHaveRequests = false;
@@ -163,10 +165,34 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                     children: <Widget>[
                       Recorder(
                         carryOn: () async {
+                          print('(AU99)');
+                          currentSessionStep = sessionStep;
+                          try {
+                            models.FileList fileList = await listStorageFiles(
+                              bucketId: artTheopyAIRaudiosRef.path,
+                            );
+                            print('(AU100)');
+                            print('(AU100A)${fileList.files.length}');
+                            if (fileList.files.length > 0 ) {
+                              print('(AU100B)${fileList.files.first.name}....${fileList.files.first.runtimeType.toString()}');
+                            } else {
+                              return true;
+                            }
+                          } on AppwriteException catch (e) {
+                             print('(AU100C)${e}....${e.code}');
+                             return true;
+                          }
                           return false;
                         },
-                        onStop: (path) async {
-                          print('(AU60)$path....${currentSessionStep!.reference!.path}');
+                        onStop: (String path, bool deleteFirst) async {
+                          currentSessionStep = sessionStep;
+                          if (deleteFirst){
+                            await deleteStorageFile(
+                              bucketId: artTheopyAIRaudiosRef.path,
+                              fileId: 'audio' + currentSessionStep!.reference!.path!);
+                            print('(AU60)${'audio' + currentSessionStep!.reference!.path!}');
+                          }
+                          print('(AU61)${path}');
                           await createStorageAudioFile(
                             therapistId: currentTherapist!.reference,
                             sessionStepId: currentSessionStep!.reference,
@@ -190,8 +216,17 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                       height: 60,
                       child: AudioPlayer(
                         source: audioPath,
+                        onStart: () async {
+                          currentSessionStep = sessionStep;
+                          print('(AP4)${artTheopyAIRaudiosRef.path}');
+                          copyStorageFiletoLocal(
+                              bucketId: artTheopyAIRaudiosRef.path,
+                              fileId: 'audio' + currentSessionStep!.reference!.path!,
+                              localPath: currentLocalAudioPath,
+                          );
+                        },
                         onDelete: () {
-                          print('(AU40)');
+                          print('(AP5)');
                           setState(() => audioPath = '');
                         },
                       ),

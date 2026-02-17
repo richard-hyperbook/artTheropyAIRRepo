@@ -4,26 +4,30 @@ import 'package:audioplayers/audioplayers.dart' as ap;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../platform/audio_recorder_platform.dart';
+import '../appwrite_interface.dart';
 
-class AudioPlayer extends StatefulWidget {
+class AudioPlayer extends StatefulWidget  {
   /// Path from where to play recorded audio
   final String source;
 
   /// Callback when audio file should be removed
   /// Setting this to null hides the delete button
   final VoidCallback onDelete;
+  final Future<void> Function() onStart;
 
   const AudioPlayer({
     super.key,
     required this.source,
     required this.onDelete,
+    required this.onStart,
   });
 
   @override
   AudioPlayerState createState() => AudioPlayerState();
 }
 
-class AudioPlayerState extends State<AudioPlayer> {
+class AudioPlayerState extends State<AudioPlayer>  with AudioRecorderMixin {
   static const double _controlSize = 56;
   static const double _deleteBtnSize = 24;
 
@@ -108,6 +112,8 @@ class AudioPlayerState extends State<AudioPlayer> {
     } else {
       final theme = Theme.of(context);
       icon = Icon(Icons.play_arrow, color: theme.primaryColor, size: 30);
+      print('(AP1)');
+
       color = theme.primaryColor.withValues(alpha: 0.1);
     }
 
@@ -117,10 +123,14 @@ class AudioPlayerState extends State<AudioPlayer> {
         child: InkWell(
           child:
               SizedBox(width: _controlSize, height: _controlSize, child: icon),
-          onTap: () {
+          onTap: () async {
             if (_audioPlayer.state == ap.PlayerState.playing) {
               pause();
             } else {
+              print('(AP2)');
+              await setCurrentLocalAudioPath();
+              print('(AP2A)${currentLocalAudioPath}');
+              await widget.onStart();
               play();
             }
           },
