@@ -1,33 +1,38 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart' as ap;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../platform/audio_recorder_platform.dart';
-import '../appwrite_interface.dart';
 
-class AudioPlayer extends StatefulWidget  {
+
+class AudioPlayer extends StatefulWidget {
   /// Path from where to play recorded audio
-  final String source;
+  // final String source;
 
   /// Callback when audio file should be removed
   /// Setting this to null hides the delete button
   final VoidCallback onDelete;
-  final Future<void> Function() onStart;
+  final Future<void> Function(String localPath) onPlay;
+  //final int? stepIndex;
+  final String? sessionStepId;
 
   const AudioPlayer({
     super.key,
-    required this.source,
+    // required this.stepIndex,
     required this.onDelete,
-    required this.onStart,
+    required this.onPlay,
+    required this.sessionStepId,
   });
 
   @override
   AudioPlayerState createState() => AudioPlayerState();
 }
 
-class AudioPlayerState extends State<AudioPlayer>  with AudioRecorderMixin {
+class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
   static const double _controlSize = 56;
   static const double _deleteBtnSize = 24;
 
@@ -37,9 +42,37 @@ class AudioPlayerState extends State<AudioPlayer>  with AudioRecorderMixin {
   late StreamSubscription<Duration> _positionChangedSubscription;
   Duration? _position;
   Duration? _duration;
+  String? localPath;
+
+  void localSetSource() async {
+    _audioPlayer.setSource(await _source());
+    print('(DE35)${_source()}');
+  }
+
+  void resetPlayer(){
+    print('(DE304)');
+    _playerStateChangedSubscription =
+        _audioPlayer.onPlayerComplete.listen((state) async {
+          await stop();
+        });
+    _positionChangedSubscription = _audioPlayer.onPositionChanged.listen(
+          (position) => setState(() {
+        _position = position;
+      }),
+    );
+    _durationChangedSubscription = _audioPlayer.onDurationChanged.listen(
+          (duration) => setState(() {
+        _duration = duration;
+      }),
+    );
+
+    localSetSource();
+  }
+
 
   @override
   void initState() {
+    print('(DE300)');
     _playerStateChangedSubscription =
         _audioPlayer.onPlayerComplete.listen((state) async {
       await stop();
@@ -55,7 +88,7 @@ class AudioPlayerState extends State<AudioPlayer>  with AudioRecorderMixin {
       }),
     );
 
-    _audioPlayer.setSource(_source);
+    localSetSource();
 
     super.initState();
   }
@@ -71,6 +104,7 @@ class AudioPlayerState extends State<AudioPlayer>  with AudioRecorderMixin {
 
   @override
   Widget build(BuildContext context) {
+    print('(DE301)');
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(
@@ -105,15 +139,13 @@ class AudioPlayerState extends State<AudioPlayer>  with AudioRecorderMixin {
   Widget _buildControl() {
     Icon icon;
     Color color;
-
+    print('(DE302)');
     if (_audioPlayer.state == ap.PlayerState.playing) {
       icon = const Icon(Icons.pause, color: Colors.red, size: 30);
       color = Colors.red.withValues(alpha: 0.1);
     } else {
       final theme = Theme.of(context);
       icon = Icon(Icons.play_arrow, color: theme.primaryColor, size: 30);
-      print('(AP1)');
-
       color = theme.primaryColor.withValues(alpha: 0.1);
     }
 
@@ -127,10 +159,7 @@ class AudioPlayerState extends State<AudioPlayer>  with AudioRecorderMixin {
             if (_audioPlayer.state == ap.PlayerState.playing) {
               pause();
             } else {
-              print('(AP2)');
-              await setCurrentLocalAudioPath();
-              print('(AP2A)${currentLocalAudioPath}');
-              await widget.onStart();
+              await widget.onPlay(await getPath(widget.sessionStepId!));
               play();
             }
           },
@@ -151,7 +180,7 @@ class AudioPlayerState extends State<AudioPlayer>  with AudioRecorderMixin {
 
     double width = widgetWidth - _controlSize - _deleteBtnSize;
     width -= _deleteBtnSize;
-    print('(AU44)${widgetWidth}....${width}');
+    print('(AU44)${widgetWidth}....${position}');
 
     return SizedBox(
       width: width,
@@ -171,7 +200,26 @@ class AudioPlayerState extends State<AudioPlayer>  with AudioRecorderMixin {
     );
   }
 
-  Future<void> play() => _audioPlayer.play(_source);
+  Future<void> play() async {
+    //localSetSource();//???????????????
+
+    final utf8Encoder = utf8.encoder;
+    Source localSource = await _source();
+    String localPath = await getPath(widget.sessionStepId!);
+    List<String> dirPath = localPath.split('/audio');
+    print('DE36A)${dirPath[0]}');
+    var dir = Directory.fromRawPath(utf8Encoder.convert(dirPath[0]));
+    await for (var entity in
+    dir.list(recursive: true, followLinks: false)) {
+      print('DE36B)${entity.path}');
+      // if(entity.path.contains('audio')) {
+      //   File file = File(entity.path);
+      //   await file.delete();
+      // }
+    }
+    print('(DE36C)${localSource.toString()}');
+    _audioPlayer.play(localSource);
+  }
 
   Future<void> pause() async {
     await _audioPlayer.pause();
@@ -183,6 +231,13 @@ class AudioPlayerState extends State<AudioPlayer>  with AudioRecorderMixin {
     setState(() {});
   }
 
-  Source get _source =>
-      kIsWeb ? ap.UrlSource(widget.source) : ap.DeviceFileSource(widget.source);
+  // Source get _source =>
+  //     kIsWeb ? ap.UrlSource(localPath) : ap.DeviceFileSource(localPath!);
+
+  Future<Source> _source() async {
+    print('(DE34)${widget.sessionStepId!}....${await getPath(widget.sessionStepId!)}');
+    return kIsWeb
+        ? ap.UrlSource(await getPath(widget.sessionStepId!))
+        : ap.DeviceFileSource(await getPath(widget.sessionStepId!));
+  }
 }

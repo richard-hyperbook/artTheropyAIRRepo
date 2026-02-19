@@ -34,6 +34,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 // import 'package:web/web.dart';
 import 'package:universal_html/html.dart' as html;
+import 'dart:io';
+import 'dart:convert';
 
 // part 'appwrite_interface.g.dart';
 
@@ -1177,29 +1179,25 @@ Future<String?> createStorageImageFile({
 }
 
 Future<String?> createStorageAudioFile({
-  required DocumentReference? therapistId,
-  required DocumentReference? sessionStepId,
+  required String? storageFilename,
   required String? localFilePath,
 }) async {
-  final String fileId =
-      'audio' + sessionStepId!.path! ;
-  final String storageFilename =
-      fileId + '.m4a';
-  print('(AU30)${fileId}++++${storageFilename}');
+
+  print('(AU30)${storageFilename}');
 
   models.File result = await storage.createFile(
     bucketId: artTheopyAIRaudiosRef.path!,
-    fileId: fileId,
+    fileId: storageFilename!,
     file: InputFile.fromPath(path: localFilePath!),
   );
   var file = await storage.getFile(
-      bucketId: artTheopyAIRaudiosRef.path!, fileId: fileId);
+      bucketId: artTheopyAIRaudiosRef.path!, fileId: storageFilename);
   // String url = file.
   print('(AU62)${file.toString()}++++${result.name}@@@@${file.name}~~~~');
 
   const String head = imageFilenameHead;
   final b_id = artTheopyAIRphotosRef.path!;
-  final f_id = fileId;
+  final f_id = storageFilename;
   final p_id = project;
   final String url =
       '${head}/${b_id}/files/${f_id}/preview?project=${p_id}&mode=admin';
@@ -1225,25 +1223,76 @@ Future<String?> getStorageFileDownload({
   return s;
 }
 
+Future<void> deleteFile(String path) async {
+  dartio.File file = dartio.File(path);
+  try {
+    if (await file.exists()) {
+      await file.delete();
+    }
+  } catch (e) {
+    print('(DE50)${e}....${path}');
+  }
+}
 
-Future<void> copyStorageFiletoLocal({
+
+Future<bool> copyStorageFiletoLocal({
   String? bucketId,
   String? fileId,
   String? localPath,
 }) async {
+  await deleteFile(localPath!);
   String? localBucketId = bucketId;
   if (bucketId == null){
     localBucketId =  backupStorageRef.path!;
   }
-  print('(AP70)${localBucketId}....${localPath}');
-  var bytes = await storage.getFileDownload(
-    bucketId: localBucketId!,
-    fileId: fileId!,
-  );
-  print('(AP71)${bytes.length}');
-  var result = await dartio.File(localPath!).writeAsBytes(bytes);
-  print('(AP72)${result}');
+  print('(DE70)${fileId}....${localPath}');
 
+/*  try {
+    models.File bytes = await storage.getFile(
+      bucketId: localBucketId!,
+      fileId: fileId!,
+    );
+    print('(AP71)${bytes}');
+
+    // var result = await dartio.File(localPath!).writeAsBytes(bytes);
+    // print('(AP72)${result}');
+  } on AppwriteException catch (e){
+    print('(DE99)${e}');
+    return false;
+  }*/
+  final utf8Encoder = utf8.encoder;
+  List<String> dirPath = localPath.split('/audio');
+  print('DE70)${dirPath[0]}');
+  var dir = Directory.fromRawPath(utf8Encoder.convert(dirPath[0]));
+  await for (var entity in
+  dir.list(recursive: true, followLinks: false)) {
+    print('(DE71)${entity.path}');
+     if(entity.path.contains('audio')) {
+       File file = File(entity.path);
+       print('DE72)${entity.path}');
+       await file.delete();
+     }
+  }
+  print('(DE73)${dirPath[0]}...${dirPath[1]}');
+  await storage.getFileDownload(
+    bucketId:  localBucketId!,
+    fileId: fileId!,
+  ).then((bytes) {
+    print('(DE74)${bytes.length}');
+    final file = File(localPath);
+    file.writeAsBytesSync(bytes);
+  }).catchError((error) {
+    print('(DE75)${error.response}');
+  });
+
+  await for (var entity in
+  dir.list(recursive: true, followLinks: false)) {
+    print('(DE76)${entity.path}');
+  }
+
+
+
+  return true;
 }
 
 

@@ -6,19 +6,19 @@ import 'package:web/web.dart' as web;
 import 'package:record/record.dart';
 
 mixin AudioRecorderMixin {
-  Future<void> recordFile(AudioRecorder recorder, RecordConfig config) {
+  Future<void> recordFile(AudioRecorder recorder, RecordConfig config,  String sessionStepId) {
     print('(AU2WEB)${config}');
 
     return recorder.start(config, path: '');
   }
 
-  Future<void> recordStream(AudioRecorder recorder, RecordConfig config) async {
+  Future<void> recordStream(AudioRecorder recorder, RecordConfig config, String sessionStepId) async {
     final bytes = <int>[];
     final stream = await recorder.startStream(config);
     print('(AU3WEB)${config}');
 
     stream.listen(
-      (data) => bytes.addAll(data),
+          (data) => bytes.addAll(data),
       onDone: () => downloadWebData(
         web.URL.createObjectURL(
           web.Blob(<JSUint8Array>[Uint8List.fromList(bytes).toJS].toJS),
@@ -39,13 +39,7 @@ mixin AudioRecorderMixin {
     web.document.body!.removeChild(anchor);
   }
 
-
-  Future<void> setCurrentLocalAudioPath() async {
-    print('(AU0WEB)');
+  Future<String> getPath(String sessionStepId) async {
+    return '';
   }
-
-  Future<void> deleteLocalFile(String path) async {
-    print('(AU300WEB)${path}');
-  }
-
 }

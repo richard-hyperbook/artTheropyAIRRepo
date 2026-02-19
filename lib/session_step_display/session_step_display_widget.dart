@@ -89,6 +89,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
     }
     super.dispose();
   }
+
   String audioPath = '';
 
   Future<void> setCurrentSessionStepAndIndex(int index) async {
@@ -97,15 +98,19 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
       attribute1: kSessionStepSessionId,
       value1: currentSession!.reference!.path,
       attribute2: kSessionStepIndex,
-      value2: index,);
-    if (sessionStepList.documents.length > 0){
-      currentSessionStep = extractSessionStepRecord(sessionStepList.documents.first);
+      value2: index,
+    );
+    if (sessionStepList.documents.length > 0) {
+      currentSessionStep =
+          extractSessionStepRecord(sessionStepList.documents.first);
     } else {
       toast(context, 'Error in database', ToastKind.error);
     }
-
   }
 
+  String generateStorageFilename(SessionStepsRecord sessionStep) {
+    return 'audio${sessionStep.reference!.path}.m4a';
+  }
 
   Widget displaySessionStep(SessionStepsRecord sessionStep, int index) {
     return Material(
@@ -155,7 +160,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                   style: FlutterFlowTheme.of(context).bodyMedium,
                 ),
               ),
-              Container(height: 60,
+              Container(
+                height: 60,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -164,40 +170,82 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                     //     : UniqueKey(),
                     children: <Widget>[
                       Recorder(
-                        carryOn: () async {
-                          print('(AU99)');
+                        sessionStepId: sessionStep.reference!.path,
+                        onStart: () async {
                           currentSessionStep = sessionStep;
+                          print('(DE3)${currentSessionStep!.reference!.path}');
+                          bool askToOverwrite = false;
+                          bool doDelete = false;
+                          bool doRecord = true;
+                          String storageFilename =
+                              generateStorageFilename(sessionStep);
                           try {
                             models.FileList fileList = await listStorageFiles(
                               bucketId: artTheopyAIRaudiosRef.path,
                             );
-                            print('(AU100)');
-                            print('(AU100A)${fileList.files.length}');
-                            if (fileList.files.length > 0 ) {
-                              print('(AU100B)${fileList.files.first.name}....${fileList.files.first.runtimeType.toString()}');
-                            } else {
-                              return true;
+                            print('(DE8)${fileList}');
+                            print('(DE9)${fileList.files.length}');
+                            if (fileList.files.length > 0) {
+                              for (var file in fileList.files) {
+                                print(
+                                    '(DE10)${file.name}....${file.runtimeType.toString()}');
+                                if (file.name == storageFilename) {
+                                  askToOverwrite = true;
+                                }
+                              }
                             }
                           } on AppwriteException catch (e) {
-                             print('(AU100C)${e}....${e.code}');
-                             return true;
+                            print('(DE20)${e}....${e.code}');
+                            return askToOverwrite = true;
                           }
-                          return false;
-                        },
-                        onStop: (String path, bool deleteFirst) async {
-                          currentSessionStep = sessionStep;
-                          if (deleteFirst){
+                          if (askToOverwrite) {
+                            print('(DE21)');
+                            await showDialog<bool>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Overwrite recording?'),
+                                    //content: Text('XXX'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            doRecord = false;
+                                            doDelete = false;
+                                            Navigator.pop(context, false);
+                                          },
+                                          child: const Text('Cancel')),
+                                      TextButton(
+                                        onPressed: () async {
+                                          AudioPlayerState.resetPlayer();
+                                          doRecord = true;
+                                          doDelete = true;
+                                          context.pop();
+                                        },
+                                        child: const Text('Confirm'),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          }
+                          print('(DE21)');
+                          if (doDelete) {
                             await deleteStorageFile(
-                              bucketId: artTheopyAIRaudiosRef.path,
-                              fileId: 'audio' + currentSessionStep!.reference!.path!);
-                            print('(AU60)${'audio' + currentSessionStep!.reference!.path!}');
+                                bucketId: artTheopyAIRaudiosRef.path,
+                                fileId: storageFilename);
+                            print(
+                                '(DE18)${'audio' + currentSessionStep!.reference!.path!}');
                           }
-                          print('(AU61)${path}');
+                          return doRecord;
+                        },
+                        onStop: (path) async {
+                          print(
+                              '(DE1)$path....${currentSessionStep!.reference!.path}');
                           await createStorageAudioFile(
-                            therapistId: currentTherapist!.reference,
-                            sessionStepId: currentSessionStep!.reference,
+                            storageFilename:
+                                generateStorageFilename(sessionStep),
                             localFilePath: path,
                           );
+                          print('(DE6)${audioPath}');
                           setState(() => audioPath = path);
                         },
                       ),
@@ -212,21 +260,29 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                   //     ? intro!.keys[4]
                   //     : UniqueKey(),
                   children: <Widget>[
-                    Container(width: MediaQuery.sizeOf(context).width * 1.0,
+                    Container(
+                      width: MediaQuery.sizeOf(context).width * 1.0,
                       height: 60,
                       child: AudioPlayer(
-                        source: audioPath,
-                        onStart: () async {
+                        sessionStepId: sessionStep.reference!.path,
+                        onPlay: (String localPath) async {
                           currentSessionStep = sessionStep;
-                          print('(AP4)${artTheopyAIRaudiosRef.path}');
-                          copyStorageFiletoLocal(
-                              bucketId: artTheopyAIRaudiosRef.path,
-                              fileId: 'audio' + currentSessionStep!.reference!.path!,
-                              localPath: currentLocalAudioPath,
+                          final String storageFileId = 'audio' +
+                              currentSessionStep!.reference!.path! +
+                              '.m4a';
+                          print('(DE33A)${storageFileId}....${localPath}');
+                          bool ok = await copyStorageFiletoLocal(
+                            bucketId: artTheopyAIRaudiosRef.path,
+                            fileId: storageFileId,
+                            localPath: localPath,
                           );
+                          print('(DE33B)${ok}');
+                          if(!ok){
+                            toast(context, 'No recording stored', ToastKind.warning);
+                          }
                         },
                         onDelete: () {
-                          print('(AP5)');
+                          print('(DE7)');
                           setState(() => audioPath = '');
                         },
                       ),
@@ -475,7 +531,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                                 .fromSTEB(10.0, 0.0, 10.0, 0.0),
                                             iconPadding:
                                                 const EdgeInsetsDirectional
-                                                    .fromSTEB(0.0, 0.0, 0.0, 0.0),
+                                                    .fromSTEB(
+                                                    0.0, 0.0, 0.0, 0.0),
                                             color: FlutterFlowTheme.of(context)
                                                 .primary,
                                             textStyle:
@@ -485,7 +542,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                                       fontFamily: 'Rubik',
                                                       color: Colors.white,
                                                       fontSize: 12.0,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                             elevation: 2.0,
                                             borderSide: const BorderSide(
@@ -498,7 +556,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                       ),
                                       (currentUser!.role! == kRoleAdministrator)
                                           ? Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: FFButtonWidget(
                                                 text: 'check',
                                                 onPressed: () async {
@@ -518,8 +577,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                                               builder: (context,
                                                                   setState) {
                                                             return AlertDialog(
-                                                              title:
-                                                                  Text('Message'),
+                                                              title: Text(
+                                                                  'Message'),
                                                               content: Column(
                                                                 mainAxisSize:
                                                                     MainAxisSize
@@ -545,7 +604,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                                                         '',
                                                                         ToastKind
                                                                             .success);
-                                                                    context.pop();
+                                                                    context
+                                                                        .pop();
                                                                   },
                                                                   child: const Text(
                                                                       'Confirm'),
@@ -567,11 +627,12 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                                       const EdgeInsetsDirectional
                                                           .fromSTEB(
                                                           0.0, 0.0, 0.0, 0.0),
-                                                  color:
-                                                      FlutterFlowTheme.of(context)
-                                                          .primary,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primary,
                                                   textStyle:
-                                                      FlutterFlowTheme.of(context)
+                                                      FlutterFlowTheme.of(
+                                                              context)
                                                           .titleSmall
                                                           .override(
                                                             fontFamily: 'Rubik',
@@ -585,14 +646,17 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                                     color: Colors.transparent,
                                                   ),
                                                   borderRadius:
-                                                      BorderRadius.circular(8.0),
+                                                      BorderRadius.circular(
+                                                          8.0),
                                                 ),
                                               ),
                                             )
                                           : Container(),
-                                      (currentUser!.role! == kUserLevelSupervisor)
+                                      (currentUser!.role! ==
+                                              kUserLevelSupervisor)
                                           ? Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: FFButtonWidget(
                                                 text: 'loadDB',
                                                 onPressed: () async {},
@@ -607,11 +671,12 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                                       const EdgeInsetsDirectional
                                                           .fromSTEB(
                                                           0.0, 0.0, 0.0, 0.0),
-                                                  color:
-                                                      FlutterFlowTheme.of(context)
-                                                          .primary,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primary,
                                                   textStyle:
-                                                      FlutterFlowTheme.of(context)
+                                                      FlutterFlowTheme.of(
+                                                              context)
                                                           .titleSmall
                                                           .override(
                                                             fontFamily: 'Rubik',
@@ -625,7 +690,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                                     color: Colors.transparent,
                                                   ),
                                                   borderRadius:
-                                                      BorderRadius.circular(8.0),
+                                                      BorderRadius.circular(
+                                                          8.0),
                                                 ),
                                               ),
                                             )

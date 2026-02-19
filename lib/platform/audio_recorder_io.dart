@@ -6,18 +6,16 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
-import '../appwrite_interface.dart';
-
 mixin AudioRecorderMixin {
-  Future<void> recordFile(AudioRecorder recorder, RecordConfig config) async {
-    final path = await _getPath();
+  Future<void> recordFile(AudioRecorder recorder, RecordConfig config,  String sessionStepId) async {
+    final path = await getPath(sessionStepId);
     print('(AU10)${path}');
     await recorder.start(config, path: path);
     print('(AU11)${config}');
   }
 
-  Future<void> recordStream(AudioRecorder recorder, RecordConfig config) async {
-    final path = await _getPath();
+  Future<void> recordStream(AudioRecorder recorder, RecordConfig config,  String sessionStepId) async {
+    final path = await getPath(sessionStepId);
 
     final file = File(path);
     print('(AU12)${path}');
@@ -26,7 +24,7 @@ mixin AudioRecorderMixin {
     print('(AU13)${path}');
 
     stream.listen(
-      (data) {
+          (data) {
         file.writeAsBytesSync(data, mode: FileMode.append);
       },
       onDone: () {
@@ -37,30 +35,12 @@ mixin AudioRecorderMixin {
 
   void downloadWebData(String path) {}
 
-  Future<void> setCurrentLocalAudioPath() async {
-    print('(AU0IO)');
-    await _getPath();
-  }
-
-  Future<String> _getPath() async {
+  Future<String> getPath(String sessionStepId) async {
     final dir = await getApplicationDocumentsDirectory();
-    print('(AU1IO)${dir.path}....${currentSessionStep}');
-    String path =  p.join(
+    print('(AU1IO)${dir.path}');
+    return p.join(
       dir.path,
-      'audio${currentSessionStep!.reference!.path}.m4a',
+      'audio${sessionStepId}.m4a',
     );
-    currentLocalAudioPath = path;
-    return path;
   }
-
-  Future<void> deleteLocalFile(String path) async {
-    print('(AU300)${path}');
-    try {
-      File file = File(path);
-      await file.delete();
-    } on Exception catch (e){
-      print('(AU30E)${e}');
-    }
-  }
-
 }
