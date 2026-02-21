@@ -38,6 +38,17 @@ import '../../audio/audio_player.dart';
 import '../../audio/audio_recorder.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as models;
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import '../../platform/audio_recorder_platform.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:appwrite/appwrite.dart' as appwrite;
+
+import 'package:appwrite/models.dart' as models;
+import 'package:appwrite/enums.dart' as enums;
+
+http.Client _http = http.Client();
 
 int _count = 0;
 bool _iHaveRequests = false;
@@ -51,11 +62,12 @@ class SessionStepDisplayWidget extends StatefulWidget {
       _SessionStepDisplayWidgetState();
 }
 
-class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
+class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>  with AudioRecorderMixin {
   late SessionStepDisplayModel _model;
 
   TextEditingController? enteredHyperbookTitleController;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   // Intro? intro;
   _SessionStepDisplayWidgetState() {}
 
@@ -108,9 +120,82 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
     }
   }
 
-  String generateStorageFilename(SessionStepsRecord sessionStep) {
-    return 'audio${sessionStep.reference!.path}.m4a';
+  String generateAudioStorageFilename(SessionStepsRecord sessionStep) {
+    return 'audio${sessionStep.reference!.path}.wav';
   }
+
+  String generatePhotoStorageFilename(SessionStepsRecord sessionStep) {
+    return 'photo${sessionStep.reference!.path}.jpg';
+  }
+
+  Future<bool> checkIfCanPutInStorage({
+    required String bucketId,
+  }) async {
+    bool askToOverwrite = false;
+    bool doStore = true;
+    bool doDelete = false;
+    String storageFilename =
+    generateAudioStorageFilename(currentSessionStep!);
+    try {
+      models.FileList fileList = await listStorageFiles(
+        bucketId: bucketId,
+      );
+      print('(DE8)${fileList}');
+      print('(DE9)${fileList.files.length}');
+      if (fileList.files.length > 0) {
+        for (var file in fileList.files) {
+          print(
+              '(DE10)${file.name}....${file.runtimeType.toString()}');
+          if (file.name == storageFilename) {
+            askToOverwrite = true;
+          }
+        }
+      }
+    } on AppwriteException catch (e) {
+      print('(DE20)${e}....${e.code}');
+      return false;
+    }
+    if (askToOverwrite) {
+      print('(DE21)');
+      await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Overwrite?'),
+//content: Text('XXX'),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      doStore = false;
+                      doDelete = false;
+                      Navigator.pop(context, false);
+                    },
+                    child: const Text('Cancel')),
+                TextButton(
+                  onPressed: () async {
+                    doStore = true;
+                    doDelete = true;
+                    context.pop();
+                  },
+                  child: const Text('Confirm'),
+                ),
+              ],
+            );
+          });
+    }
+    print('(DE21)');
+    if (doDelete) {
+      await deleteStorageFile(
+          bucketId: bucketId,
+          fileId: storageFilename);
+      print(
+          '(DE18)${currentSessionStep!.reference!.path!}');
+    }
+    return doStore;
+  }
+
+
+String transcription = '';
 
   Widget displaySessionStep(SessionStepsRecord sessionStep, int index) {
     return Material(
@@ -156,7 +241,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                 scrollDirection: Axis.horizontal,
                 child: Text(
                   softWrap: false,
-                  'PhotoId: ${sessionStep.photo!.path}',
+                  'Question: ${sessionStep.question}',
                   style: FlutterFlowTheme.of(context).bodyMedium,
                 ),
               ),
@@ -174,75 +259,18 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                         onStart: () async {
                           currentSessionStep = sessionStep;
                           print('(DE3)${currentSessionStep!.reference!.path}');
-                          bool askToOverwrite = false;
-                          bool doDelete = false;
                           bool doRecord = true;
-                          String storageFilename =
-                              generateStorageFilename(sessionStep);
-                          try {
-                            models.FileList fileList = await listStorageFiles(
-                              bucketId: artTheopyAIRaudiosRef.path,
-                            );
-                            print('(DE8)${fileList}');
-                            print('(DE9)${fileList.files.length}');
-                            if (fileList.files.length > 0) {
-                              for (var file in fileList.files) {
-                                print(
-                                    '(DE10)${file.name}....${file.runtimeType.toString()}');
-                                if (file.name == storageFilename) {
-                                  askToOverwrite = true;
-                                }
-                              }
-                            }
-                          } on AppwriteException catch (e) {
-                            print('(DE20)${e}....${e.code}');
-                            return askToOverwrite = true;
-                          }
-                          if (askToOverwrite) {
-                            print('(DE21)');
-                            await showDialog<bool>(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text('Overwrite recording?'),
-                                    //content: Text('XXX'),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            doRecord = false;
-                                            doDelete = false;
-                                            Navigator.pop(context, false);
-                                          },
-                                          child: const Text('Cancel')),
-                                      TextButton(
-                                        onPressed: () async {
-                                          AudioPlayerState.resetPlayer();
-                                          doRecord = true;
-                                          doDelete = true;
-                                          context.pop();
-                                        },
-                                        child: const Text('Confirm'),
-                                      ),
-                                    ],
-                                  );
-                                });
-                          }
-                          print('(DE21)');
-                          if (doDelete) {
-                            await deleteStorageFile(
-                                bucketId: artTheopyAIRaudiosRef.path,
-                                fileId: storageFilename);
-                            print(
-                                '(DE18)${'audio' + currentSessionStep!.reference!.path!}');
-                          }
+                          doRecord = await checkIfCanPutInStorage(bucketId: artTheopyAIRaudiosRef.path!);
+                          print('(DE3)${currentSessionStep!.reference!.path}....${doRecord}');
                           return doRecord;
                         },
                         onStop: (path) async {
                           print(
                               '(DE1)$path....${currentSessionStep!.reference!.path}');
-                          await createStorageAudioFile(
+                          await storeStorageFile(
+                              bucketId: artTheopyAIRaudiosRef.path!,
                             storageFilename:
-                                generateStorageFilename(sessionStep),
+                                generateAudioStorageFilename(sessionStep),
                             localFilePath: path,
                           );
                           print('(DE6)${audioPath}');
@@ -269,7 +297,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                           currentSessionStep = sessionStep;
                           final String storageFileId = 'audio' +
                               currentSessionStep!.reference!.path! +
-                              '.m4a';
+                              '.wav';
                           print('(DE33A)${storageFileId}....${localPath}');
                           bool ok = await copyStorageFiletoLocal(
                             bucketId: artTheopyAIRaudiosRef.path,
@@ -290,96 +318,73 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                   ],
                 ),
               ),
+
               Row(children: [
                 FlutterFlowIconButton(
-                  caption: 'Edit',
-                  tooltipMessage: 'Go to hyperbook map',
+                  caption: 'Select photo',
+                  tooltipMessage: 'Select photo from gallery',
                   borderColor: Colors.transparent,
                   borderRadius: 0.0,
                   borderWidth: 1.0,
                   buttonSize: 40.0,
-                  icon: kIconHyperbookMap,
+                  buttonWidth: 120,
+                  icon: Icon(Icons.camera),
                   onPressed: () async {
                     FFAppState().update(() {});
-
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                          type: kStandardPageTransitionType,
-                          duration: kStandardTransitionTime,
-                          reverseDuration: kStandardReverseTransitionTime,
-                          child: LoginWidget(),
-                        ));
+                    currentSessionStep = sessionStep;
+                    insertPicture(context, sessionStep);
                   },
-                ),
-                FlutterFlowIconButton(
-                  caption: 'List',
-                  tooltipMessage: 'Go to list of chapters of this hyperbook',
-                  borderColor: Colors.transparent,
-                  borderRadius: 0.0,
-                  borderWidth: 1.0,
-                  buttonSize: 40.0,
-                  icon: kIconList,
-                  onPressed: () async {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            type: kStandardPageTransitionType,
-                            duration: kStandardTransitionTime,
-                            reverseDuration: kStandardReverseTransitionTime,
-                            child: LoginWidget()));
-                  },
-                ),
-                FlutterFlowIconButton(
-                  caption: 'Settings',
-                  tooltipMessage: 'Hyperbook settings',
-                  borderColor: Colors.transparent,
-                  borderRadius: 30.0,
-                  borderWidth: 1.0,
-                  buttonSize: 40.0,
-                  icon: kIconSettings,
-                  onPressed: () async {},
                 ),
               ]),
               Row(
                 children: <Widget>[
                   FlutterFlowIconButton(
-                    caption: 'Delete',
-                    tooltipMessage: 'Delete this hyperbook',
+                    caption: 'Transcribe',
+                    tooltipMessage: 'Speech to text',
                     borderColor: Colors.transparent,
                     borderRadius: 0.0,
                     borderWidth: 1.0,
                     buttonSize: 40.0,
-                    icon: kIconDelete,
-                    onPressed: () async {},
-                  ),
-                  FlutterFlowIconButton(
-                    caption: 'Notice',
-                    colorIfEnabled: Colors.yellow,
-                    // key: infoCount == 1
-                    //     ? intro!.keys[9]
-                    //     : UniqueKey(),
-                    tooltipMessage:
-                        'Enabled if you need to respond to requests',
-                    borderColor: Colors.transparent,
-                    borderRadius: 0.0,
-                    borderWidth: 1.0,
-                    buttonSize: 40.0,
-                    icon: kIconRequestsOutstanding,
-                    onPressed: () async {},
-                  ),
-                  FlutterFlowIconButton(
-                    caption: 'Request',
-                    tooltipMessage: 'Click to request access to this hyperbook',
-                    borderColor: Colors.transparent,
-                    borderRadius: 0.0,
-                    borderWidth: 1.0,
-                    buttonSize: 40.0,
-                    icon: kIconRequest,
-                    onPressed: () async {},
+                    buttonWidth: 120,
+                    icon: Icon(Icons.speaker_notes),
+                    onPressed: () async {
+
+
+
+                      currentSessionStep = sessionStep;
+//                      final uri = Uri.parse('698718ad000f1cc14442.fra.appwrite.run');
+                      print('(PQ1)${sessionStep.reference!.path!}');
+                      final uri = Uri.parse('https://698718ad000f1cc14442.fra.appwrite.run');
+                      //final creds = base64.encode(utf8.encode('$clientId:$secret'));
+                      final respAccessToken = await _http.post(
+                        uri,
+                        headers: {
+                          // 'Authorization': 'Basic $creds',
+                          'Content-Type': 'application/json',
+                        },
+                        body: 'audio' + sessionStep.reference!.path! + '.wav',
+                      );
+                      print('(PQ2)${respAccessToken.statusCode}');
+                      print(respAccessToken.body);
+                      var respDynamic = jsonDecode(respAccessToken.body);
+                      Map<String, dynamic> respObject = respDynamic as Map<String, dynamic>;
+                      transcription = respObject['transcription']! as String;
+                      print('(PQ4)${respDynamic}....${respObject},,,,${transcription}');
+                      if (respAccessToken.statusCode < 200 || respAccessToken.statusCode >= 300) {
+                        toast(context, 'Error in transcription', ToastKind.error);
+                      }
+                      setState(() {
+
+                      });
+                    },
                   ),
                 ],
               ),
+            SizedBox(
+              width: MediaQuery.sizeOf(context).width * 0.9,
+              child: Text(transcription),
+            ),
+
             ]),
       ),
     );
@@ -392,6 +397,50 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
   }) async {}
 
   List<BackupFileDetail> backupFileDetailList = [];
+
+
+
+  void insertPicture(BuildContext context, SessionStepsRecord sessionStep) async {
+    // //> print('(X400)${jobData[kJrAMS][0]}');
+    // String? role = Provider.of<ScaffoldData>(context, listen: false).cUserRole;
+    ImagePicker picker;
+    const bool KIsWeb = identical(0, 0.0);
+
+    if (!KIsWeb) {
+      //((Platform.isAndroid) || (Platform.isIOS)) {
+      // //> print('(XJJP0)');
+      picker = ImagePicker();
+      PickedFile pickedFile;
+
+      XFile? imageFile = await picker
+          .pickImage(
+        source: ImageSource.gallery,
+      );
+      bool okToStorePhoto = await checkIfCanPutInStorage(bucketId: artTheopyAIRphotosRef.path!);
+
+      if (okToStorePhoto){
+        String localFilePath = imageFile!.path;//= await getPath(sessionStepId: sessionStep.reference!.path!, fileKind: FileKind.photo);
+        print('(DE400)${localFilePath}....${sessionStep.reference!.path!}');
+        storeStorageFile(bucketId: artTheopyAIRphotosRef.path!,
+            storageFilename: generatePhotoStorageFilename(sessionStep), localFilePath: localFilePath);
+        print('(DE401)${localFilePath}....${sessionStep.reference!.path!}');
+
+      }
+        // //> print('(XJJP9A)±${snapshot}');
+        //File file = File(snapshot!.path);
+        // //> print('(XJJPAA)${cloudStoragePathname}±${snapshot.path}±${file}');
+        //   await storeFileInStorage(
+        //       prefix: 'photo', bucketId: artTheopyAIRphotosRef.path, contents: contents);
+          // //> print('(XJJPB)${snapshot2}');
+                  // //> print('(XJJPD)${e}');
+
+    } else {
+      // //> print('(XJJQ0)${cloudStoragePathname}');
+      // Deploy.storeWebImage(context, jobId, cloudStoragePathname);
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -513,7 +562,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                   child: Wrap(
                                     // mainAxisAlignment: MainAxisAlignment.end,
                                     children: <Widget>[
-                                      SizedBox(width: 20),
+                                      /*SizedBox(width: 20),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: FFButtonWidget(
@@ -553,7 +602,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget> {
                                                 BorderRadius.circular(8.0),
                                           ),
                                         ),
-                                      ),
+                                      ),*/
                                       (currentUser!.role! == kRoleAdministrator)
                                           ? Padding(
                                               padding:

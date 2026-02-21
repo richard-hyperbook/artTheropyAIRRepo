@@ -178,7 +178,8 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                   borderRadius: 0.0,
                   borderWidth: 1.0,
                   buttonSize: 40.0,
-                  icon: kIconHyperbookMap,
+                  buttonWidth: 120,
+                  icon: Icon(Icons.edit),
                   onPressed: () async {
                     FFAppState().update(() {
 
@@ -203,94 +204,9 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                         ));
                   },
                 ),
-                FlutterFlowIconButton(
-                  caption: 'List',
 
-                  tooltipMessage:
-                  'Go to list of chapters of this hyperbook',
-                  borderColor:
-                  Colors.transparent,
-                  borderRadius: 0.0,
-                  borderWidth: 1.0,
-                  buttonSize: 40.0,
-                  icon: kIconList,
-                  onPressed: () async {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            type:
-                            kStandardPageTransitionType,
-                            duration:
-                            kStandardTransitionTime,
-                            reverseDuration:
-                            kStandardReverseTransitionTime,
-                            child:
-                            LoginWidget()));
-                  },
-                ),
-                FlutterFlowIconButton(
-                  caption: 'Settings',
-                  tooltipMessage:
-                  'Hyperbook settings',
-                  borderColor:
-                  Colors.transparent,
-                  borderRadius: 30.0,
-                  borderWidth: 1.0,
-                  buttonSize: 40.0,
-                  icon: kIconSettings,
-                  onPressed: () async {
-                  },
-                ),
               ]),
-              Row(
-                children: <Widget>[
-                  FlutterFlowIconButton(
-                    caption: 'Delete',
-                    tooltipMessage:
-                    'Delete this hyperbook',
-                    borderColor:
-                    Colors.transparent,
-                    borderRadius: 0.0,
-                    borderWidth: 1.0,
-                    buttonSize: 40.0,
-                    icon: kIconDelete,
-                    onPressed: () async {
-                    },
-                  ),
-                  FlutterFlowIconButton(
-                    caption: 'Notice',
-                    colorIfEnabled:
-                    Colors.yellow,
-                    // key: infoCount == 1
-                    //     ? intro!.keys[9]
-                    //     : UniqueKey(),
-                    tooltipMessage:
-                    'Enabled if you need to respond to requests',
-                    borderColor:
-                    Colors.transparent,
-                    borderRadius: 0.0,
-                    borderWidth: 1.0,
-                    buttonSize: 40.0,
-                    icon:
-                    kIconRequestsOutstanding,
-                    onPressed: () async {
-                    },
-                  ),
-                  FlutterFlowIconButton(
-                    caption: 'Request',
-                    tooltipMessage:
-                    'Click to request access to this hyperbook',
-                    borderColor:
-                    Colors.transparent,
-                    borderRadius: 0.0,
-                    borderWidth: 1.0,
-                    buttonSize: 40.0,
-                    icon: kIconRequest,
-                    onPressed: () async {
-                    },
-                  ),
-                ],
-              ),
+
             ]),
       ),
     );
@@ -436,7 +352,7 @@ return
                                 child: Wrap(
                                   // mainAxisAlignment: MainAxisAlignment.end,
                                   children: <Widget>[
-                                    Container(),
+                                   /* Container(),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text('XXX1'),
@@ -479,7 +395,7 @@ return
                                           BorderRadius.circular(8.0),
                                         ),
                                       ),
-                                    ),
+                                    ),*/
                                     (currentUser!.role! == kRoleAdministrator)
                                         ? Padding(
                                       padding: const EdgeInsets.all(8.0),

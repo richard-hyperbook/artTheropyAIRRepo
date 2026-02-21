@@ -7,7 +7,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../platform/audio_recorder_platform.dart';
-
+import '../../appwrite_interface.dart';
 
 class AudioPlayer extends StatefulWidget {
   /// Path from where to play recorded audio
@@ -159,7 +159,7 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
             if (_audioPlayer.state == ap.PlayerState.playing) {
               pause();
             } else {
-              await widget.onPlay(await getPath(widget.sessionStepId!));
+              await widget.onPlay(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio));
               play();
             }
           },
@@ -205,7 +205,7 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
 
     final utf8Encoder = utf8.encoder;
     Source localSource = await _source();
-    String localPath = await getPath(widget.sessionStepId!);
+    String localPath = await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio);
     List<String> dirPath = localPath.split('/audio');
     print('DE36A)${dirPath[0]}');
     var dir = Directory.fromRawPath(utf8Encoder.convert(dirPath[0]));
@@ -235,9 +235,9 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
   //     kIsWeb ? ap.UrlSource(localPath) : ap.DeviceFileSource(localPath!);
 
   Future<Source> _source() async {
-    print('(DE34)${widget.sessionStepId!}....${await getPath(widget.sessionStepId!)}');
+    print('(DE34)${widget.sessionStepId!}....${await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio)}');
     return kIsWeb
-        ? ap.UrlSource(await getPath(widget.sessionStepId!))
-        : ap.DeviceFileSource(await getPath(widget.sessionStepId!));
+        ? ap.UrlSource(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio))
+        : ap.DeviceFileSource(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio));
   }
 }

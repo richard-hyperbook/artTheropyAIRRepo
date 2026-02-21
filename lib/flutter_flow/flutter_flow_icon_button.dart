@@ -20,6 +20,7 @@ class FlutterFlowIconButton extends StatefulWidget {
     this.enabled = true,
     this.caption,
     this.colorIfEnabled,
+    this.buttonWidth = 95,
   });
 
   final Widget icon;
@@ -38,6 +39,7 @@ class FlutterFlowIconButton extends StatefulWidget {
   final bool enabled;
   final String? caption;
   final Color? colorIfEnabled;
+  final double? buttonWidth;
 
   @override
   State<FlutterFlowIconButton> createState() => _FlutterFlowIconButtonState();
@@ -167,7 +169,7 @@ class _FlutterFlowIconButtonState extends State<FlutterFlowIconButton> {
     return Tooltip(
       message: widget.tooltipMessage ?? '???',
       child: SizedBox(
-        width: (widget.caption == null) ? widget.buttonSize : 95,
+        width: (widget.caption == null) ? widget.buttonSize : widget.buttonWidth,
         height: widget.buttonSize,
         child: Theme(
           data: Theme.of(context).copyWith(),

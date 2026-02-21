@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:web/web.dart' as web;
 
 import 'package:record/record.dart';
+import '../../appwrite_interface.dart';
 
 mixin AudioRecorderMixin {
   Future<void> recordFile(AudioRecorder recorder, RecordConfig config,  String sessionStepId) {
@@ -39,7 +40,7 @@ mixin AudioRecorderMixin {
     web.document.body!.removeChild(anchor);
   }
 
-  Future<String> getPath(String sessionStepId) async {
-    return '';
+  Future<String> getPath({required String sessionStepId, required FileKind fileKind}) async {
+    return await  '';
   }
 }

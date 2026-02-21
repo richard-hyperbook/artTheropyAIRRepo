@@ -28,6 +28,7 @@ const kSessionStepAudio= 'audio';
 const kSessionStepCompleted= 'completed';
 const kSessionStepTranscription= 'transcription';
 const kSessionStepIndex= 'index';
+const kSessionStepQuestion= 'question';
 const kUserEmail = 'email';
 const kUserDisplayName = 'displayName';
 const kUserPhoneNumber = 'phoneNumber';

@@ -39,6 +39,8 @@ import 'dart:convert';
 
 // part 'appwrite_interface.g.dart';
 
+enum FileKind {audio, photo}
+
 const String _numericChars = '1234567890';
 Random _numericRnd = Random();
 
@@ -287,6 +289,7 @@ class SessionStepsRecord {
   bool? completed;
   String? transcription;
   int? index;
+  String? question;
   DateTime? $createdAt;
   DateTime? $updatedAt;
 
@@ -298,6 +301,7 @@ class SessionStepsRecord {
     this.completed,
     this.transcription,
     this.index,
+    this.question,
     this.$createdAt,
     this.$updatedAt,
   });
@@ -722,6 +726,7 @@ Future<SessionStepsRecord> createSessionStep({
   required bool? completed,
   required String? transcription,
   required int? index,
+  required String? question,
   String id = '',
 }) async {
   //>//>('(NW60)${id}');
@@ -734,6 +739,7 @@ Future<SessionStepsRecord> createSessionStep({
       kSessionStepCompleted: completed,
       kSessionStepTranscription: transcription,
       kSessionStepIndex: index,
+      kSessionStepQuestion: question,
       kDBcreatedAt: DateTime.now(),
       kDBupdatedAt: DateTime.now(),
     },
@@ -748,6 +754,7 @@ Future<SessionStepsRecord> createSessionStep({
     completed: completed,
     transcription: transcription,
     index: index,
+    question: question
   );
   return h;
 }
@@ -868,6 +875,7 @@ Future<List<SessionStepsRecord>> listSessionStepList(
       completed: d.data[kSessionStepCompleted] as bool,
       transcription: d.data[kSessionStepTranscription] as String,
       index: d.data[kSessionStepIndex] as int,
+      question: d.data[kSessionStepQuestion] as String,
       );
     print('(SS40)${hh.length}....${h.photo}');
     hh.add(h);
@@ -887,6 +895,7 @@ SessionStepsRecord extractSessionStepRecord(models.Document d) {
     completed: d.data[kSessionStepCompleted] as bool,
     transcription: d.data[kSessionStepTranscription] as String,
     index: d.data[kSessionStepIndex] as int,
+    question: d.data[kSessionStepQuestion] as String,
   );
   return h;
 }
@@ -920,8 +929,10 @@ Future<SessionStepsRecord> getSessionStep({DocumentReference? document}) async {
     completed: d.data[kSessionStepCompleted] as bool,
     transcription: d.data[kSessionStepTranscription] as String,
     index: d.data[kSessionStepIndex] as int,
+    question: d.data[kSessionStepQuestion] as String,
     $createdAt: DateTime.parse(d.$createdAt),
     $updatedAt: DateTime.parse(d.$updatedAt),
+
   );
   //>print('(N5005)${h}');
   return h;
@@ -1178,23 +1189,21 @@ Future<String?> createStorageImageFile({
   return url;
 }
 
-Future<String?> createStorageAudioFile({
+Future<String?> storeStorageFile({
+  required String? bucketId,
   required String? storageFilename,
   required String? localFilePath,
 }) async {
-
-  print('(AU30)${storageFilename}');
-
+  print('(AU30)${bucketId},,,,${storageFilename}...${localFilePath}');
   models.File result = await storage.createFile(
-    bucketId: artTheopyAIRaudiosRef.path!,
+    bucketId: bucketId!,
     fileId: storageFilename!,
     file: InputFile.fromPath(path: localFilePath!),
   );
   var file = await storage.getFile(
-      bucketId: artTheopyAIRaudiosRef.path!, fileId: storageFilename);
-  // String url = file.
+      bucketId: bucketId,
+      fileId: storageFilename);
   print('(AU62)${file.toString()}++++${result.name}@@@@${file.name}~~~~');
-
   const String head = imageFilenameHead;
   final b_id = artTheopyAIRphotosRef.path!;
   final f_id = storageFilename;
@@ -1202,7 +1211,6 @@ Future<String?> createStorageAudioFile({
   final String url =
       '${head}/${b_id}/files/${f_id}/preview?project=${p_id}&mode=admin';
   print('(AU63)${head}££££${url}????');
-
   return url;
 }
 
@@ -1245,7 +1253,7 @@ Future<bool> copyStorageFiletoLocal({
   if (bucketId == null){
     localBucketId =  backupStorageRef.path!;
   }
-  print('(DE70)${fileId}....${localPath}');
+  print('(DE70A)${fileId}....${localPath}');
 
 /*  try {
     models.File bytes = await storage.getFile(
@@ -1262,7 +1270,7 @@ Future<bool> copyStorageFiletoLocal({
   }*/
   final utf8Encoder = utf8.encoder;
   List<String> dirPath = localPath.split('/audio');
-  print('DE70)${dirPath[0]}');
+  print('(DE70B)${dirPath[0]}');
   var dir = Directory.fromRawPath(utf8Encoder.convert(dirPath[0]));
   await for (var entity in
   dir.list(recursive: true, followLinks: false)) {
@@ -1273,7 +1281,7 @@ Future<bool> copyStorageFiletoLocal({
        await file.delete();
      }
   }
-  print('(DE73)${dirPath[0]}...${dirPath[1]}');
+  print('(DE73)${localBucketId},,,,${fileId}----${dirPath[0]}...${dirPath[1]}');
   await storage.getFileDownload(
     bucketId:  localBucketId!,
     fileId: fileId!,

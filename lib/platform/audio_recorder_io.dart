@@ -5,17 +5,18 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import '../../appwrite_interface.dart';
 
 mixin AudioRecorderMixin {
   Future<void> recordFile(AudioRecorder recorder, RecordConfig config,  String sessionStepId) async {
-    final path = await getPath(sessionStepId);
+    final path = await getPath(sessionStepId: sessionStepId, fileKind: FileKind.audio);
     print('(AU10)${path}');
     await recorder.start(config, path: path);
     print('(AU11)${config}');
   }
 
   Future<void> recordStream(AudioRecorder recorder, RecordConfig config,  String sessionStepId) async {
-    final path = await getPath(sessionStepId);
+    final path = await getPath(sessionStepId: sessionStepId, fileKind: FileKind.audio);
 
     final file = File(path);
     print('(AU12)${path}');
@@ -35,12 +36,25 @@ mixin AudioRecorderMixin {
 
   void downloadWebData(String path) {}
 
-  Future<String> getPath(String sessionStepId) async {
+
+  Future<String> getPath({required String sessionStepId, required FileKind fileKind}) async {
     final dir = await getApplicationDocumentsDirectory();
     print('(AU1IO)${dir.path}');
+    String prefix = '';
+    String suffix = '';
+    switch(fileKind){
+      case FileKind.audio:
+        prefix = 'audio';
+        suffix = '.wav';
+        break;
+      case FileKind.photo:
+        prefix = 'photo';
+        suffix = '.jpg';
+        break;
+    }
     return p.join(
       dir.path,
-      'audio${sessionStepId}.m4a',
+      prefix + sessionStepId + suffix
     );
   }
 }
