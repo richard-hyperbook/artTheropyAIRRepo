@@ -75,11 +75,11 @@ const DocumentReference aaMilneUserRef = DocumentReference(
 //intelvid.co.uk
 
 late Timer timer;
-const endpoint = 'https://fra.cloud.appwrite.io/v1';
-const project = '696ddda6001b28f2352e';
-const devKey =
+const kEndpoint = 'https://fra.cloud.appwrite.io/v1';
+const kProjectID = '696ddda6001b28f2352e';
+const kDevKey =
     '4de99514ee3d5a8fb3cdf236ba66a91e9bdb37c8397f9f98542530bd2f6a71797d93b068276fc23c0aba27cbd1e41912d4362456a9a167150bc5a2d66265b86a94229cfaf7d63181b173898e5f322b28f4d1c9a6c3470fa129f933062428ceb4806c26ca5bfa8e91d7e88f8dcbc430d1eb864016906a31d0dd78bf6a9450794d';
-const imageFilenameHead = endpoint + '/storage/buckets';
+const imageFilenameHead = kEndpoint + '/storage/buckets';
 
 final DocumentReference databaseRef = DocumentReference(
   path: '698c8fce0029ddaaecdb',
@@ -196,6 +196,8 @@ const kConectedUserColors = 'colors';
 
 const double kMapNodeMoveMinChange = 2.0;
 const int kLimitDatabaseListDocuments = 1000;
+const int kLimitStorageListDocuments = 1000;
+
 
 const PageTransitionType kStandardPageTransitionType =
     PageTransitionType.leftToRight;
@@ -239,9 +241,9 @@ TablesDB? tablesDB;
 void initAppwrite() {
   print('(AAT30)');
   client = Client()
-      .setEndpoint(endpoint)
-      .setProject(project)
-      .setDevKey(devKey)
+      .setEndpoint(kEndpoint)
+      .setProject(kProjectID)
+      .setDevKey(kDevKey)
       .setSelfSigned();
   account = Account(client!);
   tablesDB = TablesDB(client!);
@@ -1181,7 +1183,7 @@ Future<String?> createStorageImageFile({
   const String head = imageFilenameHead;
   final b_id = artTheopyAIRphotosRef.path!;
   final f_id = fileId;
-  final p_id = project;
+  final p_id = kProjectID;
   final String url =
       '${head}/${b_id}/files/${f_id}/preview?project=${p_id}&mode=admin';
   //>print('(IS2)${head}££££${url}????');
@@ -1207,7 +1209,7 @@ Future<String?> storeStorageFile({
   const String head = imageFilenameHead;
   final b_id = artTheopyAIRphotosRef.path!;
   final f_id = storageFilename;
-  final p_id = project;
+  final p_id = kProjectID;
   final String url =
       '${head}/${b_id}/files/${f_id}/preview?project=${p_id}&mode=admin';
   print('(AU63)${head}££££${url}????');
@@ -1286,7 +1288,7 @@ Future<bool> copyStorageFiletoLocal({
     bucketId:  localBucketId!,
     fileId: fileId!,
   ).then((bytes) {
-    print('(DE74)${bytes.length}');
+    print('(DE74)${bytes.length}....${localPath}');
     final file = File(localPath);
     file.writeAsBytesSync(bytes);
   }).catchError((error) {
@@ -1336,13 +1338,15 @@ Future<void> deleteStorageFile(
 }
 
 Future<models.FileList> listStorageFiles({String? bucketId}) async {
-  //>print('(XY6)${bucketId}');
+  print('(XY6)${bucketId}....${kAttrStorageName}----${currentSessionStep!.reference!.path}');
   models.FileList fileList = models.FileList(total: 0, files: []);
   try {
     fileList = await storage.listFiles(bucketId: bucketId!, queries: [
-      Query.limit(1000),
+       Query.contains(kAttrStorageName, currentSessionStep!.reference!.path),
+       Query.limit(kLimitStorageListDocuments),
     ]);
-    //>print('(XY7)${fileList.files.length}');
+    print('(XY7A)${fileList.files.length}....${fileList.files.first}');
+    print('(XY7B)${fileList.files[1].$id}....${fileList.files[1].hashCode}');
     if (fileList.files.length < 1) {
       for (models.File file in fileList.files) {
         String filename = file.name;

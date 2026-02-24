@@ -8,7 +8,7 @@ import '../../platform/audio_recorder_platform.dart';
 
 class Recorder extends StatefulWidget {
   final void Function(String path) onStop;
-  final Future<bool> Function() onStart;
+  final Future<int> Function() onStart;
 //  final int? stepIndex;
   final String? sessionStepId;
 
@@ -26,7 +26,7 @@ class _RecorderState extends State<Recorder> with AudioRecorderMixin {
   RecordState _recordState = RecordState.stop;
   StreamSubscription<Amplitude>? _amplitudeSub;
   Amplitude? _amplitude;
-
+  int? maxVersion;
 
   void resetRecorder(){
     _audioRecorder = AudioRecorder();
@@ -75,7 +75,7 @@ class _RecorderState extends State<Recorder> with AudioRecorderMixin {
         const config = RecordConfig(encoder: encoder, numChannels: 1);
 
         // Record to file
-        await recordFile(_audioRecorder, config, widget.sessionStepId!);
+        await recordFile(_audioRecorder, config, widget.sessionStepId!, maxVersion! + 1);
 
         // Record to stream
         // await recordStream(_audioRecorder, config);
@@ -189,11 +189,9 @@ class _RecorderState extends State<Recorder> with AudioRecorderMixin {
           onTap: () async {
             bool doRecord = false;
             print('(DE15)');
-            doRecord = await widget.onStart();
-            print('(DE19)${doRecord}');
-            if(doRecord) {
+            maxVersion = await widget.onStart();
+            print('(DE19)${maxVersion}');
               (_recordState != RecordState.stop) ? _stop() : _start();
-            }
           },
         ),
       ),

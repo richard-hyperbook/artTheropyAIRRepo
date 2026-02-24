@@ -108,3 +108,9 @@ const kAttrBackupUsers = 'hyperbookUsers';
 const kAttrBackupHyperbook = 'hyperbook';
 const kAttrBackupConnectedUserList = 'connectedUserList';
 const kAttrBackupChapterList = 'chapterList';
+
+const double kIconButtonWidth = 150;
+const double kIconButtonHeight = 40;
+const double kIconButtonGap = 20;
+
+const kAttrStorageName ='name';

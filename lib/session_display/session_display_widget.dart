@@ -178,7 +178,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                   borderRadius: 0.0,
                   borderWidth: 1.0,
                   buttonSize: 40.0,
-                  buttonWidth: 120,
+                  buttonWidth: 150,
                   icon: Icon(Icons.edit),
                   onPressed: () async {
                     FFAppState().update(() {

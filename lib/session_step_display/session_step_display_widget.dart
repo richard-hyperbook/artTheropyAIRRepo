@@ -62,7 +62,8 @@ class SessionStepDisplayWidget extends StatefulWidget {
       _SessionStepDisplayWidgetState();
 }
 
-class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>  with AudioRecorderMixin {
+class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
+    with AudioRecorderMixin {
   late SessionStepDisplayModel _model;
 
   TextEditingController? enteredHyperbookTitleController;
@@ -120,41 +121,87 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>  wi
     }
   }
 
-  String generateAudioStorageFilename(SessionStepsRecord sessionStep) {
-    return 'audio${sessionStep.reference!.path}.wav';
+  String generateAudioStorageFilename(
+      SessionStepsRecord sessionStep, int version) {
+    return 'audio${sessionStep.reference!.path}_${version}.wav';
   }
 
-  String generatePhotoStorageFilename(SessionStepsRecord sessionStep) {
-    return 'photo${sessionStep.reference!.path}.jpg';
+  String generatePhotoStorageFilename(
+      SessionStepsRecord sessionStep, int version) {
+    return 'photo${sessionStep.reference!.path}_${version}.jpg';
   }
 
-  Future<bool> checkIfCanPutInStorage({
+  Future<int> getMaxVersionNumber({
+    required String bucketId,
+    required String sessionStepId,
+  }) async {
+    models.FileList? fileList;
+    try {
+      fileList = await storage.listFiles(bucketId: bucketId, queries: [
+        Query.contains(kAttrStorageName, sessionStepId),
+        Query.limit(kLimitStorageListDocuments),
+      ]);
+      print('(DE80)${fileList}');
+      print('(DE81)${fileList.files.length}');
+      int maxVersion = 0;
+      if (fileList.files.length > 0) {
+        for (var file in fileList.files) {
+          List<String> filenameSplit1 = file.name.split('_');
+          List<String> filenameSplit2 = filenameSplit1[1].split('.');
+          int? version = int.tryParse(filenameSplit2[0]);
+          if (version == null) {
+            version = 0;
+          }
+          if (version > maxVersion) {
+            maxVersion = version;
+          }
+          print(
+              '(DE82)${file.name}....${filenameSplit2[0]}----${version}----${maxVersion}');
+        }
+      }
+      return maxVersion;
+    } on AppwriteException catch (e) {
+      print('(DE83)${e}....${e.code}');
+      return 0;
+    }
+  }
+
+  Future<int> checkIfCanPutInStorageLatestVersion({
     required String bucketId,
   }) async {
     bool askToOverwrite = false;
     bool doStore = true;
     bool doDelete = false;
     String storageFilename =
-    generateAudioStorageFilename(currentSessionStep!);
+        generatePhotoStorageFilename(currentSessionStep!, 1);
     try {
       models.FileList fileList = await listStorageFiles(
         bucketId: bucketId,
       );
       print('(DE8)${fileList}');
       print('(DE9)${fileList.files.length}');
+      int maxVersion = 0;
       if (fileList.files.length > 0) {
         for (var file in fileList.files) {
-          print(
-              '(DE10)${file.name}....${file.runtimeType.toString()}');
-          if (file.name == storageFilename) {
-            askToOverwrite = true;
+          List<String> filenameSplit1 = file.name.split('_');
+          List<String> filenameSplit2 = filenameSplit1[1].split('.');
+          int? version = int.tryParse(filenameSplit2[0]);
+          if (version == null) {
+            version = 0;
           }
+          if (version > maxVersion) {
+            maxVersion = version;
+          }
+          print(
+              '(DE10A)${file.name}....${filenameSplit2[0]}----${version}----${maxVersion}');
         }
       }
+      return maxVersion;
     } on AppwriteException catch (e) {
       print('(DE20)${e}....${e.code}');
-      return false;
+      return 0;
     }
+    /*
     if (askToOverwrite) {
       print('(DE21)');
       await showDialog<bool>(
@@ -185,19 +232,31 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>  wi
     }
     print('(DE21)');
     if (doDelete) {
-      await deleteStorageFile(
-          bucketId: bucketId,
-          fileId: storageFilename);
-      print(
-          '(DE18)${currentSessionStep!.reference!.path!}');
+      await deleteStorageFile(bucketId: bucketId, fileId: storageFilename);
+      print('(DE18)${currentSessionStep!.reference!.path!}');
     }
-    return doStore;
+
+     */
   }
 
+  String imageNetworkPath = '';
+  String transcription = '';
+  int? maxVersion;
 
-String transcription = '';
+  Widget displayThumbnail() {
+    print('(DE410)${imageNetworkPath}');
+    return Image.network(
+      imageNetworkPath,
+      width: (MediaQuery.sizeOf(context).width * 0.9) -
+          kIconButtonWidth -
+          kIconButtonGap,
+      height: (kIconButtonHeight * 2) + kIconButtonGap,
+      fit: BoxFit.contain,
+    );
+  }
 
   Widget displaySessionStep(SessionStepsRecord sessionStep, int index) {
+    loadImageNetworkPath(sessionStep);
     return Material(
       color: Colors.transparent,
       elevation: 5.0,
@@ -229,7 +288,7 @@ String transcription = '';
                 // ? intro!.keys[2]
                 // : UniqueKey(),
                 child: Text(
-                  'Step: ${index.toString()}',
+                  'Step: ${(index + 1).toString()}',
                   softWrap: false,
                   style: FlutterFlowTheme.of(context).bodyMedium,
                 ),
@@ -245,6 +304,8 @@ String transcription = '';
                   style: FlutterFlowTheme.of(context).bodyMedium,
                 ),
               ),
+              ///////////////////////////////
+
               Container(
                 height: 60,
                 child: SingleChildScrollView(
@@ -258,19 +319,21 @@ String transcription = '';
                         sessionStepId: sessionStep.reference!.path,
                         onStart: () async {
                           currentSessionStep = sessionStep;
-                          print('(DE3)${currentSessionStep!.reference!.path}');
+                          print('(DE3A)${currentSessionStep!.reference!.path}');
                           bool doRecord = true;
-                          doRecord = await checkIfCanPutInStorage(bucketId: artTheopyAIRaudiosRef.path!);
-                          print('(DE3)${currentSessionStep!.reference!.path}....${doRecord}');
-                          return doRecord;
+                          maxVersion =
+                              await checkIfCanPutInStorageLatestVersion(
+                                  bucketId: artTheopyAIRaudiosRef.path!);
+                          print(
+                              '(DE3B)${currentSessionStep!.reference!.path}....${maxVersion}');
+                          return maxVersion!;
                         },
                         onStop: (path) async {
-                          print(
-                              '(DE1)$path....${currentSessionStep!.reference!.path}');
+                          print('(DE1)$path....${maxVersion}');
                           await storeStorageFile(
-                              bucketId: artTheopyAIRaudiosRef.path!,
-                            storageFilename:
-                                generateAudioStorageFilename(sessionStep),
+                            bucketId: artTheopyAIRaudiosRef.path!,
+                            storageFilename: generateAudioStorageFilename(
+                                sessionStep, maxVersion! + 1),
                             localFilePath: path,
                           );
                           print('(DE6)${audioPath}');
@@ -292,29 +355,40 @@ String transcription = '';
                       width: MediaQuery.sizeOf(context).width * 1.0,
                       height: 60,
                       child: AudioPlayer(
-                        sessionStepId: sessionStep.reference!.path,
-                        onPlay: (String localPath) async {
-                          currentSessionStep = sessionStep;
-                          final String storageFileId = 'audio' +
-                              currentSessionStep!.reference!.path! +
-                              '.wav';
-                          print('(DE33A)${storageFileId}....${localPath}');
-                          bool ok = await copyStorageFiletoLocal(
-                            bucketId: artTheopyAIRaudiosRef.path,
-                            fileId: storageFileId,
-                            localPath: localPath,
-                          );
-                          print('(DE33B)${ok}');
-                          if(!ok){
-                            toast(context, 'No recording stored', ToastKind.warning);
-                          }
-                        },
-                        onDelete: () {
-                          print('(DE7)');
-                          setState(() => audioPath = '');
-                        },
-                      ),
-                    ),
+                          sessionStepId: sessionStep.reference!.path,
+                          onPlay: (String localPath) async {
+                            maxVersion = await getMaxVersionNumber(
+                              bucketId: artTheopyAIRaudiosRef.path!,
+                              sessionStepId: sessionStep.reference!.path!,
+                            );
+                            if (maxVersion! < 1) {
+                              toast(context, 'No recording stored',
+                                  ToastKind.warning);
+                            } else {
+                              String correctedLocalPath = localPath.replaceAll('999999', maxVersion.toString());
+                              print(
+                                  '(DE33A)${sessionStep.reference!.path!}....${localPath},,,,${maxVersion}++++${correctedLocalPath}oooo${generateAudioStorageFilename(sessionStep, maxVersion!)}');
+                              bool ok = await copyStorageFiletoLocal(
+                                bucketId: artTheopyAIRaudiosRef.path,
+                                fileId: generateAudioStorageFilename(
+                                    sessionStep, maxVersion!),
+                                localPath: correctedLocalPath,
+                              );
+                              print(
+                                  '(DE33B)${generateAudioStorageFilename(sessionStep, maxVersion!)}');
+                              if (maxVersion! < 1) {
+                                toast(context, 'Error in replay',
+                                    ToastKind.error);
+                              }
+                            }
+                            print('(DE39)${maxVersion}');
+                            return maxVersion!;
+                          },
+                          onDelete: () {
+                            print('(DE7)');
+                            setState(() => audioPath = '');
+                          }),
+                    )
                   ],
                 ),
               ),
@@ -327,7 +401,7 @@ String transcription = '';
                   borderRadius: 0.0,
                   borderWidth: 1.0,
                   buttonSize: 40.0,
-                  buttonWidth: 120,
+                  buttonWidth: kIconButtonWidth,
                   icon: Icon(Icons.camera),
                   onPressed: () async {
                     FFAppState().update(() {});
@@ -345,16 +419,14 @@ String transcription = '';
                     borderRadius: 0.0,
                     borderWidth: 1.0,
                     buttonSize: 40.0,
-                    buttonWidth: 120,
+                    buttonWidth: kIconButtonWidth,
                     icon: Icon(Icons.speaker_notes),
                     onPressed: () async {
-
-
-
                       currentSessionStep = sessionStep;
 //                      final uri = Uri.parse('698718ad000f1cc14442.fra.appwrite.run');
                       print('(PQ1)${sessionStep.reference!.path!}');
-                      final uri = Uri.parse('https://698718ad000f1cc14442.fra.appwrite.run');
+                      final uri = Uri.parse(
+                          'https://698718ad000f1cc14442.fra.appwrite.run');
                       //final creds = base64.encode(utf8.encode('$clientId:$secret'));
                       final respAccessToken = await _http.post(
                         uri,
@@ -367,24 +439,27 @@ String transcription = '';
                       print('(PQ2)${respAccessToken.statusCode}');
                       print(respAccessToken.body);
                       var respDynamic = jsonDecode(respAccessToken.body);
-                      Map<String, dynamic> respObject = respDynamic as Map<String, dynamic>;
+                      Map<String, dynamic> respObject =
+                          respDynamic as Map<String, dynamic>;
                       transcription = respObject['transcription']! as String;
-                      print('(PQ4)${respDynamic}....${respObject},,,,${transcription}');
-                      if (respAccessToken.statusCode < 200 || respAccessToken.statusCode >= 300) {
-                        toast(context, 'Error in transcription', ToastKind.error);
+                      print(
+                          '(PQ4)${respDynamic}....${respObject},,,,${transcription}');
+                      if (respAccessToken.statusCode < 200 ||
+                          respAccessToken.statusCode >= 300) {
+                        toast(
+                            context, 'Error in transcription', ToastKind.error);
                       }
-                      setState(() {
-
-                      });
+                      setState(() {});
                     },
                   ),
                 ],
               ),
-            SizedBox(
-              width: MediaQuery.sizeOf(context).width * 0.9,
-              child: Text(transcription),
-            ),
+              SizedBox(
+                width: MediaQuery.sizeOf(context).width * 0.9,
+                child: Text(transcription),
+              ),
 
+              ////////////////////
             ]),
       ),
     );
@@ -398,9 +473,16 @@ String transcription = '';
 
   List<BackupFileDetail> backupFileDetailList = [];
 
+  void loadImageNetworkPath(SessionStepsRecord sessionStep) {
+    final String BUCKET_ID = artTheopyAIRphotosRef.path!;
+    final String FILE_ID = generatePhotoStorageFilename(sessionStep, 1);
+    final String PROJECT_ID = kProjectID;
+    imageNetworkPath =
+        'https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${FILE_ID}/view?project=${PROJECT_ID}';
+  }
 
-
-  void insertPicture(BuildContext context, SessionStepsRecord sessionStep) async {
+  void insertPicture(
+      BuildContext context, SessionStepsRecord sessionStep) async {
     // //> print('(X400)${jobData[kJrAMS][0]}');
     // String? role = Provider.of<ScaffoldData>(context, listen: false).cUserRole;
     ImagePicker picker;
@@ -412,35 +494,40 @@ String transcription = '';
       picker = ImagePicker();
       PickedFile pickedFile;
 
-      XFile? imageFile = await picker
-          .pickImage(
+      XFile? imageFile = await picker.pickImage(
         source: ImageSource.gallery,
       );
-      bool okToStorePhoto = await checkIfCanPutInStorage(bucketId: artTheopyAIRphotosRef.path!);
+      bool okToStorePhoto = true;
+      int x = await checkIfCanPutInStorageLatestVersion(
+          bucketId: artTheopyAIRphotosRef.path!);
 
-      if (okToStorePhoto){
-        String localFilePath = imageFile!.path;//= await getPath(sessionStepId: sessionStep.reference!.path!, fileKind: FileKind.photo);
+      if (okToStorePhoto) {
+        String localFilePath = imageFile!
+            .path; //= await getPath(sessionStepId: sessionStep.reference!.path!, fileKind: FileKind.photo);
         print('(DE400)${localFilePath}....${sessionStep.reference!.path!}');
-        storeStorageFile(bucketId: artTheopyAIRphotosRef.path!,
-            storageFilename: generatePhotoStorageFilename(sessionStep), localFilePath: localFilePath);
-        print('(DE401)${localFilePath}....${sessionStep.reference!.path!}');
+        await storeStorageFile(
+            bucketId: artTheopyAIRphotosRef.path!,
+            storageFilename: generatePhotoStorageFilename(sessionStep, 1),
+            localFilePath: localFilePath);
+        setState(() {
+          loadImageNetworkPath(sessionStep);
+        });
 
+        print(
+            '(DE401)${localFilePath}....${sessionStep.reference!.path!}----${imageNetworkPath}');
       }
-        // //> print('(XJJP9A)±${snapshot}');
-        //File file = File(snapshot!.path);
-        // //> print('(XJJPAA)${cloudStoragePathname}±${snapshot.path}±${file}');
-        //   await storeFileInStorage(
-        //       prefix: 'photo', bucketId: artTheopyAIRphotosRef.path, contents: contents);
-          // //> print('(XJJPB)${snapshot2}');
-                  // //> print('(XJJPD)${e}');
-
+      // //> print('(XJJP9A)±${snapshot}');
+      //File file = File(snapshot!.path);
+      // //> print('(XJJPAA)${cloudStoragePathname}±${snapshot.path}±${file}');
+      //   await storeFileInStorage(
+      //       prefix: 'photo', bucketId: artTheopyAIRphotosRef.path, contents: contents);
+      // //> print('(XJJPB)${snapshot2}');
+      // //> print('(XJJPD)${e}');
     } else {
       // //> print('(XJJQ0)${cloudStoragePathname}');
       // Deploy.storeWebImage(context, jobId, cloudStoragePathname);
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {

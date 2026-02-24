@@ -16,7 +16,7 @@ class AudioPlayer extends StatefulWidget {
   /// Callback when audio file should be removed
   /// Setting this to null hides the delete button
   final VoidCallback onDelete;
-  final Future<void> Function(String localPath) onPlay;
+  final Future<int> Function(String localPath) onPlay;
   //final int? stepIndex;
   final String? sessionStepId;
 
@@ -35,6 +35,7 @@ class AudioPlayer extends StatefulWidget {
 class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
   static const double _controlSize = 56;
   static const double _deleteBtnSize = 24;
+  int? maxVersion;
 
   final _audioPlayer = ap.AudioPlayer()..setReleaseMode(ReleaseMode.stop);
   late StreamSubscription<void> _playerStateChangedSubscription;
@@ -159,7 +160,7 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
             if (_audioPlayer.state == ap.PlayerState.playing) {
               pause();
             } else {
-              await widget.onPlay(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio));
+              maxVersion = await widget.onPlay(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: 999999));
               play();
             }
           },
@@ -205,7 +206,7 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
 
     final utf8Encoder = utf8.encoder;
     Source localSource = await _source();
-    String localPath = await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio);
+    String localPath = await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!);
     List<String> dirPath = localPath.split('/audio');
     print('DE36A)${dirPath[0]}');
     var dir = Directory.fromRawPath(utf8Encoder.convert(dirPath[0]));
@@ -235,9 +236,9 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
   //     kIsWeb ? ap.UrlSource(localPath) : ap.DeviceFileSource(localPath!);
 
   Future<Source> _source() async {
-    print('(DE34)${widget.sessionStepId!}....${await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio)}');
+    print('(DE34)${widget.sessionStepId!}....${await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!)}');
     return kIsWeb
-        ? ap.UrlSource(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio))
-        : ap.DeviceFileSource(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio));
+        ? ap.UrlSource(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!))
+        : ap.DeviceFileSource(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!));
   }
 }
