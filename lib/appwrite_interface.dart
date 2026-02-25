@@ -39,7 +39,7 @@ import 'dart:convert';
 
 // part 'appwrite_interface.g.dart';
 
-enum FileKind {audio, photo}
+enum FileKind { audio, photo }
 
 const String _numericChars = '1234567890';
 Random _numericRnd = Random();
@@ -198,7 +198,6 @@ const double kMapNodeMoveMinChange = 2.0;
 const int kLimitDatabaseListDocuments = 1000;
 const int kLimitStorageListDocuments = 1000;
 
-
 const PageTransitionType kStandardPageTransitionType =
     PageTransitionType.leftToRight;
 const Duration kStandardTransitionTime = Duration(milliseconds: 1000);
@@ -294,6 +293,8 @@ class SessionStepsRecord {
   String? question;
   DateTime? $createdAt;
   DateTime? $updatedAt;
+  int? maxAudioVersion;
+  int? maxPhotoVersion;
 
   SessionStepsRecord({
     this.reference,
@@ -306,6 +307,8 @@ class SessionStepsRecord {
     this.question,
     this.$createdAt,
     this.$updatedAt,
+    this.maxAudioVersion,
+    this.maxPhotoVersion,
   });
 
 /* factory SessionStepsRecord.fromJson(Map<String, dynamic> json) =>
@@ -595,7 +598,7 @@ Future<models.RowList> listRowsWithOneQueryDocumentReference({
         ],
       );
     }
-  } on AppwriteException  catch (e) {
+  } on AppwriteException catch (e) {
     print('(N8A)${e.message}&&&&${e.code}====${e.code}');
     print('(N8B)${e}');
   }
@@ -636,6 +639,7 @@ Future<models.DocumentList> listDocumentsWithTwoQueryDocumentReferences({
   //>print('(NY13)${docs.documents.length}>>>>${docs.documents}<<<<${docs.total}');
   return docs;
 }
+
 Future<models.DocumentList> listDocumentsWithTwoQueries({
   DocumentReference? collection,
   String attribute1 = '',
@@ -756,7 +760,9 @@ Future<SessionStepsRecord> createSessionStep({
     completed: completed,
     transcription: transcription,
     index: index,
-    question: question
+    question: question,
+    maxAudioVersion: 0,
+    maxPhotoVersion: 0,
   );
   return h;
 }
@@ -800,8 +806,7 @@ Future<UsersRecord> createUser({
 
 Future<UsersRecord> getUser({DocumentReference? document}) async {
   models.Row row = await getRow(collection: usersRef, document: document);
-  print(
-      '(M1)${row.data}****${row.data['chapterColorInts']}');
+  print('(M1)${row.data}****${row.data['chapterColorInts']}');
   List<int> colorInts = [];
   print('(M1A)${row.data['displayName']}');
   UsersRecord u = UsersRecord(
@@ -833,22 +838,67 @@ Future<List<SessionsRecord>> listSessionList(
   List<SessionsRecord> hh = [];
   for (models.Document d in docs.documents) {
     //>print('(N1)${d.$id}&&&&${d.data}');
-    UsersRecord clientsRecord = await getUser(document: DocumentReference(path: (d.data[kSessionClientId] as String?)));
+    UsersRecord clientsRecord = await getUser(
+        document:
+            DocumentReference(path: (d.data[kSessionClientId] as String?)));
     String clientDisplayName = clientsRecord.displayName!;
     SessionsRecord h = SessionsRecord(
       reference: DocumentReference(path: d.$id),
       clientId: DocumentReference(path: (d.data[kSessionClientId] as String?)),
       therapistId:
-      DocumentReference(path: (d.data[kSessionTherapistId] as String?)),
+          DocumentReference(path: (d.data[kSessionTherapistId] as String?)),
       $createdAt: DateTime.parse(d.$createdAt),
       $updatedAt: DateTime.parse(d.$updatedAt),
       clientDisplayName: clientDisplayName,
-
     );
     hh.add(h);
   }
   //>print('(N1AA)${hh.length}');
   return hh;
+}
+
+Future<int> getMaxVersionNumber({
+  required String bucketId,
+  required String sessionStepId,
+}) async {
+  print('(DE79)${bucketId}....${sessionStepId}');
+  models.FileList? fileList;
+  try {
+    fileList = await storage.listFiles(bucketId: bucketId, queries: [
+      Query.contains(kAttrStorageId, sessionStepId),
+      Query.limit(kLimitStorageListDocuments),
+    ]);
+    print('(DE80)${fileList}');
+    print('(DE81.0)${fileList.files.length}');
+    int maxVersion = 0;
+    if (fileList.files.length > 0) {
+      print('(DE81.1)${fileList.files.length}');
+      // for (var file in fileList.files) {
+      for (int i = 0; i < fileList.files.length; i++) {
+        print('(DE81.2)${i}');
+        var file = fileList.files[i];
+        print('(DE81.3)${i}...${file.$id}');
+        List<String> filenameSplit1 = file.$id.split('_');
+        print('(DE81.4)${i}...${filenameSplit1}');
+        List<String> filenameSplit2 = filenameSplit1[1].split('.');
+        print('(DE81.5)${filenameSplit2}');
+        int? version = int.tryParse(filenameSplit2[0]);
+        print('(DE81.6)${version}');
+        if (version == null) {
+          version = 0;
+        }
+        if (version > maxVersion) {
+          maxVersion = version;
+        }
+        print(
+            '(DE82)${file.name}....${filenameSplit2[0]}----${version}----${maxVersion}');
+      }
+    }
+    return maxVersion;
+  } on AppwriteException catch (e) {
+    print('(DE83)${e}....${e.code}');
+    return 0;
+  }
 }
 
 Future<List<SessionStepsRecord>> listSessionStepList(
@@ -867,18 +917,31 @@ Future<List<SessionStepsRecord>> listSessionStepList(
   }
   print('(SS16)${docs.documents.length}');
   List<SessionStepsRecord> hh = [];
+
   for (models.Document d in docs.documents) {
-    print('(SS13)${d.$id}&&&&${d.data[kSessionStepPhoto]}');
+    int maxPhotoVersion = await getMaxVersionNumber(
+      bucketId: artTheopyAIRphotosRef.path!,
+      sessionStepId: d.$id,
+    );
+    int maxAudioVersion = await getMaxVersionNumber(
+      bucketId: artTheopyAIRaudiosRef.path!,
+      sessionStepId: d.$id,
+    );
+    print(
+        '(SS13)${d.$id}&&&&${d.data[kSessionStepPhoto]}^^^^${maxPhotoVersion}');
     SessionStepsRecord h = SessionStepsRecord(
       reference: DocumentReference(path: d.$id),
-      sessionId: DocumentReference(path: (d.data[kSessionStepSessionId] as String?)),
+      sessionId:
+          DocumentReference(path: (d.data[kSessionStepSessionId] as String?)),
       photo: DocumentReference(path: (d.data[kSessionStepPhoto] as String?)),
       audio: DocumentReference(path: (d.data[kSessionStepAudio] as String?)),
       completed: d.data[kSessionStepCompleted] as bool,
       transcription: d.data[kSessionStepTranscription] as String,
       index: d.data[kSessionStepIndex] as int,
       question: d.data[kSessionStepQuestion] as String,
-      );
+      maxPhotoVersion: maxPhotoVersion,
+      maxAudioVersion: maxAudioVersion,
+    );
     print('(SS40)${hh.length}....${h.photo}');
     hh.add(h);
     print('(SS41)${hh.length}');
@@ -886,12 +949,13 @@ Future<List<SessionStepsRecord>> listSessionStepList(
   print('(SS42)${hh.length}');
   return hh;
 }
+
 SessionStepsRecord extractSessionStepRecord(models.Document d) {
   print('(SS80)${d.$id}&&&&${d.data[kSessionStepPhoto]}');
   SessionStepsRecord h = SessionStepsRecord(
     reference: DocumentReference(path: d.$id),
-    sessionId: DocumentReference(
-        path: (d.data[kSessionStepSessionId] as String?)),
+    sessionId:
+        DocumentReference(path: (d.data[kSessionStepSessionId] as String?)),
     photo: DocumentReference(path: (d.data[kSessionStepPhoto] as String?)),
     audio: DocumentReference(path: (d.data[kSessionStepAudio] as String?)),
     completed: d.data[kSessionStepCompleted] as bool,
@@ -902,16 +966,15 @@ SessionStepsRecord extractSessionStepRecord(models.Document d) {
   return h;
 }
 
-
 Future<SessionsRecord> getSession({DocumentReference? document}) async {
   models.Document d =
-  await getDocument(collection: sessionsRef, document: document);
+      await getDocument(collection: sessionsRef, document: document);
   ////>print('(M1)${doc.data['chapterColorInts'].runtimeType}****${doc.data['chapterColorInts']}');
   SessionsRecord h = SessionsRecord(
     reference: DocumentReference(path: d.$id),
     clientId: DocumentReference(path: (d.data[kSessionClientId] as String?)),
     therapistId:
-    DocumentReference(path: (d.data[kSessionTherapistId] as String?)),
+        DocumentReference(path: (d.data[kSessionTherapistId] as String?)),
     $createdAt: DateTime.parse(d.$createdAt),
     $updatedAt: DateTime.parse(d.$updatedAt),
   );
@@ -921,11 +984,12 @@ Future<SessionsRecord> getSession({DocumentReference? document}) async {
 
 Future<SessionStepsRecord> getSessionStep({DocumentReference? document}) async {
   models.Document d =
-  await getDocument(collection: sessionsRef, document: document);
+      await getDocument(collection: sessionsRef, document: document);
   ////>print('(M1)${doc.data['chapterColorInts'].runtimeType}****${doc.data['chapterColorInts']}');
   SessionStepsRecord h = SessionStepsRecord(
     reference: DocumentReference(path: d.$id),
-    sessionId: DocumentReference(path: (d.data[kSessionStepSessionId] as String?)),
+    sessionId:
+        DocumentReference(path: (d.data[kSessionStepSessionId] as String?)),
     photo: DocumentReference(path: (d.data[kSessionStepPhoto] as String?)),
     audio: DocumentReference(path: (d.data[kSessionStepAudio] as String?)),
     completed: d.data[kSessionStepCompleted] as bool,
@@ -934,7 +998,6 @@ Future<SessionStepsRecord> getSessionStep({DocumentReference? document}) async {
     question: d.data[kSessionStepQuestion] as String,
     $createdAt: DateTime.parse(d.$createdAt),
     $updatedAt: DateTime.parse(d.$updatedAt),
-
   );
   //>print('(N5005)${h}');
   return h;
@@ -1163,7 +1226,7 @@ Future<String?> createStorageImageFile({
   // final String preffix = splitFilename.first;
   // final String suffix = splitFilename.last;
   final String truncatedName =
-  (name!.length > 15) ? name.substring(0, 15) : name;
+      (name!.length > 15) ? name.substring(0, 15) : name;
   final String fileId =
       chapter!.path! + kStorageFilenameSpitString + randomFileNumber;
   final String storageFilename =
@@ -1202,9 +1265,7 @@ Future<String?> storeStorageFile({
     fileId: storageFilename!,
     file: InputFile.fromPath(path: localFilePath!),
   );
-  var file = await storage.getFile(
-      bucketId: bucketId,
-      fileId: storageFilename);
+  var file = await storage.getFile(bucketId: bucketId, fileId: storageFilename);
   print('(AU62)${file.toString()}++++${result.name}@@@@${file.name}~~~~');
   const String head = imageFilenameHead;
   final b_id = artTheopyAIRphotosRef.path!;
@@ -1221,8 +1282,8 @@ Future<String?> getStorageFileDownload({
   models.File? file,
 }) async {
   String? localBucketId = bucketId;
-  if (bucketId == null){
-    localBucketId =  backupStorageRef.path!;
+  if (bucketId == null) {
+    localBucketId = backupStorageRef.path!;
   }
   Uint8List bytes = await storage.getFileDownload(
     bucketId: backupStorageRef.path!,
@@ -1244,7 +1305,6 @@ Future<void> deleteFile(String path) async {
   }
 }
 
-
 Future<bool> copyStorageFiletoLocal({
   String? bucketId,
   String? fileId,
@@ -1252,8 +1312,8 @@ Future<bool> copyStorageFiletoLocal({
 }) async {
   await deleteFile(localPath!);
   String? localBucketId = bucketId;
-  if (bucketId == null){
-    localBucketId =  backupStorageRef.path!;
+  if (bucketId == null) {
+    localBucketId = backupStorageRef.path!;
   }
   print('(DE70A)${fileId}....${localPath}');
 
@@ -1274,20 +1334,21 @@ Future<bool> copyStorageFiletoLocal({
   List<String> dirPath = localPath.split('/audio');
   print('(DE70B)${dirPath[0]}');
   var dir = Directory.fromRawPath(utf8Encoder.convert(dirPath[0]));
-  await for (var entity in
-  dir.list(recursive: true, followLinks: false)) {
+  await for (var entity in dir.list(recursive: true, followLinks: false)) {
     print('(DE71)${entity.path}');
-     if(entity.path.contains('audio')) {
-       File file = File(entity.path);
-       print('DE72)${entity.path}');
-       await file.delete();
-     }
+    if (entity.path.contains('audio')) {
+      File file = File(entity.path);
+      print('DE72)${entity.path}');
+      await file.delete();
+    }
   }
   print('(DE73)${localBucketId},,,,${fileId}----${dirPath[0]}...${dirPath[1]}');
-  await storage.getFileDownload(
-    bucketId:  localBucketId!,
+  await storage
+      .getFileDownload(
+    bucketId: localBucketId!,
     fileId: fileId!,
-  ).then((bytes) {
+  )
+      .then((bytes) {
     print('(DE74)${bytes.length}....${localPath}');
     final file = File(localPath);
     file.writeAsBytesSync(bytes);
@@ -1295,22 +1356,17 @@ Future<bool> copyStorageFiletoLocal({
     print('(DE75)${error.response}');
   });
 
-  await for (var entity in
-  dir.list(recursive: true, followLinks: false)) {
+  await for (var entity in dir.list(recursive: true, followLinks: false)) {
     print('(DE76)${entity.path}');
   }
-
-
 
   return true;
 }
 
-
-
 Future<String?> readStorageFile(
     {required DocumentReference? user,
-      required String? hyperbookTitle,
-      required int? versionNumber}) async {
+    required String? hyperbookTitle,
+    required int? versionNumber}) async {
   String expandedFilename = user!.path! +
       '_' +
       hyperbookTitle! +
@@ -1326,10 +1382,10 @@ Future<String?> readStorageFile(
   return s;
 }
 
-Future<void> deleteStorageFile(
-    {required String? bucketId,
-      required String? fileId,
-    }) async {
+Future<void> deleteStorageFile({
+  required String? bucketId,
+  required String? fileId,
+}) async {
   await storage.deleteFile(
     bucketId: bucketId!,
     fileId: fileId!,
@@ -1338,21 +1394,15 @@ Future<void> deleteStorageFile(
 }
 
 Future<models.FileList> listStorageFiles({String? bucketId}) async {
-  print('(XY6)${bucketId}....${kAttrStorageName}----${currentSessionStep!.reference!.path}');
+  print(
+      '(XY6)${bucketId}....${kAttrStorageName}----${currentSessionStep!.reference!.path}');
   models.FileList fileList = models.FileList(total: 0, files: []);
   try {
     fileList = await storage.listFiles(bucketId: bucketId!, queries: [
-       Query.contains(kAttrStorageName, currentSessionStep!.reference!.path),
-       Query.limit(kLimitStorageListDocuments),
+      Query.contains(kAttrStorageId, currentSessionStep!.reference!.path),
+      Query.limit(kLimitStorageListDocuments),
     ]);
-    print('(XY7A)${fileList.files.length}....${fileList.files.first}');
-    print('(XY7B)${fileList.files[1].$id}....${fileList.files[1].hashCode}');
-    if (fileList.files.length < 1) {
-      for (models.File file in fileList.files) {
-        String filename = file.name;
-        //>print('(XY8)${filename}');
-      }
-    }
+    print('(XY7A)${fileList.files.length}');
   } catch (e) {
     //>print('(XY9)${e.toString()}');
   }

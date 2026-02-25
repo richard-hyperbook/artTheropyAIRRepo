@@ -131,41 +131,6 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
     return 'photo${sessionStep.reference!.path}_${version}.jpg';
   }
 
-  Future<int> getMaxVersionNumber({
-    required String bucketId,
-    required String sessionStepId,
-  }) async {
-    models.FileList? fileList;
-    try {
-      fileList = await storage.listFiles(bucketId: bucketId, queries: [
-        Query.contains(kAttrStorageName, sessionStepId),
-        Query.limit(kLimitStorageListDocuments),
-      ]);
-      print('(DE80)${fileList}');
-      print('(DE81)${fileList.files.length}');
-      int maxVersion = 0;
-      if (fileList.files.length > 0) {
-        for (var file in fileList.files) {
-          List<String> filenameSplit1 = file.name.split('_');
-          List<String> filenameSplit2 = filenameSplit1[1].split('.');
-          int? version = int.tryParse(filenameSplit2[0]);
-          if (version == null) {
-            version = 0;
-          }
-          if (version > maxVersion) {
-            maxVersion = version;
-          }
-          print(
-              '(DE82)${file.name}....${filenameSplit2[0]}----${version}----${maxVersion}');
-        }
-      }
-      return maxVersion;
-    } on AppwriteException catch (e) {
-      print('(DE83)${e}....${e.code}');
-      return 0;
-    }
-  }
-
   Future<int> checkIfCanPutInStorageLatestVersion({
     required String bucketId,
   }) async {
@@ -179,11 +144,11 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
         bucketId: bucketId,
       );
       print('(DE8)${fileList}');
-      print('(DE9)${fileList.files.length}');
+      print('(DE9A)${fileList.files.length}');
       int maxVersion = 0;
       if (fileList.files.length > 0) {
         for (var file in fileList.files) {
-          List<String> filenameSplit1 = file.name.split('_');
+          List<String> filenameSplit1 = file.$id.split('_');
           List<String> filenameSplit2 = filenameSplit1[1].split('.');
           int? version = int.tryParse(filenameSplit2[0]);
           if (version == null) {
@@ -201,42 +166,6 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
       print('(DE20)${e}....${e.code}');
       return 0;
     }
-    /*
-    if (askToOverwrite) {
-      print('(DE21)');
-      await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Overwrite?'),
-//content: Text('XXX'),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      doStore = false;
-                      doDelete = false;
-                      Navigator.pop(context, false);
-                    },
-                    child: const Text('Cancel')),
-                TextButton(
-                  onPressed: () async {
-                    doStore = true;
-                    doDelete = true;
-                    context.pop();
-                  },
-                  child: const Text('Confirm'),
-                ),
-              ],
-            );
-          });
-    }
-    print('(DE21)');
-    if (doDelete) {
-      await deleteStorageFile(bucketId: bucketId, fileId: storageFilename);
-      print('(DE18)${currentSessionStep!.reference!.path!}');
-    }
-
-     */
   }
 
   String imageNetworkPath = '';
@@ -255,8 +184,9 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
     );
   }
 
-  Widget displaySessionStep(SessionStepsRecord sessionStep, int index) {
-    loadImageNetworkPath(sessionStep);
+  Widget displaySessionStep(SessionStepsRecord sessionStep, int index, int maxVersion) {
+    print('(ss111)${maxVersion}');
+    loadImageNetworkPath(sessionStep, maxVersion);
     return Material(
       color: Colors.transparent,
       elevation: 5.0,
@@ -393,7 +323,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                 ),
               ),
 
-              Row(children: [
+              Row(children:[
+              Column(children:[
                 FlutterFlowIconButton(
                   caption: 'Select photo',
                   tooltipMessage: 'Select photo from gallery',
@@ -409,9 +340,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                     insertPicture(context, sessionStep);
                   },
                 ),
-              ]),
-              Row(
-                children: <Widget>[
+
+      SizedBox(height: kIconButtonGap),
                   FlutterFlowIconButton(
                     caption: 'Transcribe',
                     tooltipMessage: 'Speech to text',
@@ -452,8 +382,9 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                       setState(() {});
                     },
                   ),
-                ],
-              ),
+      ]),
+                Expanded(child: displayThumbnail()),
+      ]),
               SizedBox(
                 width: MediaQuery.sizeOf(context).width * 0.9,
                 child: Text(transcription),
@@ -473,9 +404,9 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
 
   List<BackupFileDetail> backupFileDetailList = [];
 
-  void loadImageNetworkPath(SessionStepsRecord sessionStep) {
+  void loadImageNetworkPath(SessionStepsRecord sessionStep, int localMaxVersion) {
     final String BUCKET_ID = artTheopyAIRphotosRef.path!;
-    final String FILE_ID = generatePhotoStorageFilename(sessionStep, 1);
+    final String FILE_ID = generatePhotoStorageFilename(sessionStep, localMaxVersion);
     final String PROJECT_ID = kProjectID;
     imageNetworkPath =
         'https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${FILE_ID}/view?project=${PROJECT_ID}';
@@ -497,25 +428,24 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
       XFile? imageFile = await picker.pickImage(
         source: ImageSource.gallery,
       );
-      bool okToStorePhoto = true;
-      int x = await checkIfCanPutInStorageLatestVersion(
+
+      maxVersion = await checkIfCanPutInStorageLatestVersion(
           bucketId: artTheopyAIRphotosRef.path!);
 
-      if (okToStorePhoto) {
         String localFilePath = imageFile!
             .path; //= await getPath(sessionStepId: sessionStep.reference!.path!, fileKind: FileKind.photo);
-        print('(DE400)${localFilePath}....${sessionStep.reference!.path!}');
+        print('(DE400)${maxVersion}====${localFilePath}....${sessionStep.reference!.path!}');
         await storeStorageFile(
             bucketId: artTheopyAIRphotosRef.path!,
-            storageFilename: generatePhotoStorageFilename(sessionStep, 1),
+            storageFilename: generatePhotoStorageFilename(sessionStep, maxVersion! + 1),
             localFilePath: localFilePath);
         setState(() {
-          loadImageNetworkPath(sessionStep);
+          loadImageNetworkPath(sessionStep, maxVersion!);
         });
 
         print(
             '(DE401)${localFilePath}....${sessionStep.reference!.path!}----${imageNetworkPath}');
-      }
+
       // //> print('(XJJP9A)±${snapshot}');
       //File file = File(snapshot!.path);
       // //> print('(XJJPAA)${cloudStoragePathname}±${snapshot.path}±${file}');
@@ -849,7 +779,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                                             int listViewIndex) {
                                           return displaySessionStep(
                                               sessionSteps![listViewIndex],
-                                              listViewIndex);
+                                              listViewIndex, sessionSteps![listViewIndex].maxPhotoVersion!);
                                         }),
                                   ),
                                 ),

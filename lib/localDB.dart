@@ -114,3 +114,4 @@ const double kIconButtonHeight = 40;
 const double kIconButtonGap = 20;
 
 const kAttrStorageName ='name';
+const kAttrStorageId ='\$id';
