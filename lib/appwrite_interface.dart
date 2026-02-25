@@ -39,7 +39,7 @@ import 'dart:convert';
 
 // part 'appwrite_interface.g.dart';
 
-enum FileKind { audio, photo }
+enum FileKind { audio, photo, video }
 
 const String _numericChars = '1234567890';
 Random _numericRnd = Random();
@@ -821,6 +821,17 @@ Future<UsersRecord> getUser({DocumentReference? document}) async {
   return u;
 }
 
+String generateAudioStorageFilename(
+    SessionStepsRecord sessionStep, int version) {
+  return 'audio${sessionStep.reference!.path}_${version}.wav';
+}
+
+String generatePhotoStorageFilename(
+    SessionStepsRecord sessionStep, int version) {
+  return 'photo${sessionStep.reference!.path}_${version}.jpg';
+}
+
+
 Future<List<SessionsRecord>> listSessionList(
     {bool justCurrentUserAsTherapist = true}) async {
   //>print('(N12)${justCurrentUserAsModerator}');
@@ -856,6 +867,21 @@ Future<List<SessionsRecord>> listSessionList(
   //>print('(N1AA)${hh.length}');
   return hh;
 }
+
+Future<void> setMaxVersionNumbersCurrentSessionStep() async {
+  final int maxAudioVersion = await getMaxVersionNumber(
+    bucketId: artTheopyAIRaudiosRef.path!,
+    sessionStepId: currentSessionStep!.reference!.path!,
+  );
+  final int maxPhotoVersion = await getMaxVersionNumber(
+    bucketId: artTheopyAIRphotosRef.path!,
+    sessionStepId: currentSessionStep!.reference!.path!,
+  );
+  currentSessionStep!.maxAudioVersion = maxAudioVersion;
+  currentSessionStep!.maxPhotoVersion = maxPhotoVersion;
+  print('(VC5)${currentSessionStep!.maxAudioVersion}....${currentSessionStep!.maxPhotoVersion}');
+}
+
 
 Future<int> getMaxVersionNumber({
   required String bucketId,
@@ -1306,9 +1332,10 @@ Future<void> deleteFile(String path) async {
 }
 
 Future<bool> copyStorageFiletoLocal({
-  String? bucketId,
-  String? fileId,
-  String? localPath,
+  required String? bucketId,
+  required String? fileId,
+  required String? localPath,
+  required FileKind? fileKind,
 }) async {
   await deleteFile(localPath!);
   String? localBucketId = bucketId;
@@ -1316,27 +1343,27 @@ Future<bool> copyStorageFiletoLocal({
     localBucketId = backupStorageRef.path!;
   }
   print('(DE70A)${fileId}....${localPath}');
-
-/*  try {
-    models.File bytes = await storage.getFile(
-      bucketId: localBucketId!,
-      fileId: fileId!,
-    );
-    print('(AP71)${bytes}');
-
-    // var result = await dartio.File(localPath!).writeAsBytes(bytes);
-    // print('(AP72)${result}');
-  } on AppwriteException catch (e){
-    print('(DE99)${e}');
-    return false;
-  }*/
+  String token = '';
+  switch(fileKind){
+    case FileKind.audio :
+      token = 'audio';
+      break;
+    case FileKind.photo :
+      token = 'photo';
+      break;
+    case FileKind.video :
+      token = 'video';
+      break;
+    case null:
+      break;
+  }
   final utf8Encoder = utf8.encoder;
-  List<String> dirPath = localPath.split('/audio');
+  List<String> dirPath = localPath.split('/${token}');
   print('(DE70B)${dirPath[0]}');
   var dir = Directory.fromRawPath(utf8Encoder.convert(dirPath[0]));
   await for (var entity in dir.list(recursive: true, followLinks: false)) {
     print('(DE71)${entity.path}');
-    if (entity.path.contains('audio')) {
+    if (entity.path.contains(token)) {
       File file = File(entity.path);
       print('DE72)${entity.path}');
       await file.delete();

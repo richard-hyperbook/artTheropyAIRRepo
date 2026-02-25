@@ -41,6 +41,10 @@ mixin AudioRecorderMixin {
   }
 
   Future<String> getPath({required String sessionStepId, required FileKind fileKind, required int version}) async {
-    return await  '';
+    return  '';
+  }
+
+  Future<String> getTempDirPath() async {
+    return '';
   }
 }

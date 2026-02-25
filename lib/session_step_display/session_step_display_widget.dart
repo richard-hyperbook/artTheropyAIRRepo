@@ -121,56 +121,11 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
     }
   }
 
-  String generateAudioStorageFilename(
-      SessionStepsRecord sessionStep, int version) {
-    return 'audio${sessionStep.reference!.path}_${version}.wav';
-  }
 
-  String generatePhotoStorageFilename(
-      SessionStepsRecord sessionStep, int version) {
-    return 'photo${sessionStep.reference!.path}_${version}.jpg';
-  }
-
-  Future<int> checkIfCanPutInStorageLatestVersion({
-    required String bucketId,
-  }) async {
-    bool askToOverwrite = false;
-    bool doStore = true;
-    bool doDelete = false;
-    String storageFilename =
-        generatePhotoStorageFilename(currentSessionStep!, 1);
-    try {
-      models.FileList fileList = await listStorageFiles(
-        bucketId: bucketId,
-      );
-      print('(DE8)${fileList}');
-      print('(DE9A)${fileList.files.length}');
-      int maxVersion = 0;
-      if (fileList.files.length > 0) {
-        for (var file in fileList.files) {
-          List<String> filenameSplit1 = file.$id.split('_');
-          List<String> filenameSplit2 = filenameSplit1[1].split('.');
-          int? version = int.tryParse(filenameSplit2[0]);
-          if (version == null) {
-            version = 0;
-          }
-          if (version > maxVersion) {
-            maxVersion = version;
-          }
-          print(
-              '(DE10A)${file.name}....${filenameSplit2[0]}----${version}----${maxVersion}');
-        }
-      }
-      return maxVersion;
-    } on AppwriteException catch (e) {
-      print('(DE20)${e}....${e.code}');
-      return 0;
-    }
-  }
 
   String imageNetworkPath = '';
   String transcription = '';
-  int? maxVersion;
+  //int? maxVersion;
 
   Widget displayThumbnail() {
     print('(DE410)${imageNetworkPath}');
@@ -247,23 +202,19 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                     children: <Widget>[
                       Recorder(
                         sessionStepId: sessionStep.reference!.path,
+
                         onStart: () async {
                           currentSessionStep = sessionStep;
+                          await setMaxVersionNumbersCurrentSessionStep();
                           print('(DE3A)${currentSessionStep!.reference!.path}');
-                          bool doRecord = true;
-                          maxVersion =
-                              await checkIfCanPutInStorageLatestVersion(
-                                  bucketId: artTheopyAIRaudiosRef.path!);
-                          print(
-                              '(DE3B)${currentSessionStep!.reference!.path}....${maxVersion}');
-                          return maxVersion!;
+                          return currentSessionStep!.maxAudioVersion!;
                         },
                         onStop: (path) async {
-                          print('(DE1)$path....${maxVersion}');
+                          print('(DE1)$path....${currentSessionStep!.maxPhotoVersion!}');
                           await storeStorageFile(
                             bucketId: artTheopyAIRaudiosRef.path!,
                             storageFilename: generateAudioStorageFilename(
-                                sessionStep, maxVersion! + 1),
+                                sessionStep, currentSessionStep!.maxPhotoVersion! + 1),
                             localFilePath: path,
                           );
                           print('(DE6)${audioPath}');
@@ -287,11 +238,9 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                       child: AudioPlayer(
                           sessionStepId: sessionStep.reference!.path,
                           onPlay: (String localPath) async {
-                            maxVersion = await getMaxVersionNumber(
-                              bucketId: artTheopyAIRaudiosRef.path!,
-                              sessionStepId: sessionStep.reference!.path!,
-                            );
-                            if (maxVersion! < 1) {
+                            currentSessionStep = sessionStep;
+                            await setMaxVersionNumbersCurrentSessionStep();
+                            if (currentSessionStep!.maxPhotoVersion! < 1) {
                               toast(context, 'No recording stored',
                                   ToastKind.warning);
                             } else {
@@ -303,6 +252,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                                 fileId: generateAudioStorageFilename(
                                     sessionStep, maxVersion!),
                                 localPath: correctedLocalPath,
+                                fileKind: FileKind.audio,
                               );
                               print(
                                   '(DE33B)${generateAudioStorageFilename(sessionStep, maxVersion!)}');
@@ -337,52 +287,54 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                   onPressed: () async {
                     FFAppState().update(() {});
                     currentSessionStep = sessionStep;
+                    await setMaxVersionNumbersCurrentSessionStep();
                     insertPicture(context, sessionStep);
                   },
                 ),
 
-      SizedBox(height: kIconButtonGap),
-                  FlutterFlowIconButton(
-                    caption: 'Transcribe',
-                    tooltipMessage: 'Speech to text',
-                    borderColor: Colors.transparent,
-                    borderRadius: 0.0,
-                    borderWidth: 1.0,
-                    buttonSize: 40.0,
-                    buttonWidth: kIconButtonWidth,
-                    icon: Icon(Icons.speaker_notes),
-                    onPressed: () async {
-                      currentSessionStep = sessionStep;
+                SizedBox(height: kIconButtonGap),
+                FlutterFlowIconButton(
+                  caption: 'Transcribe',
+                  tooltipMessage: 'Speech to text',
+                  borderColor: Colors.transparent,
+                  borderRadius: 0.0,
+                  borderWidth: 1.0,
+                  buttonSize: 40.0,
+                  buttonWidth: kIconButtonWidth,
+                  icon: Icon(Icons.speaker_notes),
+                  onPressed: () async {
+                    currentSessionStep = sessionStep;
 //                      final uri = Uri.parse('698718ad000f1cc14442.fra.appwrite.run');
-                      print('(PQ1)${sessionStep.reference!.path!}');
-                      final uri = Uri.parse(
-                          'https://698718ad000f1cc14442.fra.appwrite.run');
-                      //final creds = base64.encode(utf8.encode('$clientId:$secret'));
-                      final respAccessToken = await _http.post(
-                        uri,
-                        headers: {
-                          // 'Authorization': 'Basic $creds',
-                          'Content-Type': 'application/json',
-                        },
-                        body: 'audio' + sessionStep.reference!.path! + '.wav',
-                      );
-                      print('(PQ2)${respAccessToken.statusCode}');
-                      print(respAccessToken.body);
-                      var respDynamic = jsonDecode(respAccessToken.body);
-                      Map<String, dynamic> respObject =
-                          respDynamic as Map<String, dynamic>;
-                      transcription = respObject['transcription']! as String;
-                      print(
-                          '(PQ4)${respDynamic}....${respObject},,,,${transcription}');
-                      if (respAccessToken.statusCode < 200 ||
-                          respAccessToken.statusCode >= 300) {
-                        toast(
-                            context, 'Error in transcription', ToastKind.error);
-                      }
-                      setState(() {});
-                    },
-                  ),
-      ]),
+                    print('(PQ1)${sessionStep.reference!.path!}....${sessionStep.maxAudioVersion.toString()}');
+                    final uri = Uri.parse(
+                        'https://698718ad000f1cc14442.fra.appwrite.run');
+                    //final creds = base64.encode(utf8.encode('$clientId:$secret'));
+                    final respAccessToken = await _http.post(
+                      uri,
+                      headers: {
+                        // 'Authorization': 'Basic $creds',
+                        'Content-Type': 'application/json',
+                      },
+                      body: 'audio' + sessionStep.reference!.path! + '_' + sessionStep.maxAudioVersion.toString() + '.wav',
+                    );
+                    print('(PQ2)${respAccessToken.statusCode}....${'audio' + sessionStep.reference!.path! + '_' + sessionStep.maxAudioVersion.toString() + '.wav'}');
+                    print(respAccessToken.body);
+                    var respDynamic = jsonDecode(respAccessToken.body);
+                    Map<String, dynamic> respObject =
+                    respDynamic as Map<String, dynamic>;
+                    transcription = respObject['transcription']! as String;
+                    print(
+                        '(PQ4)${respDynamic}....${respObject},,,,${transcription}');
+                    if (respAccessToken.statusCode < 200 ||
+                        respAccessToken.statusCode >= 300) {
+                      toast(
+                          context, 'Error in transcription', ToastKind.error);
+                    }
+                    setState(() {});
+                  },
+                ),
+
+              ]),
                 Expanded(child: displayThumbnail()),
       ]),
               SizedBox(
@@ -429,18 +381,17 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
         source: ImageSource.gallery,
       );
 
-      maxVersion = await checkIfCanPutInStorageLatestVersion(
-          bucketId: artTheopyAIRphotosRef.path!);
+
 
         String localFilePath = imageFile!
             .path; //= await getPath(sessionStepId: sessionStep.reference!.path!, fileKind: FileKind.photo);
-        print('(DE400)${maxVersion}====${localFilePath}....${sessionStep.reference!.path!}');
+        print('(DE400)${currentSessionStep!.maxPhotoVersion!}====${localFilePath}....${sessionStep.reference!.path!}');
         await storeStorageFile(
             bucketId: artTheopyAIRphotosRef.path!,
-            storageFilename: generatePhotoStorageFilename(sessionStep, maxVersion! + 1),
+            storageFilename: generatePhotoStorageFilename(sessionStep, currentSessionStep!.maxPhotoVersion! + 1),
             localFilePath: localFilePath);
         setState(() {
-          loadImageNetworkPath(sessionStep, maxVersion!);
+          loadImageNetworkPath(sessionStep, currentSessionStep!.maxPhotoVersion!);
         });
 
         print(

@@ -35,6 +35,14 @@ import '../../hyperbook_edit/hyperbook_edit_widget.dart';
 import '../../chapter_display/chapter_display_widget.dart';
 import '../../paypal/paypal_widget.dart';
 import '../../session_step_display/session_step_display_widget.dart';
+import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new/log.dart';
+import 'package:ffmpeg_kit_flutter_new/session.dart';
+import 'package:ffmpeg_kit_flutter_new/statistics.dart';
+import '../../platform/audio_recorder_platform.dart';
+import 'package:video_player/video_player.dart';
+import 'dart:io';
+
 
 int _count = 0;
 bool _iHaveRequests = false;
@@ -47,7 +55,7 @@ class SessionDisplayWidget extends StatefulWidget {
   _SessionDisplayWidgetState createState() => _SessionDisplayWidgetState();
 }
 
-class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
+class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with AudioRecorderMixin {
   late SessionDisplayModel _model;
 
   TextEditingController? enteredHyperbookTitleController;
@@ -63,6 +71,8 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
   }
 
   List<SessionsRecord>? sessions;
+
+  VideoPlayerController videoController = VideoPlayerController.file(File(''));
 
   @override
   void initState()  {
@@ -100,7 +110,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
         width:
         MediaQuery.sizeOf(context).width *
             1.0,
-        height: 165.0,
+        height: 400.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(
               Radius.circular(5)),
@@ -182,8 +192,6 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                   icon: Icon(Icons.edit),
                   onPressed: () async {
                     FFAppState().update(() {
-
-
                     });
                     currentSession = session;
                     currentTherapist = await getUser(document: session.therapistId);
@@ -206,6 +214,136 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget> {
                 ),
 
               ]),
+              SizedBox(height: kIconButtonGap),
+              FlutterFlowIconButton(
+                caption: 'Make video',
+                tooltipMessage: 'Speech to text',
+                borderColor: Colors.transparent,
+                borderRadius: 0.0,
+                borderWidth: 1.0,
+                buttonSize: 40.0,
+                buttonWidth: kIconButtonWidth,
+                icon: Icon(Icons.video_camera_back_outlined),
+                onPressed: () async {
+                  currentSession = session;
+                  List<SessionStepsRecord> sessionStepsList = await listSessionStepList(justCurrentSession: true);
+                  String tempDirPath = await getTempDirPath();
+                  print('(VC1)${tempDirPath}');
+                  for (int i = 0; i < 1/*sessionStepsList.length*/; i++){
+                    SessionStepsRecord sessionStep  = sessionStepsList[i];
+                    currentSessionStep = sessionStepsList[i];
+                    await setMaxVersionNumbersCurrentSessionStep();
+                    final int maxAudioVersion = currentSessionStep!.maxAudioVersion!;
+                    final maxPhotoVersion = currentSessionStep!.maxPhotoVersion!;
+                    final String audioPath = '${tempDirPath}/audio_${i.toString()}.wav';
+                    final String photoPath = '${tempDirPath}/photo_${i.toString()}.jpg';
+                    final String videoPath = '${tempDirPath}/video_${i.toString()}.mp4';
+                    bool okAudio = await copyStorageFiletoLocal(
+                      bucketId: artTheopyAIRaudiosRef.path,
+                      fileId: generateAudioStorageFilename(
+                          sessionStep, maxAudioVersion),
+                      localPath: audioPath,
+                      fileKind: FileKind.audio,
+                    );
+                    print('(VC2)${i}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====');
+                    print('(VC3)${i}~~~~${generatePhotoStorageFilename(sessionStep, maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
+                    bool okPhoto = await copyStorageFiletoLocal(
+                      bucketId: artTheopyAIRphotosRef.path,
+                      fileId: generatePhotoStorageFilename(
+                          sessionStep, maxPhotoVersion),
+                      localPath: photoPath,
+                      fileKind: FileKind.photo,
+                    );
+                    print('(VC4)${i}~~~~${okPhoto}....${maxPhotoVersion},,,,${photoPath}====');
+                    final String command = '-loop 1 -i ${photoPath} -i ${audioPath} -shortest ${videoPath}';
+
+                    String logString = 'Logs will appear here...';
+                    await FFmpegKit.executeAsync(
+                      command,
+                          (Session session) async {
+                        final output = await session.getOutput();
+                        final returnCode = await session.getReturnCode();
+                        final duration = await session.getDuration();
+
+                        setState(() {
+                          logString += '\n✅ Processing completed!\n';
+                          logString += 'Return code: $returnCode\n';
+                          logString += 'Duration: ${duration}ms\n';
+                          logString += 'Output: $output\n';
+                        //  isProcessing = false;
+                        });
+
+                        debugPrint('session: $output');
+                      },
+                          (Log log) {
+                        setState(() {
+                          logString += log.getMessage();
+                        });
+                        debugPrint('log: ${log.getMessage()}');
+                      },
+                          (Statistics statistics) {
+                        setState(() {
+                          logString +=
+                          '\n📊 Progress: ${statistics.getSize()} bytes, ${statistics
+                              .getTime()}ms\n';
+                        });
+                        debugPrint('statistics: ${statistics.getSize()}');
+                      },
+                    );
+                    print('(VC4)${logString}');
+                    videoController =  VideoPlayerController.file(File(videoPath))
+                      ..initialize().then((_) {
+                   //    Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+
+                    });
+                  };
+
+
+
+
+                  // String  command =
+                      // " -y -framerate 1 -pattern_type sequence -i $pictureFilenames -c:v libx264 -r 30 -pix_fmt yuv420p ${generatedFile.path}";
+
+              },
+              ),
+              // SizedBox(
+              //   width: 300,
+              //   height: 200,
+              //   child:  Container(
+              //     decoration: BoxDecoration(border: BoxBorder.all(width: 1, color: Colors.black)),
+              //     child: FittedBox(
+              //     fit: BoxFit.fill,
+              //     child: SizedBox(
+              //       width: 290/*videoController.value.size.width ?? 0*/,
+              //       height: 190/*videoController.value.size.height ?? 0*/,
+              //       child: VideoPlayer(videoController),
+              //     ),
+              //   ),
+              //
+              //     /*AspectRatio(
+              //       aspectRatio: videoController.value.aspectRatio,
+              //       child: VideoPlayer(videoController),
+              //     ),*/
+              //   )
+              // )
+
+              SizedBox(
+                width: 300,
+                height: 200,
+                child: FittedBox(
+                  alignment: Alignment.center,
+                  fit: BoxFit.cover,
+                  child: SizedBox(
+                    height: videoController.value.size.height,
+                    width: videoController.value.size.width,
+                    child: VideoPlayer(
+                      videoController,
+                    ),
+                  ),
+                ),
+              ),
+
+
 
             ]),
       ),
@@ -279,6 +417,21 @@ return
                 child: Scaffold(
                     key: scaffoldKey,
                     backgroundColor: const Color(0xFFF5F5F5),
+
+
+                    floatingActionButton: FloatingActionButton(
+                      onPressed: () {
+                        setState(() {
+                          videoController.value.isPlaying
+                              ? videoController.pause()
+                              : videoController.play();
+                        });
+                      },
+                      child: Icon(
+                        videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                      ),
+                    ),
+
                     appBar: AppBar(
                       leading: BackButton(color: Colors.white),
                       backgroundColor: FlutterFlowTheme

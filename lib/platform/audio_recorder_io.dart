@@ -51,10 +51,19 @@ mixin AudioRecorderMixin {
         prefix = 'photo';
         suffix = '.jpg';
         break;
+      case FileKind.video:
+        prefix = 'video';
+        suffix = '.mp4';
+        break;
     }
     return p.join(
       dir.path,
       prefix + sessionStepId + '_${version}' + suffix
     );
+  }
+
+  Future<String> getTempDirPath() async {
+    Directory tempDir = await getTemporaryDirectory();
+    return tempDir.path;
   }
 }
