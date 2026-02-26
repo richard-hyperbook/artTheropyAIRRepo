@@ -12,7 +12,7 @@ import 'flutter_flow/flutter_flow_theme.dart';
 import 'dart:math';
 import 'appwrite_interface.dart';
 
-final int versionNumber = 16;
+final int versionNumber = 17;
 
 late SharedPreferences globalSharedPrefs;
 DocumentReference? _introductionHyperbook;
@@ -21,8 +21,10 @@ Future initializePersistedState() async {
   globalSharedPrefs = await SharedPreferences.getInstance();
   _safeInit(() {
     _introductionHyperbook = DocumentReference(
-      path: globalSharedPrefs.getString('ff_introductionHyperbook') /*?.ref ??
-              _introductionHyperbook*/,
+      path: globalSharedPrefs.getString(
+          'ff_introductionHyperbook') /*?.ref ??
+              _introductionHyperbook*/
+      ,
     );
   });
 }
@@ -327,11 +329,11 @@ Color? _colorFromIntValue(int? val) {
 const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
 Random _rnd = Random();
 String getRandomString(int length) => String.fromCharCodes(
-  Iterable.generate(
-    length,
-    (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length)),
-  ),
-);
+      Iterable.generate(
+        length,
+        (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length)),
+      ),
+    );
 
 bool isUserTheTherapist(DocumentReference user, SessionsRecord session) {
   //>print('(N403)${hyperbook.moderator!.path}****${currentUser!.reference!.path}');

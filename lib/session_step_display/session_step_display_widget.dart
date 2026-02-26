@@ -130,8 +130,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
     print('(DE410)${imageNetworkPath}');
     return Image.network(
       imageNetworkPath,
-      width:
-          (MediaQuery.sizeOf(context).width * 0.9) -
+      width: (MediaQuery.sizeOf(context).width * 0.9) -
           kIconButtonWidth -
           kIconButtonGap,
       height: (kIconButtonHeight * 2) + kIconButtonGap,
@@ -155,16 +154,19 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
         width: MediaQuery.sizeOf(context).width * 1.0,
         height: 400.0,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           color: FlutterFlowTheme.of(context).secondaryBackground,
           boxShadow: [
             BoxShadow(
-              blurRadius: 4.0,
-              color: Color(0x33000000),
-              offset: Offset(0.0, 2.0),
+              blurRadius: 15.0,
+              color: Color(0x1F000000),
+              offset: Offset(0.0, 4.0),
             ),
           ],
-          border: Border.all(width: 2.0),
+          border: Border.all(
+            color: FlutterFlowTheme.of(context).lineColor,
+            width: 1.0,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,7 +206,6 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                   children: <Widget>[
                     Recorder(
                       sessionStepId: sessionStep.reference!.path,
-
                       onStart: () async {
                         currentSessionStep = sessionStep;
                         await setMaxVersionNumbersCurrentSessionStep();
@@ -309,7 +310,6 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                         insertPicture(context, sessionStep);
                       },
                     ),
-
                     SizedBox(height: kIconButtonGap),
                     FlutterFlowIconButton(
                       caption: 'Transcribe',
@@ -336,8 +336,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                             // 'Authorization': 'Basic $creds',
                             'Content-Type': 'application/json',
                           },
-                          body:
-                              'audio' +
+                          body: 'audio' +
                               sessionStep.reference!.path! +
                               '_' +
                               sessionStep.maxAudioVersion.toString() +
@@ -508,10 +507,10 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                 title: Text(
                   'Steps',
                   style: FlutterFlowTheme.of(context).headlineMedium.override(
-                    fontFamily: 'Rubik',
-                    color: Colors.white,
-                    fontSize: 22.0,
-                  ),
+                        fontFamily: 'Rubik',
+                        color: Colors.white,
+                        fontSize: 22.0,
+                      ),
                 ),
                 actions: [
                   // insertOutstandingRequestsButton(context),
@@ -537,11 +536,13 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                         ),
                       );
                     },
-                    child: Text('XXX16') /*SvgPicture.asset(
+                    child: Text(
+                        'XXX16') /*SvgPicture.asset(
                             'assets/images/hyperbooklogosvg10.svg',
                             width: 40,
                             height: 40,
-                          ),*/,
+                          ),*/
+                    ,
                   ),
                 ],
                 centerTitle: false,
@@ -622,11 +623,13 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                                               //>print('(UM5)${message}');
                                               showDialog<bool>(
                                                 context: context,
-                                                builder: (BuildContext context) {
+                                                builder:
+                                                    (BuildContext context) {
                                                   // currentCachedHyperbookIndex = getCurrentHyperbookIndex(widget.hyperbook!);
                                                   //>print('(UM6)${message}');
                                                   return StatefulBuilder(
-                                                    builder: (context, setState) {
+                                                    builder:
+                                                        (context, setState) {
                                                       return AlertDialog(
                                                         title: Text('Message'),
                                                         content: Column(
@@ -640,15 +643,16 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                                                           TextButton(
                                                             onPressed: () =>
                                                                 Navigator.pop(
-                                                                  context,
-                                                                  false,
-                                                                ),
+                                                              context,
+                                                              false,
+                                                            ),
                                                             child: const Text(
                                                               'Cancel',
                                                             ),
                                                           ),
                                                           TextButton(
-                                                            onPressed: () async {
+                                                            onPressed:
+                                                                () async {
                                                               toast(
                                                                 context,
                                                                 '',
@@ -672,27 +676,27 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                                           options: FFButtonOptions(
                                             //width: 200.0,
                                             height: 30.0,
-                                            padding:
-                                                const EdgeInsetsDirectional.fromSTEB(
-                                                  10.0,
-                                                  0.0,
-                                                  10.0,
-                                                  0.0,
-                                                ),
+                                            padding: const EdgeInsetsDirectional
+                                                .fromSTEB(
+                                              10.0,
+                                              0.0,
+                                              10.0,
+                                              0.0,
+                                            ),
                                             iconPadding:
-                                                const EdgeInsetsDirectional.fromSTEB(
-                                                  0.0,
-                                                  0.0,
-                                                  0.0,
-                                                  0.0,
-                                                ),
+                                                const EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                              0.0,
+                                              0.0,
+                                              0.0,
+                                              0.0,
+                                            ),
                                             color: FlutterFlowTheme.of(
                                               context,
                                             ).primary,
-                                            textStyle:
-                                                FlutterFlowTheme.of(
-                                                  context,
-                                                ).titleSmall.override(
+                                            textStyle: FlutterFlowTheme.of(
+                                              context,
+                                            ).titleSmall.override(
                                                   fontFamily: 'Rubik',
                                                   color: Colors.white,
                                                   fontSize: 12.0,
@@ -718,27 +722,27 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                                           options: FFButtonOptions(
                                             //width: 200.0,
                                             height: 30.0,
-                                            padding:
-                                                const EdgeInsetsDirectional.fromSTEB(
-                                                  10.0,
-                                                  0.0,
-                                                  10.0,
-                                                  0.0,
-                                                ),
+                                            padding: const EdgeInsetsDirectional
+                                                .fromSTEB(
+                                              10.0,
+                                              0.0,
+                                              10.0,
+                                              0.0,
+                                            ),
                                             iconPadding:
-                                                const EdgeInsetsDirectional.fromSTEB(
-                                                  0.0,
-                                                  0.0,
-                                                  0.0,
-                                                  0.0,
-                                                ),
+                                                const EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                              0.0,
+                                              0.0,
+                                              0.0,
+                                              0.0,
+                                            ),
                                             color: FlutterFlowTheme.of(
                                               context,
                                             ).primary,
-                                            textStyle:
-                                                FlutterFlowTheme.of(
-                                                  context,
-                                                ).titleSmall.override(
+                                            textStyle: FlutterFlowTheme.of(
+                                              context,
+                                            ).titleSmall.override(
                                                   fontFamily: 'Rubik',
                                                   color: Colors.white,
                                                   fontSize: 12.0,
@@ -774,13 +778,13 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                                 //#cachedHyperbookList.length,
                                 itemBuilder:
                                     (BuildContext context, int listViewIndex) {
-                                      return displaySessionStep(
-                                        sessionSteps![listViewIndex],
-                                        listViewIndex,
-                                        sessionSteps![listViewIndex]
-                                            .maxPhotoVersion!,
-                                      );
-                                    },
+                                  return displaySessionStep(
+                                    sessionSteps![listViewIndex],
+                                    listViewIndex,
+                                    sessionSteps![listViewIndex]
+                                        .maxPhotoVersion!,
+                                  );
+                                },
                               ),
                             ),
                           ),
