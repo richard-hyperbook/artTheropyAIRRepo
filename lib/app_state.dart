@@ -20,29 +20,27 @@ DocumentReference? _introductionHyperbook;
 Future initializePersistedState() async {
   globalSharedPrefs = await SharedPreferences.getInstance();
   _safeInit(() {
-    _introductionHyperbook =
-        DocumentReference(path: globalSharedPrefs.getString('ff_introductionHyperbook')/*?.ref ??
-              _introductionHyperbook*/);
+    _introductionHyperbook = DocumentReference(
+      path: globalSharedPrefs.getString('ff_introductionHyperbook') /*?.ref ??
+              _introductionHyperbook*/,
+    );
   });
 }
-
 
 class FFAppState extends ChangeNotifier {
   factory FFAppState() {
     return _instance;
   }
 
-
   FFAppState._internal();
   static final FFAppState _instance = FFAppState._internal();
-
 
   void update(VoidCallback callback) {
     callback();
     // notifyListenersFilter();
   }
 
- // late SharedPreferences globalSharedPrefs;
+  // late SharedPreferences globalSharedPrefs;
 
   DocumentReference? _currentHyperbook;
   DocumentReference? get currentHyperbook => _currentHyperbook;
@@ -74,10 +72,7 @@ class FFAppState extends ChangeNotifier {
     _chosenColors.removeAt(index);
   }
 
-  void updateChosenColorsAtIndex(
-      int index,
-      Color Function(Color) updateFn,
-      ) {
+  void updateChosenColorsAtIndex(int index, Color Function(Color) updateFn) {
     _chosenColors[index] = updateFn(_chosenColors[index]);
   }
 
@@ -118,10 +113,7 @@ class FFAppState extends ChangeNotifier {
     _chaptersReadState.removeAt(index);
   }
 
-  void updateChaptersReadStateAtIndex(
-      int index,
-      int Function(int) updateFn,
-      ) {
+  void updateChaptersReadStateAtIndex(int index, int Function(int) updateFn) {
     _chaptersReadState[index] = updateFn(_chaptersReadState[index]);
   }
 
@@ -144,9 +136,9 @@ class FFAppState extends ChangeNotifier {
   }
 
   void updateChaptersReadAtIndex(
-      int index,
-      DocumentReference Function(DocumentReference) updateFn,
-      ) {
+    int index,
+    DocumentReference Function(DocumentReference) updateFn,
+  ) {
     _chaptersRead[index] = updateFn(_chaptersRead[index]);
   }
 
@@ -169,14 +161,13 @@ class FFAppState extends ChangeNotifier {
   }
 
   void updateChaptersReadStateColorsAtIndex(
-      int index,
-      Color Function(Color) updateFn,
-      ) {
+    int index,
+    Color Function(Color) updateFn,
+  ) {
     _chaptersReadStateColors[index] = updateFn(_chaptersReadStateColors[index]);
   }
 
-  List<DocumentReference> _chaptersReadReferences =
-  <DocumentReference>[];
+  List<DocumentReference> _chaptersReadReferences = <DocumentReference>[];
   List<DocumentReference> get chaptersReadReferences => _chaptersReadReferences;
   set chaptersReadReferences(List<DocumentReference> value) {
     _chaptersReadReferences = value;
@@ -195,9 +186,9 @@ class FFAppState extends ChangeNotifier {
   }
 
   void updateChaptersReadReferencesAtIndex(
-      int index,
-      DocumentReference Function(DocumentReference) updateFn,
-      ) {
+    int index,
+    DocumentReference Function(DocumentReference) updateFn,
+  ) {
     _chaptersReadReferences[index] = updateFn(_chaptersReadReferences[index]);
   }
 
@@ -206,7 +197,7 @@ class FFAppState extends ChangeNotifier {
   set chosenModerator(DocumentReference? value) {
     _chosenModerator = value;
   }
-/*
+  /*
 
   HyperbookType? _chosenHyperbookType;
   HyperbookType? get chosenHyperbookType => _chosenHyperbookType;
@@ -226,7 +217,6 @@ class FFAppState extends ChangeNotifier {
   set filterByModerator(bool value) {
     _filterByModerator = value;
   }
-
 
   DocumentReference? get introductionHyperbook => _introductionHyperbook;
   set introductionHyperbook(DocumentReference? value) {
@@ -266,10 +256,7 @@ class FFAppState extends ChangeNotifier {
     _canRead.removeAt(index);
   }
 
-  void updateCanReadAtIndex(
-      int index,
-      bool Function(bool) updateFn,
-      ) {
+  void updateCanReadAtIndex(int index, bool Function(bool) updateFn) {
     _canRead[index] = updateFn(_canRead[index]);
   }
 
@@ -291,10 +278,7 @@ class FFAppState extends ChangeNotifier {
     _canEdit.removeAt(index);
   }
 
-  void updateCanEditAtIndex(
-      int index,
-      bool Function(bool) updateFn,
-      ) {
+  void updateCanEditAtIndex(int index, bool Function(bool) updateFn) {
     _canEdit[index] = updateFn(_canEdit[index]);
   }
 
@@ -340,17 +324,19 @@ Color? _colorFromIntValue(int? val) {
   return Color(val);
 }
 
-
 const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
 Random _rnd = Random();
-String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
-    length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+String getRandomString(int length) => String.fromCharCodes(
+  Iterable.generate(
+    length,
+    (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length)),
+  ),
+);
 
 bool isUserTheTherapist(DocumentReference user, SessionsRecord session) {
   //>print('(N403)${hyperbook.moderator!.path}****${currentUser!.reference!.path}');
-  return (session!.therapistId!.path == currentUser!.reference!.path);
+  return (session.therapistId!.path == currentUser!.reference!.path);
 }
-
 
 const kIconDepreciated = Icon(Icons.thumb_down);
 const kIconInfoStart = Icon(Icons.help_center_rounded);
@@ -378,22 +364,34 @@ const kIconTelephone = Icon(Icons.call_rounded);
 const kIconVisible = Icon(Icons.visibility_outlined);
 const kIconNotVisible = Icon(Icons.visibility_off_outlined);
 const kIconList = Icon(Icons.list_alt);
-const kIconListWhite = Icon(Icons.list_alt,  color: Colors.white);
+const kIconListWhite = Icon(Icons.list_alt, color: Colors.white);
 const kIconRequestsOutstanding = Icon(Icons.star);
 const kIconRequestsOutstandingRed = Icon(Icons.star, color: Colors.red);
 const kIconRequest = Icon(Icons.local_library);
 const kIconTutorial = Icon(Icons.school);
 const kIconTutorialWhite = Icon(Icons.school, color: Colors.white);
-final Widget kIconTutorialReverse = Container(child: Icon(Icons.school), color: Colors.white);
+final Widget kIconTutorialReverse = Container(
+  child: Icon(Icons.school),
+  color: Colors.white,
+);
 const kIconLogin = Icon(Icons.login);
 const kIconLoginWhite = Icon(Icons.login, color: Colors.white);
-final Widget kIconLoginReverse = Container(child: Icon(Icons.login), color: Colors.white);
+final Widget kIconLoginReverse = Container(
+  child: Icon(Icons.login),
+  color: Colors.white,
+);
 const kIconProfile = Icon(Icons.person);
 const kIconProfileWhite = Icon(Icons.person, color: Colors.white);
-final Widget kIconProfileReverse = Container(child: Icon(Icons.person), color: Colors.white);
+final Widget kIconProfileReverse = Container(
+  child: Icon(Icons.person),
+  color: Colors.white,
+);
 const kIconHyperbooks = Icon(Icons.folder_copy);
 const kIconHyperbooksWhite = Icon(Icons.folder_copy, color: Colors.white);
-final Widget kIconHyperbooksReverse = Container(child: Icon(Icons.folder_copy), color: Colors.white);
+final Widget kIconHyperbooksReverse = Container(
+  child: Icon(Icons.folder_copy),
+  color: Colors.white,
+);
 const kIconSave = Icon(Icons.save);
 const kIconOpenBook = Icon(Icons.import_contacts);
 const kIconFitScreen = Icon(Icons.fit_screen);
@@ -403,47 +401,46 @@ final Widget kIconImageWhite = Icon(Icons.image, color: Colors.white);
 const kIconLeft = Icon(Icons.keyboard_arrow_left);
 const kIconRight = Icon(Icons.keyboard_arrow_right);
 const kIconNone = Icon(Icons.keyboard_arrow_down);
-const kIconMinimizeAll= Icon(Icons.snowing);
-final kIconMinimizeAllWhite= Container(child: Icon(Icons.snowing), color: Colors.white);
+const kIconMinimizeAll = Icon(Icons.snowing);
+final kIconMinimizeAllWhite = Container(
+  child: Icon(Icons.snowing),
+  color: Colors.white,
+);
 const kIconMenu = Icon(Icons.menu);
 const kIconCancel = Icon(Icons.cancel);
 const kIconUpgrade = Icon(Icons.upgrade);
 
-
-
-
-
-const Map<String, Icon> kIconMapStandard ={
-'thumb_down': Icon(Icons.thumb_down),
-'help_center_rounded': Icon(Icons.help_center_rounded),
-'white': Icon(Icons.help_center_rounded, color: Colors.white),
-'visibility_off': Icon(Icons.visibility_off),
-'battery_0_bar': Icon(Icons.battery_0_bar),
-'battery_3_bar': Icon(Icons.battery_3_bar),
-'battery_full': Icon(Icons.battery_full),
-'highlight': Icon(Icons.highlight),
-'palette': Icon(Icons.palette),
-'share': Icon(Icons.share),
-'edit_note': Icon(Icons.edit_note),
-'comment': Icon(Icons.comment),
-'visibility': Icon(Icons.visibility),
-'arrow_forward_ios': Icon(Icons.arrow_forward_ios),
-'settings': Icon(Icons.settings),
-'arrow_back': Icon(Icons.arrow_back),
-'delete': Icon(Icons.delete),
-'call_rounded': Icon(Icons.call_rounded),
-'visibility_outlined': Icon(Icons.visibility_outlined),
-'visibility_off_outlined': Icon(Icons.visibility_off_outlined),
-'list_alt': Icon(Icons.list_alt),
-'star': Icon(Icons.star),
-'local_library': Icon(Icons.local_library),
-'school': Icon(Icons.school),
-'login': Icon(Icons.login),
-'person': Icon(Icons.person),
-'folder_copy': Icon(Icons.folder_copy),
-'save': Icon(Icons.save),
-'open_book': Icon(Icons.import_contacts),
-'fit_screen': Icon(Icons.fit_screen),
+const Map<String, Icon> kIconMapStandard = {
+  'thumb_down': Icon(Icons.thumb_down),
+  'help_center_rounded': Icon(Icons.help_center_rounded),
+  'white': Icon(Icons.help_center_rounded, color: Colors.white),
+  'visibility_off': Icon(Icons.visibility_off),
+  'battery_0_bar': Icon(Icons.battery_0_bar),
+  'battery_3_bar': Icon(Icons.battery_3_bar),
+  'battery_full': Icon(Icons.battery_full),
+  'highlight': Icon(Icons.highlight),
+  'palette': Icon(Icons.palette),
+  'share': Icon(Icons.share),
+  'edit_note': Icon(Icons.edit_note),
+  'comment': Icon(Icons.comment),
+  'visibility': Icon(Icons.visibility),
+  'arrow_forward_ios': Icon(Icons.arrow_forward_ios),
+  'settings': Icon(Icons.settings),
+  'arrow_back': Icon(Icons.arrow_back),
+  'delete': Icon(Icons.delete),
+  'call_rounded': Icon(Icons.call_rounded),
+  'visibility_outlined': Icon(Icons.visibility_outlined),
+  'visibility_off_outlined': Icon(Icons.visibility_off_outlined),
+  'list_alt': Icon(Icons.list_alt),
+  'star': Icon(Icons.star),
+  'local_library': Icon(Icons.local_library),
+  'school': Icon(Icons.school),
+  'login': Icon(Icons.login),
+  'person': Icon(Icons.person),
+  'folder_copy': Icon(Icons.folder_copy),
+  'save': Icon(Icons.save),
+  'open_book': Icon(Icons.import_contacts),
+  'fit_screen': Icon(Icons.fit_screen),
   'minimize': Icon(Icons.minimize),
   'image': Icon(Icons.image),
   'snowing': Icon(Icons.snowing),
@@ -452,8 +449,8 @@ const Map<String, Icon> kIconMapStandard ={
   'upgrade': Icon(Icons.upgrade),
 };
 
-const Map<String, Widget> kIconMap =
-{"kIconDepreciated": kIconDepreciated,
+const Map<String, Widget> kIconMap = {
+  "kIconDepreciated": kIconDepreciated,
   "kIconInfoStart": kIconInfoStart,
   // "kIconInfoStartWhite": kIconInfoStartWhite,
   "kIconNotVisited": kIconNotVisited,
@@ -472,7 +469,7 @@ const Map<String, Widget> kIconMap =
   "kIconReadChapter": kIconReadChapter,
   "kIconArrowForward": kIconArrowForward,
   "kIconSettings": kIconSettings,
-//  "kIconSettingsWhite": kIconSettingsWhite,
+  //  "kIconSettingsWhite": kIconSettingsWhite,
   "kIconBackArrow": kIconBackArrow,
   "kIconDelete": kIconDelete,
   "kIconTelephone": kIconTelephone,
@@ -485,27 +482,26 @@ const Map<String, Widget> kIconMap =
   "kIconRequest": kIconRequest,
   "kIconTutorial": kIconTutorial,
   "kIconTutorialWhite": kIconTutorialWhite,
- // "kIconTutorialReverse": kIconTutorialReverse,
+  // "kIconTutorialReverse": kIconTutorialReverse,
   "kIconLogin": kIconLogin,
   "kIconLoginWhite": kIconLoginWhite,
-//  "kIconLoginReverse": kIconLoginReverse,
+  //  "kIconLoginReverse": kIconLoginReverse,
   "kIconProfile": kIconProfile,
   "kIconProfileWhite": kIconProfileWhite,
-//  "kIconProfileReverse": kIconProfileReverse,
+  //  "kIconProfileReverse": kIconProfileReverse,
   "kIconHyperbooks": kIconHyperbooks,
   "kIconHyperbooksWhite": kIconHyperbooksWhite,
-//  "kIconHyperbooksReverse": kIconHyperbooksReverse,
+  //  "kIconHyperbooksReverse": kIconHyperbooksReverse,
   "kIconSave": kIconSave,
   "kIconOpenBook": kIconOpenBook,
   "kIconFitScreen": kIconFitScreen,
   "kIconMinimize": kIconMinimize,
-  "kIconMinimizeAll" :kIconMinimizeAll,
-  "kIconMenu" :kIconMenu,
-  "kIconCancel" :kIconCancel,
-  "kIconUpgrade" :kIconUpgrade,
+  "kIconMinimizeAll": kIconMinimizeAll,
+  "kIconMenu": kIconMenu,
+  "kIconCancel": kIconCancel,
+  "kIconUpgrade": kIconUpgrade,
   // "kIconImageReverse": kIconImageReverse,
 };
-
 
 // ScrollController? hyperbookDisplayscrollController;
 
@@ -513,7 +509,7 @@ enum HyperbookVisibiliy {
   visibleToAll,
   visibleToReadersAndWriters,
   VisibleOnlyToModerator,
-  TitleAndBlurbVisible
+  TitleAndBlurbVisible,
 }
 
 const kRoleNotLoggedIn = 'Not Logged In';
@@ -527,9 +523,12 @@ const List<String> kRoleListWithoutAdministrator = [
   kRoleClient,
   kRoleTherapist,
   kRoleSupervisor,
-  ];
+];
 
-const List<String> kRoleList = [...kRoleListWithoutAdministrator, kRoleAdministrator];
+const List<String> kRoleList = [
+  ...kRoleListWithoutAdministrator,
+  kRoleAdministrator,
+];
 
 /*
 class HyperbookType {

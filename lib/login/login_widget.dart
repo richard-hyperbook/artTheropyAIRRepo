@@ -30,10 +30,7 @@ import '../../sales/sales_widget.dart';
 import '../../conditional.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-
-
 export 'login_model.dart';
-
 
 class LoginWidget extends StatefulWidget {
   const LoginWidget({super.key});
@@ -101,7 +98,7 @@ class _LoginWidgetState extends State<LoginWidget> {
             ));
         // context.goNamedAuth('hyperbook_display', context.mounted);
       },
-          (context) {
+      (context) {
         // context.goNamedAuth('profilePage', context.mounted);
         Navigator.push(
             context,
@@ -112,18 +109,18 @@ class _LoginWidgetState extends State<LoginWidget> {
               child: ProfilePageWidget(),
             ));
       },
-          (context) {
+      (context) {
         // context.goNamedAuth('profilePage', context.mounted);
-            Navigator.push(
-                context,
-                PageTransition(
-                  type: kStandardPageTransitionType,
-                  duration: kStandardTransitionTime,
-                  reverseDuration: kStandardReverseTransitionTime,
-                  child: PayPalWidget(),
-                ));
-          },
-          (context) {
+        Navigator.push(
+            context,
+            PageTransition(
+              type: kStandardPageTransitionType,
+              duration: kStandardTransitionTime,
+              reverseDuration: kStandardReverseTransitionTime,
+              child: PayPalWidget(),
+            ));
+      },
+      (context) {
         // context.goNamedAuth('profilePage', context.mounted);
         Navigator.push(
             context,
@@ -151,12 +148,15 @@ class _LoginWidgetState extends State<LoginWidget> {
                 child: Container(
                   // width: MediaQuery.sizeOf(context).width * 1.0,
                   // height: MediaQuery.sizeOf(context).height * 1.0,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: <Color>[Colors.amber, Colors.yellow],
-                      stops: <double>[0.0, 1.0],
-                      begin: AlignmentDirectional(0.0, -1.0),
-                      end: AlignmentDirectional(0, 1.0),
+                      colors: <Color>[
+                        FlutterFlowTheme.of(context).primary,
+                        FlutterFlowTheme.of(context).secondary
+                      ],
+                      stops: const <double>[0.0, 1.0],
+                      begin: const AlignmentDirectional(0.0, -1.0),
+                      end: const AlignmentDirectional(0, 1.0),
                     ),
                   ),
                   child: Align(
@@ -173,20 +173,21 @@ class _LoginWidgetState extends State<LoginWidget> {
                             width: MediaQuery.sizeOf(context).width * 0.95,
                             child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: [Container(),
+                                children: [
+                                  Container(),
                                   /*Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: GestureDetector(
                                       onTap: () async {
-                                        *//*#await loadCachedChaptersReadReferencesCachedHyperbookIndex(
+                                        */ /*#await loadCachedChaptersReadReferencesCachedHyperbookIndex(
                                             hyperbook: tutorialHyperbook,
                                             user: currentUser);
-                                        *//*
+                                        */ /*
                                         toast(
                                             context,
                                             'Please wait while Hyperbook Tutorial loads',
                                             ToastKind.success);
-                                        *//*context.pushNamed(
+                                        */ /*context.pushNamed(
                                           'map_display',
                                           queryParameters: <String, String?>{
                                             'hyperbook': serializeParam(
@@ -208,7 +209,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               ParamType.String,
                                             ),
                                           }.withoutNulls,
-                                        );*//*
+                                        );*/ /*
                                         Navigator.push(
                                             context,
                                             PageTransition(
@@ -221,16 +222,17 @@ class _LoginWidgetState extends State<LoginWidget> {
                                       },
                                       child: Container(),
                                       //FittedBox(child: Container(color: Colors.amber, child: Text('ArtTherapyAIR App')),)
-                                      *//* SvgPicture.asset(
+                                      */ /* SvgPicture.asset(
                                         'assets/images/brush4.svg',
                                         width: logoSize,
                                         height: logoSize,
-                                      ),*//*
+                                      ),*/ /*
                                     ),
                                   ),*/
                                   Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(),/*FittedBox(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child:
+                                        Container(), /*FittedBox(
                                           fit: BoxFit.contain,
                                           child: Text(
                                               '\u2B05Click the\n\u2B05logo\n\u2B05to learn about\n\u2B05this app.',
@@ -250,7 +252,8 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                             ? 12
                                                             : 12)
                                                         : 20,
-                                              )))*/),
+                                              )))*/
+                                  ),
                                   Expanded(child: Container(width: 50)),
                                   Column(
                                     children: [
@@ -258,7 +261,8 @@ class _LoginWidgetState extends State<LoginWidget> {
                                           padding: const EdgeInsets.all(8.0),
                                           child: FittedBox(
                                               fit: BoxFit.contain,
-                                              child: Text('Art Therapy AIR\nApp',
+                                              child: Text(
+                                                  'Art Therapy AIR\nApp',
                                                   overflow: TextOverflow.fade,
                                                   //   style: FlutterFlowTheme.of(context)
                                                   //      .headlineMedium,),
@@ -286,8 +290,16 @@ class _LoginWidgetState extends State<LoginWidget> {
                           child: Container(
                             width: MediaQuery.sizeOf(context).width * 0.9,
                             decoration: BoxDecoration(
-                              color: FlutterFlowTheme.of(context).white,
-                              borderRadius: BorderRadius.circular(16.0),
+                              color: FlutterFlowTheme.of(context)
+                                  .secondaryBackground,
+                              borderRadius: BorderRadius.circular(24.0),
+                              boxShadow: const [
+                                BoxShadow(
+                                  blurRadius: 20.0,
+                                  color: Color(0x33000000),
+                                  offset: Offset(0.0, 10.0),
+                                )
+                              ],
                             ),
                             child: Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
@@ -531,10 +543,14 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             Navigator.push(
                                                 context,
                                                 PageTransition(
-                                                    type: kStandardPageTransitionType,
-                                                    duration:kStandardTransitionTime,
-                                                    reverseDuration: kStandardReverseTransitionTime,
-                                                    child:ChangePasswordWidget()));
+                                                    type:
+                                                        kStandardPageTransitionType,
+                                                    duration:
+                                                        kStandardTransitionTime,
+                                                    reverseDuration:
+                                                        kStandardReverseTransitionTime,
+                                                    child:
+                                                        ChangePasswordWidget()));
                                             //context.pushNamed('changePassword');
                                           },
                                           text: 'Forgot Password?',
@@ -575,7 +591,6 @@ class _LoginWidgetState extends State<LoginWidget> {
                                           onPressed: () async {
                                             // //>print('(N230-1)${currentReadReferences.length}');
 
-
                                             GoRouter.of(context)
                                                 .prepareAuthEvent();
                                             // //>print('(N230-2)${currentReadReferences.length}');
@@ -614,11 +629,11 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               _model.passwordController.text =
                                                   'aaaaaaaa';
                                             } else {
-                                              if (e.length == 0){
+                                              if (e.length == 0) {
                                                 _model.emailAddressController
                                                     .text = 't@t.com';
                                                 _model.passwordController.text =
-                                                'aaaaaaaa';
+                                                    'aaaaaaaa';
                                               }
                                             }
                                             models.User? appwriteUser;
@@ -677,18 +692,19 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             Navigator.push(
                                                 context,
                                                 PageTransition(
-                                                  type: kStandardPageTransitionType,
-                                                  duration: kStandardTransitionTime,
-                                                  reverseDuration: kStandardReverseTransitionTime,
+                                                  type:
+                                                      kStandardPageTransitionType,
+                                                  duration:
+                                                      kStandardTransitionTime,
+                                                  reverseDuration:
+                                                      kStandardReverseTransitionTime,
                                                   child: SessionDisplayWidget(),
                                                 ));
-
-
                                           },
                                           text: 'Login',
                                           options: FFButtonOptions(
-                                            width: 110.0,
-                                            height: 50.0,
+                                            width: 140.0,
+                                            height: 52.0,
                                             padding: const EdgeInsetsDirectional
                                                 .fromSTEB(0.0, 0.0, 0.0, 0.0),
                                             iconPadding:
@@ -701,18 +717,18 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                 FlutterFlowTheme.of(context)
                                                     .titleSmall
                                                     .override(
-                                                      fontFamily: 'Rubik',
+                                                      fontFamily: 'Inter',
                                                       color: Colors.white,
                                                       fontSize: 18.0,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
-                                            elevation: 2.0,
+                                            elevation: 4.0,
                                             borderSide: const BorderSide(
                                               color: Colors.transparent,
                                             ),
                                             borderRadius:
-                                                BorderRadius.circular(8.0),
+                                                BorderRadius.circular(26.0),
                                           ),
                                         ),
 
@@ -907,8 +923,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                       kStandardTransitionTime,
                                                   reverseDuration:
                                                       kStandardReverseTransitionTime,
-                                                  child:
-                                                  SessionDisplayWidget(),
+                                                  child: SessionDisplayWidget(),
                                                 ));
                                           },
                                           text: 'Continue as Guest',
@@ -976,8 +991,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                           ),
                         ),*/
 
-
-                                                SizedBox(height: 50),
+                        SizedBox(height: 50),
                       ],
                     ),
                   ),
@@ -988,7 +1002,6 @@ class _LoginWidgetState extends State<LoginWidget> {
         ));
   }
 }
-
 
 /*
 

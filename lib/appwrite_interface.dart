@@ -45,10 +45,11 @@ const String _numericChars = '1234567890';
 Random _numericRnd = Random();
 
 String getRandomNumericString(int length) => String.fromCharCodes(
-    Iterable.generate(
-        length,
-        (_) => _numericChars
-            .codeUnitAt(_numericRnd.nextInt(_numericChars.length))));
+  Iterable.generate(
+    length,
+    (_) => _numericChars.codeUnitAt(_numericRnd.nextInt(_numericChars.length)),
+  ),
+);
 
 /*
 //localhost
@@ -87,12 +88,8 @@ final DocumentReference databaseRef = DocumentReference(
 final DocumentReference sessionStepsRef = DocumentReference(
   path: 'sessionsteps',
 );
-final DocumentReference sessionsRef = DocumentReference(
-  path: 'sessions',
-);
-final DocumentReference usersRef = DocumentReference(
-  path: 'users',
-);
+final DocumentReference sessionsRef = DocumentReference(path: 'sessions');
+final DocumentReference usersRef = DocumentReference(path: 'users');
 final DocumentReference backupStorageRef = DocumentReference(
   path: '680746de003983073d29',
 );
@@ -102,9 +99,7 @@ final DocumentReference artTheopyAIRphotosRef = DocumentReference(
 final DocumentReference artTheopyAIRaudiosRef = DocumentReference(
   path: '698c93a00006c743c31f',
 );
-final DocumentReference constraintsRef = DocumentReference(
-  path: '',
-);
+final DocumentReference constraintsRef = DocumentReference(path: '');
 
 // LocalDB localDB = LocalDB();
 
@@ -216,8 +211,11 @@ class ConstraintsRecord {
   int? noOfHyperbooks;
   int? noOfUsersPerHyperbook;
   int? level;
-  ConstraintsRecord(
-      {this.noOfHyperbooks, this.noOfUsersPerHyperbook, this.level});
+  ConstraintsRecord({
+    this.noOfHyperbooks,
+    this.noOfUsersPerHyperbook,
+    this.level,
+  });
 }
 
 List<ConstraintsRecord> constraintsMatrix = [];
@@ -230,7 +228,7 @@ Future<void> loadConstraisMatrix() async {
   } else {
     print('(CC4)');
   }
-/*  if ((lastCheckedConstraints == null) ||
+  /*  if ((lastCheckedConstraints == null) ||
       (DateTime.now().difference(lastCheckedConstraints!).inDays > 1)) {
     constraintsMatrix = await listConstraintsList();
   }*/
@@ -253,7 +251,7 @@ void initAppwrite() {
 class DocumentReference {
   String? path;
   DocumentReference({this.path = '0'});
-/*  factory DocumentReference.fromJson(Map<String, dynamic> json) =>
+  /*  factory DocumentReference.fromJson(Map<String, dynamic> json) =>
       _$DocumentReferenceFromJson(json);
   Map<String, dynamic> toJson() => _$DocumentReferenceToJson(this);*/
 }
@@ -276,7 +274,7 @@ class SessionsRecord {
     this.$updatedAt,
   });
 
-/* factory SessionStepsRecord.fromJson(Map<String, dynamic> json) =>
+  /* factory SessionStepsRecord.fromJson(Map<String, dynamic> json) =>
       _$SessionStepsRecordFromJson(json);
   Map<String, dynamic> toJson() => _$SessionStepsRecordToJson(this);*/
 }
@@ -311,7 +309,7 @@ class SessionStepsRecord {
     this.maxPhotoVersion,
   });
 
-/* factory SessionStepsRecord.fromJson(Map<String, dynamic> json) =>
+  /* factory SessionStepsRecord.fromJson(Map<String, dynamic> json) =>
       _$SessionStepsRecordFromJson(json);
   Map<String, dynamic> toJson() => _$SessionStepsRecordToJson(this);*/
 }
@@ -340,16 +338,17 @@ class UsersRecord {
     this.$updatedAt,
   });
 
-/*  factory UsersRecord.fromJson(Map<String, dynamic> json) =>
+  /*  factory UsersRecord.fromJson(Map<String, dynamic> json) =>
       _$UsersRecordFromJson(json);
   Map<String, dynamic> toJson() => _$UsersRecordToJson(this);
 }*/
 }
 
-Future<models.Document> createDocument(
-    {required DocumentReference? collection,
-    required Map? data,
-    String id = ''}) async {
+Future<models.Document> createDocument({
+  required DocumentReference? collection,
+  required Map? data,
+  String id = '',
+}) async {
   if (id == '') {
     id = ID.unique();
   }
@@ -371,22 +370,21 @@ Future<models.DocumentList> listDocuments({
 }) async {
   appwriteDatabases = Databases(client!);
   print(
-      '(N11A)${appwriteDatabases!.client.endPoint}////${collection!.path}((((${orderByAttribute}');
-  print('(N11B)${databaseRef.path}////${collection!.path}');
+    '(N11A)${appwriteDatabases!.client.endPoint}////${collection!.path}((((${orderByAttribute}',
+  );
+  print('(N11B)${databaseRef.path}////${collection.path}');
   models.DocumentList? docs;
   if (orderByAttribute == null) {
     docs = await appwriteDatabases!.listDocuments(
       databaseId: databaseRef.path!,
-      collectionId: collection!.path!,
-      queries: [
-        Query.limit(kLimitDatabaseListDocuments),
-      ],
+      collectionId: collection.path!,
+      queries: [Query.limit(kLimitDatabaseListDocuments)],
     );
     print('(N11C)${docs}');
   } else {
     docs = await appwriteDatabases!.listDocuments(
       databaseId: databaseRef.path!,
-      collectionId: collection!.path!,
+      collectionId: collection.path!,
       queries: [
         Query.limit(kLimitDatabaseListDocuments),
         Query.orderAsc(orderByAttribute),
@@ -405,15 +403,18 @@ Future<models.Document> getDocument({
 }) async {
   appwriteDatabases = Databases(client!);
   print(
-      '(N2011A)${databaseRef.path}<<<<${collection!.path}++++${document!.path}');
+    '(N2011A)${databaseRef.path}<<<<${collection!.path}++++${document!.path}',
+  );
   models.Document? doc;
   try {
-    doc = await tablesDB!.getRow(
-      databaseId: databaseRef.path!,
-      tableId: collection!.path!,
-      rowId: document!.path!,
-      queries: [],
-    ) as models.Document;
+    doc =
+        await tablesDB!.getRow(
+              databaseId: databaseRef.path!,
+              tableId: collection.path!,
+              rowId: document.path!,
+              queries: [],
+            )
+            as models.Document;
   } on AppwriteException catch (e) {
     print('(AAT42)${e.type}****${e.message}');
     //   toast(context, 'Login failure: ${e.message}', ToastKind.error);
@@ -428,13 +429,14 @@ Future<models.Row> getRow({
 }) async {
   // appwriteDatabases = Databases(client!);
   print(
-      '(N2011A)${databaseRef.path}<<<<${collection!.path}++++${document!.path}');
+    '(N2011A)${databaseRef.path}<<<<${collection!.path}++++${document!.path}',
+  );
   models.Row? row;
   try {
     row = await tablesDB!.getRow(
       databaseId: databaseRef.path!,
-      tableId: collection!.path!,
-      rowId: document!.path!,
+      tableId: collection.path!,
+      rowId: document.path!,
       queries: [],
     );
   } on AppwriteException catch (e) {
@@ -514,7 +516,7 @@ Future<void> deleteRow({
       tableId: collection!.path!,
       rowId: document!.path!,
     );
-  } on AppwriteException catch (e) {
+  } on AppwriteException {
     //>print('(ND6)${e.message}&&&&${e.code}====${e.code}');
   }
   //>print('(ND5)');
@@ -529,7 +531,7 @@ Future<models.DocumentList> listDocumentsWithOneQueryDocumentReference({
 }) async {
   appwriteDatabases = Databases(client!);
   models.DocumentList docs = models.DocumentList(total: 0, documents: []);
-//>  print(
+  //>  print(
   //>   '(N7A)${attribute}&&&&${value!.path}////${databaseRef.path}ÅÅÅÅ${collection!.path}',
   // );
   //>print('(N7ZA)${appwriteDatabases}>>>>${collection}<<<<${value}');
@@ -573,7 +575,7 @@ Future<models.RowList> listRowsWithOneQueryDocumentReference({
 }) async {
   // appwriteDatabases = Databases(client!);
   models.RowList rows = models.RowList(total: 0, rows: []);
-//>  print(
+  //>  print(
   //>   '(N7A)${attribute}&&&&${value!.path}////${databaseRef.path}ÅÅÅÅ${collection!.path}',
   // );
   //>print('(N7ZA)${appwriteDatabases}>>>>${collection}<<<<${value}');
@@ -680,7 +682,7 @@ Future<models.DocumentList> listDocumentsWithOneQueryString({
   models.DocumentList? docs;
   //> print(
   //>   '(N207A)${attribute}&&&&${value}////${databaseRef.path}ÅÅÅÅ${collection!.path}',
-//>  );
+  //>  );
   //>print('(N7ZB)${appwriteDatabases}>>>>${collection}<<<<${value}');
   try {
     docs = await appwriteDatabases!.listDocuments(
@@ -688,10 +690,10 @@ Future<models.DocumentList> listDocumentsWithOneQueryString({
       collectionId: collection!.path!,
       queries: [
         Query.equal(attribute, value!),
-        Query.limit(kLimitDatabaseListDocuments)
+        Query.limit(kLimitDatabaseListDocuments),
       ],
     );
-  } on AppwriteException catch (e) {
+  } on AppwriteException {
     //  //>print('(N8A)${e.message}&&&&${e.code}====${e.code}');
     //>print('(N208B)${e}');
   }
@@ -822,42 +824,50 @@ Future<UsersRecord> getUser({DocumentReference? document}) async {
 }
 
 String generateAudioStorageFilename(
-    SessionStepsRecord sessionStep, int version) {
+  SessionStepsRecord sessionStep,
+  int version,
+) {
   return 'audio${sessionStep.reference!.path}_${version}.wav';
 }
 
 String generatePhotoStorageFilename(
-    SessionStepsRecord sessionStep, int version) {
+  SessionStepsRecord sessionStep,
+  int version,
+) {
   return 'photo${sessionStep.reference!.path}_${version}.jpg';
 }
 
-
-Future<List<SessionsRecord>> listSessionList(
-    {bool justCurrentUserAsTherapist = true}) async {
+Future<List<SessionsRecord>> listSessionList({
+  bool justCurrentUserAsTherapist = true,
+}) async {
   //>print('(N12)${justCurrentUserAsModerator}');
   models.DocumentList docs;
   if (justCurrentUserAsTherapist) {
     docs = await listDocumentsWithOneQueryDocumentReference(
-        collection: sessionsRef,
-        attribute: kSessionTherapistId,
-        value: currentUser!.reference,
-        orderByAttribute: kDBcreatedAt);
+      collection: sessionsRef,
+      attribute: kSessionTherapistId,
+      value: currentUser!.reference,
+      orderByAttribute: kDBcreatedAt,
+    );
   } else {
     docs = await listDocuments(
-        collection: sessionsRef, orderByAttribute: kDBcreatedAt);
+      collection: sessionsRef,
+      orderByAttribute: kDBcreatedAt,
+    );
   }
   List<SessionsRecord> hh = [];
   for (models.Document d in docs.documents) {
     //>print('(N1)${d.$id}&&&&${d.data}');
     UsersRecord clientsRecord = await getUser(
-        document:
-            DocumentReference(path: (d.data[kSessionClientId] as String?)));
+      document: DocumentReference(path: (d.data[kSessionClientId] as String?)),
+    );
     String clientDisplayName = clientsRecord.displayName!;
     SessionsRecord h = SessionsRecord(
       reference: DocumentReference(path: d.$id),
       clientId: DocumentReference(path: (d.data[kSessionClientId] as String?)),
-      therapistId:
-          DocumentReference(path: (d.data[kSessionTherapistId] as String?)),
+      therapistId: DocumentReference(
+        path: (d.data[kSessionTherapistId] as String?),
+      ),
       $createdAt: DateTime.parse(d.$createdAt),
       $updatedAt: DateTime.parse(d.$updatedAt),
       clientDisplayName: clientDisplayName,
@@ -879,9 +889,10 @@ Future<void> setMaxVersionNumbersCurrentSessionStep() async {
   );
   currentSessionStep!.maxAudioVersion = maxAudioVersion;
   currentSessionStep!.maxPhotoVersion = maxPhotoVersion;
-  print('(VC5)${currentSessionStep!.maxAudioVersion}....${currentSessionStep!.maxPhotoVersion}');
+  print(
+    '(VC5)${currentSessionStep!.maxAudioVersion}....${currentSessionStep!.maxPhotoVersion}',
+  );
 }
-
 
 Future<int> getMaxVersionNumber({
   required String bucketId,
@@ -890,10 +901,13 @@ Future<int> getMaxVersionNumber({
   print('(DE79)${bucketId}....${sessionStepId}');
   models.FileList? fileList;
   try {
-    fileList = await storage.listFiles(bucketId: bucketId, queries: [
-      Query.contains(kAttrStorageId, sessionStepId),
-      Query.limit(kLimitStorageListDocuments),
-    ]);
+    fileList = await storage.listFiles(
+      bucketId: bucketId,
+      queries: [
+        Query.contains(kAttrStorageId, sessionStepId),
+        Query.limit(kLimitStorageListDocuments),
+      ],
+    );
     print('(DE80)${fileList}');
     print('(DE81.0)${fileList.files.length}');
     int maxVersion = 0;
@@ -917,7 +931,8 @@ Future<int> getMaxVersionNumber({
           maxVersion = version;
         }
         print(
-            '(DE82)${file.name}....${filenameSplit2[0]}----${version}----${maxVersion}');
+          '(DE82)${file.name}....${filenameSplit2[0]}----${version}----${maxVersion}',
+        );
       }
     }
     return maxVersion;
@@ -927,19 +942,23 @@ Future<int> getMaxVersionNumber({
   }
 }
 
-Future<List<SessionStepsRecord>> listSessionStepList(
-    {bool justCurrentSession = true}) async {
+Future<List<SessionStepsRecord>> listSessionStepList({
+  bool justCurrentSession = true,
+}) async {
   print('(SS12)${justCurrentSession}');
   models.DocumentList docs;
   if (justCurrentSession) {
     docs = await listDocumentsWithOneQueryDocumentReference(
-        collection: sessionStepsRef,
-        attribute: kSessionStepSessionId,
-        value: currentSession!.reference,
-        orderByAttribute: kSessionStepIndex);
+      collection: sessionStepsRef,
+      attribute: kSessionStepSessionId,
+      value: currentSession!.reference,
+      orderByAttribute: kSessionStepIndex,
+    );
   } else {
     docs = await listDocuments(
-        collection: sessionsRef, orderByAttribute: kDBcreatedAt);
+      collection: sessionsRef,
+      orderByAttribute: kDBcreatedAt,
+    );
   }
   print('(SS16)${docs.documents.length}');
   List<SessionStepsRecord> hh = [];
@@ -954,11 +973,13 @@ Future<List<SessionStepsRecord>> listSessionStepList(
       sessionStepId: d.$id,
     );
     print(
-        '(SS13)${d.$id}&&&&${d.data[kSessionStepPhoto]}^^^^${maxPhotoVersion}');
+      '(SS13)${d.$id}&&&&${d.data[kSessionStepPhoto]}^^^^${maxPhotoVersion}',
+    );
     SessionStepsRecord h = SessionStepsRecord(
       reference: DocumentReference(path: d.$id),
-      sessionId:
-          DocumentReference(path: (d.data[kSessionStepSessionId] as String?)),
+      sessionId: DocumentReference(
+        path: (d.data[kSessionStepSessionId] as String?),
+      ),
       photo: DocumentReference(path: (d.data[kSessionStepPhoto] as String?)),
       audio: DocumentReference(path: (d.data[kSessionStepAudio] as String?)),
       completed: d.data[kSessionStepCompleted] as bool,
@@ -980,8 +1001,9 @@ SessionStepsRecord extractSessionStepRecord(models.Document d) {
   print('(SS80)${d.$id}&&&&${d.data[kSessionStepPhoto]}');
   SessionStepsRecord h = SessionStepsRecord(
     reference: DocumentReference(path: d.$id),
-    sessionId:
-        DocumentReference(path: (d.data[kSessionStepSessionId] as String?)),
+    sessionId: DocumentReference(
+      path: (d.data[kSessionStepSessionId] as String?),
+    ),
     photo: DocumentReference(path: (d.data[kSessionStepPhoto] as String?)),
     audio: DocumentReference(path: (d.data[kSessionStepAudio] as String?)),
     completed: d.data[kSessionStepCompleted] as bool,
@@ -993,14 +1015,17 @@ SessionStepsRecord extractSessionStepRecord(models.Document d) {
 }
 
 Future<SessionsRecord> getSession({DocumentReference? document}) async {
-  models.Document d =
-      await getDocument(collection: sessionsRef, document: document);
+  models.Document d = await getDocument(
+    collection: sessionsRef,
+    document: document,
+  );
   ////>print('(M1)${doc.data['chapterColorInts'].runtimeType}****${doc.data['chapterColorInts']}');
   SessionsRecord h = SessionsRecord(
     reference: DocumentReference(path: d.$id),
     clientId: DocumentReference(path: (d.data[kSessionClientId] as String?)),
-    therapistId:
-        DocumentReference(path: (d.data[kSessionTherapistId] as String?)),
+    therapistId: DocumentReference(
+      path: (d.data[kSessionTherapistId] as String?),
+    ),
     $createdAt: DateTime.parse(d.$createdAt),
     $updatedAt: DateTime.parse(d.$updatedAt),
   );
@@ -1009,13 +1034,16 @@ Future<SessionsRecord> getSession({DocumentReference? document}) async {
 }
 
 Future<SessionStepsRecord> getSessionStep({DocumentReference? document}) async {
-  models.Document d =
-      await getDocument(collection: sessionsRef, document: document);
+  models.Document d = await getDocument(
+    collection: sessionsRef,
+    document: document,
+  );
   ////>print('(M1)${doc.data['chapterColorInts'].runtimeType}****${doc.data['chapterColorInts']}');
   SessionStepsRecord h = SessionStepsRecord(
     reference: DocumentReference(path: d.$id),
-    sessionId:
-        DocumentReference(path: (d.data[kSessionStepSessionId] as String?)),
+    sessionId: DocumentReference(
+      path: (d.data[kSessionStepSessionId] as String?),
+    ),
     photo: DocumentReference(path: (d.data[kSessionStepPhoto] as String?)),
     audio: DocumentReference(path: (d.data[kSessionStepAudio] as String?)),
     completed: d.data[kSessionStepCompleted] as bool,
@@ -1029,15 +1057,11 @@ Future<SessionStepsRecord> getSessionStep({DocumentReference? document}) async {
   return h;
 }
 
-Future<List<UsersRecord>> listUsersListWithEmail({
-  String? email,
-}) async {
+Future<List<UsersRecord>> listUsersListWithEmail({String? email}) async {
   models.DocumentList docs;
   //>print('(N2106)${email}¤¤¤¤${usersRef}');
   if (email == null) {
-    docs = await listDocuments(
-      collection: usersRef,
-    );
+    docs = await listDocuments(collection: usersRef);
   } else {
     docs = await listDocumentsWithOneQueryString(
       collection: usersRef,
@@ -1070,7 +1094,9 @@ Future<List<ConstraintsRecord>> listConstraintsList() async {
   print('(CC10)${constraintsRef}');
   models.DocumentList docs;
   docs = await listDocuments(
-      collection: constraintsRef, orderByAttribute: 'level');
+    collection: constraintsRef,
+    orderByAttribute: 'level',
+  );
   List<ConstraintsRecord> cc = [];
   for (models.Document d in docs.documents) {
     print('(CC1)${d.$id}&&&&${d.data}');
@@ -1095,7 +1121,7 @@ Future<void> setUserPrefs({
   final user = await account.get();
   Map<String, int> prefMap = {};
   if (user != null) {
-    for (int i = 0; i < colorArray!.length; i++) {
+    for (int i = 0; i < colorArray.length; i++) {
       prefMap['color${i.toString()}'] = colorArray[i].value;
     }
     var response = await account.updatePrefs(prefs: prefMap);
@@ -1106,7 +1132,10 @@ Future<void> setUserPrefs({
 }
 
 Future<UsersRecord?> appwriteLogin(
-    BuildContext context, String email, String password) async {
+  BuildContext context,
+  String email,
+  String password,
+) async {
   models.User? user;
   models.Session? session;
   print('(N91A)${email}****${password}');
@@ -1227,7 +1256,7 @@ bool canUserSeeSession(DocumentReference? user, SessionsRecord? session) {
     } else {
       //>print('(N404T)${role}');
       if ((role == kRoleTherapist) &&
-          (session!.therapistId!.path == currentUser!.reference!.path)) {
+          (session.therapistId!.path == currentUser!.reference!.path)) {
         return true;
       }
 
@@ -1251,8 +1280,9 @@ Future<String?> createStorageImageFile({
   // List<String> splitFilename = name!.split('.');
   // final String preffix = splitFilename.first;
   // final String suffix = splitFilename.last;
-  final String truncatedName =
-      (name!.length > 15) ? name.substring(0, 15) : name;
+  final String truncatedName = (name!.length > 15)
+      ? name.substring(0, 15)
+      : name;
   final String fileId =
       chapter!.path! + kStorageFilenameSpitString + randomFileNumber;
   final String storageFilename =
@@ -1265,7 +1295,9 @@ Future<String?> createStorageImageFile({
     file: InputFile.fromBytes(bytes: bytes, filename: storageFilename),
   );
   var file = await storage.getFile(
-      bucketId: artTheopyAIRphotosRef.path!, fileId: fileId);
+    bucketId: artTheopyAIRphotosRef.path!,
+    fileId: fileId,
+  );
   //String url = file.
   //>print('(IS1)${file.toString()}++++${result.name}@@@@${file.name}~~~~');
 
@@ -1344,14 +1376,14 @@ Future<bool> copyStorageFiletoLocal({
   }
   print('(DE70A)${fileId}....${localPath}');
   String token = '';
-  switch(fileKind){
-    case FileKind.audio :
+  switch (fileKind) {
+    case FileKind.audio:
       token = 'audio';
       break;
-    case FileKind.photo :
+    case FileKind.photo:
       token = 'photo';
       break;
-    case FileKind.video :
+    case FileKind.video:
       token = 'video';
       break;
     case null:
@@ -1371,17 +1403,15 @@ Future<bool> copyStorageFiletoLocal({
   }
   print('(DE73)${localBucketId},,,,${fileId}----${dirPath[0]}...${dirPath[1]}');
   await storage
-      .getFileDownload(
-    bucketId: localBucketId!,
-    fileId: fileId!,
-  )
+      .getFileDownload(bucketId: localBucketId!, fileId: fileId!)
       .then((bytes) {
-    print('(DE74)${bytes.length}....${localPath}');
-    final file = File(localPath);
-    file.writeAsBytesSync(bytes);
-  }).catchError((error) {
-    print('(DE75)${error.response}');
-  });
+        print('(DE74)${bytes.length}....${localPath}');
+        final file = File(localPath);
+        file.writeAsBytesSync(bytes);
+      })
+      .catchError((error) {
+        print('(DE75)${error.response}');
+      });
 
   await for (var entity in dir.list(recursive: true, followLinks: false)) {
     print('(DE76)${entity.path}');
@@ -1390,11 +1420,13 @@ Future<bool> copyStorageFiletoLocal({
   return true;
 }
 
-Future<String?> readStorageFile(
-    {required DocumentReference? user,
-    required String? hyperbookTitle,
-    required int? versionNumber}) async {
-  String expandedFilename = user!.path! +
+Future<String?> readStorageFile({
+  required DocumentReference? user,
+  required String? hyperbookTitle,
+  required int? versionNumber,
+}) async {
+  String expandedFilename =
+      user!.path! +
       '_' +
       hyperbookTitle! +
       '-' +
@@ -1413,22 +1445,23 @@ Future<void> deleteStorageFile({
   required String? bucketId,
   required String? fileId,
 }) async {
-  await storage.deleteFile(
-    bucketId: bucketId!,
-    fileId: fileId!,
-  );
+  await storage.deleteFile(bucketId: bucketId!, fileId: fileId!);
   print('(AU110)${fileId}');
 }
 
 Future<models.FileList> listStorageFiles({String? bucketId}) async {
   print(
-      '(XY6)${bucketId}....${kAttrStorageName}----${currentSessionStep!.reference!.path}');
+    '(XY6)${bucketId}....${kAttrStorageName}----${currentSessionStep!.reference!.path}',
+  );
   models.FileList fileList = models.FileList(total: 0, files: []);
   try {
-    fileList = await storage.listFiles(bucketId: bucketId!, queries: [
-      Query.contains(kAttrStorageId, currentSessionStep!.reference!.path),
-      Query.limit(kLimitStorageListDocuments),
-    ]);
+    fileList = await storage.listFiles(
+      bucketId: bucketId!,
+      queries: [
+        Query.contains(kAttrStorageId, currentSessionStep!.reference!.path),
+        Query.limit(kLimitStorageListDocuments),
+      ],
+    );
     print('(XY7A)${fileList.files.length}');
   } catch (e) {
     //>print('(XY9)${e.toString()}');
@@ -1436,14 +1469,12 @@ Future<models.FileList> listStorageFiles({String? bucketId}) async {
   return fileList;
 }
 
-Future<void> deleteImagesInChapter({
-  required DocumentReference chapter,
-}) async {
+Future<void> deleteImagesInChapter({required DocumentReference chapter}) async {
   //>print('(MI5)${chapter.path}');
   models.FileList fileList = await storage.listFiles(
     bucketId: artTheopyAIRphotosRef.path!, // bucketId
     queries: [
-      Query.contains("name", [chapter.path])
+      Query.contains("name", [chapter.path]),
     ], // queries (optional)
   );
   for (models.File f in fileList.files) {

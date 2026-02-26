@@ -43,7 +43,6 @@ import '../../platform/audio_recorder_platform.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
 
-
 int _count = 0;
 bool _iHaveRequests = false;
 List<DocumentReference?> _hyperbookListRequesting = [];
@@ -55,14 +54,14 @@ class SessionDisplayWidget extends StatefulWidget {
   _SessionDisplayWidgetState createState() => _SessionDisplayWidgetState();
 }
 
-class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with AudioRecorderMixin {
+class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
+    with AudioRecorderMixin {
   late SessionDisplayModel _model;
 
   TextEditingController? enteredHyperbookTitleController;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   // Intro? intro;
-  _SessionDisplayWidgetState() {
-  }
+  _SessionDisplayWidgetState() {}
 
   int? externalSetState() {
     //>print('(R10X)${context}');
@@ -75,7 +74,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
   VideoPlayerController videoController = VideoPlayerController.file(File(''));
 
   @override
-  void initState()  {
+  void initState() {
     print('(XXDI-1)${hyperbookDisplayIsSubscribed}....${currentUser}');
     super.initState();
     _model = createModel(context, () => SessionDisplayModel());
@@ -83,8 +82,6 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
     enteredHyperbookTitleController.text = '';
     // hyperbookDisplayscrollController = ScrollController();
     // WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
-
-
   }
 
   @override
@@ -99,69 +96,57 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
     super.dispose();
   }
 
-  Widget displaySession(SessionsRecord session, int index)
-  {
+  Widget displaySession(SessionsRecord session, int index) {
     return Material(
       color: Colors.transparent,
       elevation: 5.0,
       child: Container(
         margin: EdgeInsets.all(5),
         padding: EdgeInsets.all(5),
-        width:
-        MediaQuery.sizeOf(context).width *
-            1.0,
+        width: MediaQuery.sizeOf(context).width * 1.0,
         height: 400.0,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(
-              Radius.circular(5)),
-          color: FlutterFlowTheme.of(context)
-              .secondaryBackground,
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          color: FlutterFlowTheme.of(context).secondaryBackground,
           boxShadow: [
             BoxShadow(
-              blurRadius: 4.0,
-              color: Color(0x33000000),
-              offset: Offset(0.0, 2.0),
+              blurRadius: 15.0,
+              color: Color(0x1F000000),
+              offset: Offset(0.0, 4.0),
             )
           ],
           border: Border.all(
-            width: 2.0,
+            color: FlutterFlowTheme.of(context).lineColor,
+            width: 1.0,
           ),
         ),
         child: Column(
-            crossAxisAlignment:
-            CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               SingleChildScrollView(
-                scrollDirection:
-                Axis.horizontal,
+                scrollDirection: Axis.horizontal,
                 // key: infoCount == 1
                 // ? intro!.keys[2]
                 // : UniqueKey(),
                 child: Text(
                   'Client: ${session.clientDisplayName}',
                   softWrap: false,
-                  style: FlutterFlowTheme.of(
-                      context)
-                      .bodyMedium,
+                  style: FlutterFlowTheme.of(context).bodyMedium,
                 ),
               ),
               SingleChildScrollView(
                 // key: infoCount == 1
                 //     ? intro!.keys[3]
                 //     : UniqueKey(),
-                scrollDirection:
-                Axis.horizontal,
+                scrollDirection: Axis.horizontal,
                 child: Text(
                   softWrap: false,
                   'Date: ${(DateFormat.yMMMd().format(session.$createdAt!))}',
-                  style: FlutterFlowTheme.of(
-                      context)
-                      .bodyMedium,
+                  style: FlutterFlowTheme.of(context).bodyMedium,
                 ),
               ),
               SingleChildScrollView(
-                scrollDirection:
-                Axis.horizontal,
+                scrollDirection: Axis.horizontal,
                 child: Row(
                   // key: infoCount == 1
                   //     ? intro!.keys[4]
@@ -169,50 +154,39 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
                   children: <Widget>[
                     Text(
                       '',
-                      style:
-                      FlutterFlowTheme.of(
-                          context)
-                          .bodyMedium,
+                      style: FlutterFlowTheme.of(context).bodyMedium,
                     ),
-
                   ],
                 ),
               ),
               Row(children: [
                 FlutterFlowIconButton(
                   caption: 'Edit',
-                  tooltipMessage:
-                  'Go to hyperbook map',
-                  borderColor:
-                  Colors.transparent,
+                  tooltipMessage: 'Go to hyperbook map',
+                  borderColor: Colors.transparent,
                   borderRadius: 0.0,
                   borderWidth: 1.0,
                   buttonSize: 40.0,
                   buttonWidth: 150,
                   icon: Icon(Icons.edit),
                   onPressed: () async {
-                    FFAppState().update(() {
-                    });
+                    FFAppState().update(() {});
                     currentSession = session;
-                    currentTherapist = await getUser(document: session.therapistId);
+                    currentTherapist =
+                        await getUser(document: session.therapistId);
                     currentClient = await getUser(document: session.clientId);
 
-                      print('(S1)${session.clientId}');
+                    print('(S1)${session.clientId}');
                     Navigator.push(
                         context,
                         PageTransition(
-                          type:
-                          kStandardPageTransitionType,
-                          duration:
-                          kStandardTransitionTime,
-                          reverseDuration:
-                          kStandardReverseTransitionTime,
-                          child:
-                          SessionStepDisplayWidget(),
+                          type: kStandardPageTransitionType,
+                          duration: kStandardTransitionTime,
+                          reverseDuration: kStandardReverseTransitionTime,
+                          child: SessionStepDisplayWidget(),
                         ));
                   },
                 ),
-
               ]),
               SizedBox(height: kIconButtonGap),
               FlutterFlowIconButton(
@@ -226,18 +200,24 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
                 icon: Icon(Icons.video_camera_back_outlined),
                 onPressed: () async {
                   currentSession = session;
-                  List<SessionStepsRecord> sessionStepsList = await listSessionStepList(justCurrentSession: true);
+                  List<SessionStepsRecord> sessionStepsList =
+                      await listSessionStepList(justCurrentSession: true);
                   String tempDirPath = await getTempDirPath();
                   print('(VC1)${tempDirPath}');
-                  for (int i = 0; i < 1/*sessionStepsList.length*/; i++){
-                    SessionStepsRecord sessionStep  = sessionStepsList[i];
+                  for (int i = 0; i < 1 /*sessionStepsList.length*/; i++) {
+                    SessionStepsRecord sessionStep = sessionStepsList[i];
                     currentSessionStep = sessionStepsList[i];
                     await setMaxVersionNumbersCurrentSessionStep();
-                    final int maxAudioVersion = currentSessionStep!.maxAudioVersion!;
-                    final maxPhotoVersion = currentSessionStep!.maxPhotoVersion!;
-                    final String audioPath = '${tempDirPath}/audio_${i.toString()}.wav';
-                    final String photoPath = '${tempDirPath}/photo_${i.toString()}.jpg';
-                    final String videoPath = '${tempDirPath}/video_${i.toString()}.mp4';
+                    final int maxAudioVersion =
+                        currentSessionStep!.maxAudioVersion!;
+                    final maxPhotoVersion =
+                        currentSessionStep!.maxPhotoVersion!;
+                    final String audioPath =
+                        '${tempDirPath}/audio_${i.toString()}.wav';
+                    final String photoPath =
+                        '${tempDirPath}/photo_${i.toString()}.jpg';
+                    final String videoPath =
+                        '${tempDirPath}/video_${i.toString()}.mp4';
                     bool okAudio = await copyStorageFiletoLocal(
                       bucketId: artTheopyAIRaudiosRef.path,
                       fileId: generateAudioStorageFilename(
@@ -245,8 +225,10 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
                       localPath: audioPath,
                       fileKind: FileKind.audio,
                     );
-                    print('(VC2)${i}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====');
-                    print('(VC3)${i}~~~~${generatePhotoStorageFilename(sessionStep, maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
+                    print(
+                        '(VC2)${i}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====');
+                    print(
+                        '(VC3)${i}~~~~${generatePhotoStorageFilename(sessionStep, maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
                     bool okPhoto = await copyStorageFiletoLocal(
                       bucketId: artTheopyAIRphotosRef.path,
                       fileId: generatePhotoStorageFilename(
@@ -254,13 +236,15 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
                       localPath: photoPath,
                       fileKind: FileKind.photo,
                     );
-                    print('(VC4)${i}~~~~${okPhoto}....${maxPhotoVersion},,,,${photoPath}====');
-                    final String command = '-loop 1 -i ${photoPath} -i ${audioPath} -shortest ${videoPath}';
+                    print(
+                        '(VC4)${i}~~~~${okPhoto}....${maxPhotoVersion},,,,${photoPath}====');
+                    final String command =
+                        '-loop 1 -i ${photoPath} -i ${audioPath} -shortest ${videoPath}';
 
                     String logString = 'Logs will appear here...';
                     await FFmpegKit.executeAsync(
                       command,
-                          (Session session) async {
+                      (Session session) async {
                         final output = await session.getOutput();
                         final returnCode = await session.getReturnCode();
                         final duration = await session.getDuration();
@@ -270,41 +254,37 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
                           logString += 'Return code: $returnCode\n';
                           logString += 'Duration: ${duration}ms\n';
                           logString += 'Output: $output\n';
-                        //  isProcessing = false;
+                          //  isProcessing = false;
                         });
 
                         debugPrint('session: $output');
                       },
-                          (Log log) {
+                      (Log log) {
                         setState(() {
                           logString += log.getMessage();
                         });
                         debugPrint('log: ${log.getMessage()}');
                       },
-                          (Statistics statistics) {
+                      (Statistics statistics) {
                         setState(() {
                           logString +=
-                          '\n📊 Progress: ${statistics.getSize()} bytes, ${statistics
-                              .getTime()}ms\n';
+                              '\n📊 Progress: ${statistics.getSize()} bytes, ${statistics.getTime()}ms\n';
                         });
                         debugPrint('statistics: ${statistics.getSize()}');
                       },
                     );
                     print('(VC4)${logString}');
-                    videoController =  VideoPlayerController.file(File(videoPath))
-                      ..initialize().then((_) {
-                   //    Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-
-                    });
-                  };
-
-
-
+                    videoController =
+                        VideoPlayerController.file(File(videoPath))
+                          ..initialize().then((_) {
+                            //    Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+                          });
+                  }
+                  ;
 
                   // String  command =
-                      // " -y -framerate 1 -pattern_type sequence -i $pictureFilenames -c:v libx264 -r 30 -pix_fmt yuv420p ${generatedFile.path}";
-
-              },
+                  // " -y -framerate 1 -pattern_type sequence -i $pictureFilenames -c:v libx264 -r 30 -pix_fmt yuv420p ${generatedFile.path}";
+                },
               ),
               // SizedBox(
               //   width: 300,
@@ -342,9 +322,6 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
                   ),
                 ),
               ),
-
-
-
             ]),
       ),
     );
@@ -354,8 +331,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
 
   Future<void> restoreHyperbookBackup({
     models.File? chosenHyperbookFile,
-  }) async {
-  }
+  }) async {}
 
   List<BackupFileDetail> backupFileDetailList = [];
 
@@ -366,8 +342,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
     String requestedRole = '';
     _hyperbookListRequesting.clear();
     _iHaveRequests = false;
-    void showRoleRequestDialog() {
-    }
+    void showRoleRequestDialog() {}
 
     int infoCount = 0;
     MenuDetails hyperbookDisplayMenuDetails = MenuDetails(
@@ -378,7 +353,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
         kIconLogin,
       ],
       menuTargets: [
-            (context) {
+        (context) {
           //# context.goNamedAuth('login', context.mounted);
           Navigator.push(
               context,
@@ -392,8 +367,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>  with Audio
       ],
     );
 
-return
-    FutureBuilder<List<SessionsRecord>>(
+    return FutureBuilder<List<SessionsRecord>>(
         future: listSessionList(justCurrentUserAsTherapist: true),
         builder: (BuildContext context, snapshot) {
           if (!snapshot.hasData) {
@@ -405,20 +379,15 @@ return
             print('(AAT80)${snapshot}');
             sessions = snapshot.data;
             print('(AAT81)${sessions}');
-            print('(AAT82)${sessions!.length}....${sessions!.first.clientId!
-                .path}');
+            print(
+                '(AAT82)${sessions!.length}....${sessions!.first.clientId!.path}');
 
             return Title(
                 title: 'session_display',
-                color: FlutterFlowTheme
-                    .of(context)
-                    .primary
-                    .withAlpha(0XFF),
+                color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
                 child: Scaffold(
                     key: scaffoldKey,
                     backgroundColor: const Color(0xFFF5F5F5),
-
-
                     floatingActionButton: FloatingActionButton(
                       onPressed: () {
                         setState(() {
@@ -428,71 +397,67 @@ return
                         });
                       },
                       child: Icon(
-                        videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                        videoController.value.isPlaying
+                            ? Icons.pause
+                            : Icons.play_arrow,
                       ),
                     ),
-
                     appBar: AppBar(
                       leading: BackButton(color: Colors.white),
-                      backgroundColor: FlutterFlowTheme
-                          .of(context)
-                          .primary,
+                      backgroundColor: FlutterFlowTheme.of(context).primary,
                       automaticallyImplyLeading: false,
                       title: Text(
                         'Sessions',
-                        style: FlutterFlowTheme
-                            .of(context)
+                        style: FlutterFlowTheme.of(context)
                             .headlineMedium
                             .override(
-                          fontFamily: 'Rubik',
-                          color: Colors.white,
-                          fontSize: 22.0,
-                        ),
+                              fontFamily: 'Rubik',
+                              color: Colors.white,
+                              fontSize: 22.0,
+                            ),
                       ),
                       actions: [
                         // insertOutstandingRequestsButton(context),
                         insertMenu(
                             context, hyperbookDisplayMenuDetails, setState),
                         GestureDetector(
-                          onTap: () async {
-                            //# await loadCachedChaptersReadReferencesCachedHyperbookIndex(
-                            //#     hyperbook: tutorialHyperbook, user: currentUser);
-                            // localDB.setTutorialAsWorkingHyperbook();
-                            toast(context,
-                                'Please wait while Hyperbook Tutorial loads',
-                                ToastKind.success);
+                            onTap: () async {
+                              //# await loadCachedChaptersReadReferencesCachedHyperbookIndex(
+                              //#     hyperbook: tutorialHyperbook, user: currentUser);
+                              // localDB.setTutorialAsWorkingHyperbook();
+                              toast(
+                                  context,
+                                  'Please wait while Hyperbook Tutorial loads',
+                                  ToastKind.success);
 
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: kStandardPageTransitionType,
-                                  duration: kStandardTransitionTime,
-                                  reverseDuration: kStandardReverseTransitionTime,
-                                  child: LoginWidget(),
-                                ));
-                          },
-                          child: Text('XXX16')/*SvgPicture.asset(
+                              Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: kStandardPageTransitionType,
+                                    duration: kStandardTransitionTime,
+                                    reverseDuration:
+                                        kStandardReverseTransitionTime,
+                                    child: LoginWidget(),
+                                  ));
+                            },
+                            child: Text(
+                                'XXX16') /*SvgPicture.asset(
                             'assets/images/hyperbooklogosvg10.svg',
                             width: 40,
                             height: 40,
                           ),*/
-                        ),
+                            ),
                       ],
                       centerTitle: false,
                       elevation: 2.0,
                     ),
                     body: SafeArea(
                       child: Container(
-                        width: MediaQuery
-                            .sizeOf(context)
-                            .width * 1.0,
-                        height: MediaQuery
-                            .sizeOf(context)
-                            .height,
+                        width: MediaQuery.sizeOf(context).width * 1.0,
+                        height: MediaQuery.sizeOf(context).height,
                         decoration: BoxDecoration(
-                          color: FlutterFlowTheme
-                              .of(context)
-                              .secondaryBackground,
+                          color:
+                              FlutterFlowTheme.of(context).secondaryBackground,
                         ),
                         child: SingleChildScrollView(
                           // controller: hyperbookDisplayscrollController,
@@ -505,7 +470,7 @@ return
                                 child: Wrap(
                                   // mainAxisAlignment: MainAxisAlignment.end,
                                   children: <Widget>[
-                                   /* Container(),
+                                    /* Container(),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text('XXX1'),
@@ -551,127 +516,137 @@ return
                                     ),*/
                                     (currentUser!.role! == kRoleAdministrator)
                                         ? Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: FFButtonWidget(
-                                        text: 'check',
-                                        onPressed: () async {
-                                          String? message =
-                                              currentUser!.userMessage;
-                                          //>print('(UM4)${message}');
-                                          if ((message != null) &&
-                                              (message != '')) {
-                                            //>print('(UM5)${message}');
-                                            showDialog<bool>(
-                                                context: context,
-                                                builder: (
-                                                    BuildContext context) {
-                                                  // currentCachedHyperbookIndex = getCurrentHyperbookIndex(widget.hyperbook!);
-                                                  //>print('(UM6)${message}');
-                                                  return StatefulBuilder(
-                                                      builder:
-                                                          (context, setState) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                              'Message'),
-                                                          content: Column(
-                                                            mainAxisSize:
-                                                            MainAxisSize.min,
-                                                            children: [Text(
-                                                                message)
-                                                            ],
-                                                          ),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.pop(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: FFButtonWidget(
+                                              text: 'check',
+                                              onPressed: () async {
+                                                String? message =
+                                                    currentUser!.userMessage;
+                                                //>print('(UM4)${message}');
+                                                if ((message != null) &&
+                                                    (message != '')) {
+                                                  //>print('(UM5)${message}');
+                                                  showDialog<bool>(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        // currentCachedHyperbookIndex = getCurrentHyperbookIndex(widget.hyperbook!);
+                                                        //>print('(UM6)${message}');
+                                                        return StatefulBuilder(
+                                                            builder: (context,
+                                                                setState) {
+                                                          return AlertDialog(
+                                                            title:
+                                                                Text('Message'),
+                                                            content: Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                Text(message)
+                                                              ],
+                                                            ),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () =>
+                                                                    Navigator.pop(
+                                                                        context,
+                                                                        false),
+                                                                child: const Text(
+                                                                    'Cancel'),
+                                                              ),
+                                                              TextButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  toast(
                                                                       context,
-                                                                      false),
-                                                              child: const Text(
-                                                                  'Cancel'),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed: () async {
-                                                                toast(
-                                                                    context,
-                                                                    '',
-                                                                    ToastKind
-                                                                        .success);
-                                                                context.pop();
-                                                              },
-                                                              child: const Text(
-                                                                  'Confirm'),
-                                                            ),
-                                                          ],
-                                                        );
+                                                                      '',
+                                                                      ToastKind
+                                                                          .success);
+                                                                  context.pop();
+                                                                },
+                                                                child: const Text(
+                                                                    'Confirm'),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        });
                                                       });
-                                                });
-                                          }
-                                        },
-                                        options: FFButtonOptions(
-                                          //width: 200.0,
-                                          height: 30.0,
-                                          padding: const EdgeInsetsDirectional
-                                              .fromSTEB(10.0, 0.0, 10.0, 0.0),
-                                          iconPadding: const EdgeInsetsDirectional
-                                              .fromSTEB(0.0, 0.0, 0.0, 0.0),
-                                          color: FlutterFlowTheme
-                                              .of(context)
-                                              .primary,
-                                          textStyle: FlutterFlowTheme
-                                              .of(context)
-                                              .titleSmall
-                                              .override(
-                                            fontFamily: 'Rubik',
-                                            color: Colors.white,
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          elevation: 2.0,
-                                          borderSide: const BorderSide(
-                                            color: Colors.transparent,
-                                          ),
-                                          borderRadius:
-                                          BorderRadius.circular(8.0),
-                                        ),
-                                      ),
-                                    )
+                                                }
+                                              },
+                                              options: FFButtonOptions(
+                                                //width: 200.0,
+                                                height: 30.0,
+                                                padding:
+                                                    const EdgeInsetsDirectional
+                                                        .fromSTEB(
+                                                        10.0, 0.0, 10.0, 0.0),
+                                                iconPadding:
+                                                    const EdgeInsetsDirectional
+                                                        .fromSTEB(
+                                                        0.0, 0.0, 0.0, 0.0),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primary,
+                                                textStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleSmall
+                                                        .override(
+                                                          fontFamily: 'Rubik',
+                                                          color: Colors.white,
+                                                          fontSize: 12.0,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                elevation: 2.0,
+                                                borderSide: const BorderSide(
+                                                  color: Colors.transparent,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                              ),
+                                            ),
+                                          )
                                         : Container(),
                                     (currentUser!.role! == kUserLevelSupervisor)
                                         ? Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: FFButtonWidget(
-                                        text: 'loadDB',
-                                        onPressed: () async {
-
-                                        },
-                                        options: FFButtonOptions(
-                                          //width: 200.0,
-                                          height: 30.0,
-                                          padding: const EdgeInsetsDirectional
-                                              .fromSTEB(10.0, 0.0, 10.0, 0.0),
-                                          iconPadding: const EdgeInsetsDirectional
-                                              .fromSTEB(0.0, 0.0, 0.0, 0.0),
-                                          color: FlutterFlowTheme
-                                              .of(context)
-                                              .primary,
-                                          textStyle: FlutterFlowTheme
-                                              .of(context)
-                                              .titleSmall
-                                              .override(
-                                            fontFamily: 'Rubik',
-                                            color: Colors.white,
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          elevation: 2.0,
-                                          borderSide: const BorderSide(
-                                            color: Colors.transparent,
-                                          ),
-                                          borderRadius:
-                                          BorderRadius.circular(8.0),
-                                        ),
-                                      ),
-                                    )
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: FFButtonWidget(
+                                              text: 'loadDB',
+                                              onPressed: () async {},
+                                              options: FFButtonOptions(
+                                                //width: 200.0,
+                                                height: 30.0,
+                                                padding:
+                                                    const EdgeInsetsDirectional
+                                                        .fromSTEB(
+                                                        10.0, 0.0, 10.0, 0.0),
+                                                iconPadding:
+                                                    const EdgeInsetsDirectional
+                                                        .fromSTEB(
+                                                        0.0, 0.0, 0.0, 0.0),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primary,
+                                                textStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleSmall
+                                                        .override(
+                                                          fontFamily: 'Rubik',
+                                                          color: Colors.white,
+                                                          fontSize: 12.0,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                elevation: 2.0,
+                                                borderSide: const BorderSide(
+                                                  color: Colors.transparent,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                              ),
+                                            ),
+                                          )
                                         : Container(),
                                   ],
                                 ),
@@ -680,35 +655,30 @@ return
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     20.0, 0.0, 20.0, 0.0),
                                 child: Container(
-                                  child:
-
-
-                                  ListView.builder(
+                                  child: ListView.builder(
                                       physics: NeverScrollableScrollPhysics(),
                                       padding: EdgeInsets.zero,
                                       shrinkWrap: true,
                                       itemCount: sessions!.length,
                                       //#cachedHyperbookList.length,
-                                      itemBuilder:
-                                          (BuildContext context,
+                                      itemBuilder: (BuildContext context,
                                           int listViewIndex) {
-
-                                        return displaySession(sessions![listViewIndex] , listViewIndex);
-                                      }
-                                  ),
+                                        return displaySession(
+                                            sessions![listViewIndex],
+                                            listViewIndex);
+                                      }),
                                 ),
                               ),
-
                             ],
                           ),
                         ),
                       ),
                     )));
           }
-        }
-    );
+        });
   }
 }
+
 class BackupFileDetail {
   String? hyperbookName;
   int? versionNumber;

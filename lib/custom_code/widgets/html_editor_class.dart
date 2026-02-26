@@ -137,7 +137,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
-/*  @override
+  /*  @override
   void dispose() {
     _model.dispose();
     //>//>print('<LD31>${localDB.getWorkingChapter().body}');
@@ -184,9 +184,10 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
     hasChanged = false;
     chapterHasBeenEdited = true;
     toast(
-        context,
-      'XX3',//  'Chapter "${FFAppState().currentChapterTitle}" of hyperbook "${localDB.getWorkingChapter()!.title}" saved',
-        ToastKind.success);
+      context,
+      'XX3', //  'Chapter "${FFAppState().currentChapterTitle}" of hyperbook "${localDB.getWorkingChapter()!.title}" saved',
+      ToastKind.success,
+    );
     //£ String? token = await FirebaseMessaging.instance.getToken();
     //%//>//>print('(N401)${token}');
     // dV9wq9m2SC6NrV9Bz4P2rc:APA91bHWAukGfNCjwSrTT43G5iRw0r4QzwlhnjmglHF_Yk8r5WdeAELAp_kKpTeuZKTaM5abnbuk9WRRxsV_XqfkqC-4h5debTT916UNc7ciBpEagtdNkG4
@@ -198,30 +199,36 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
       padding: const EdgeInsets.all(8.0),
       child: TextButton(
         style: TextButton.styleFrom(
-            backgroundColor: FlutterFlowTheme.of(context).alternate),
+          backgroundColor: FlutterFlowTheme.of(context).alternate,
+        ),
         onPressed: () async {
           await saveText();
         },
-        child: Text('Save',
-            style: TextStyle(color: FlutterFlowTheme.of(context).primaryColor)),
+        child: Text(
+          'Save',
+          style: TextStyle(color: FlutterFlowTheme.of(context).primaryColor),
+        ),
       ),
     );
   }
 
-
   Widget insertNewChapter() {
     //>//>print('(102A)${localDB.getWorkingChapter()!.authorDisplayName}');
     return Padding(
-        // key: intro!.keys[6],
-        padding: const EdgeInsets.all(8.0),
-        child: Column(children: [
+      // key: intro!.keys[6],
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
               width: 150,
-              child: insertFormField(linkNewChapterControllerC, 'Link caption',
-                  'If blank, the chapter title will be used'),
-/*              textInputField(
+              child: insertFormField(
+                linkNewChapterControllerC,
+                'Link caption',
+                'If blank, the chapter title will be used',
+              ),
+              /*              textInputField(
                   context,
                   'Link caption',
                   'If blank, the chapter title will be used',
@@ -231,24 +238,32 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
-                width: 150,
-                child: insertFormField(linkTonewChapterTitleControllerD,
-                    'Title of new chapter', 'Enter title of new chapter')
-                /* textInputField(context, 'Title of new chapter', 'Unknown',
+              width: 150,
+              child: insertFormField(
+                linkTonewChapterTitleControllerD,
+                'Title of new chapter',
+                'Enter title of new chapter',
+              ),
+              /* textInputField(context, 'Title of new chapter', 'Unknown',
                   newChapterTitleController),*/
-                ),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextButton(
-                style: TextButton.styleFrom(
-                    backgroundColor: FlutterFlowTheme.of(context).primaryColor),
-                onPressed: () async {
-                  if (linkTonewChapterTitleControllerD.text.length == 0){
-                    toast(context, 'Please enter title for new chapter', ToastKind.warning);
-                    return;
-                  }
-                        /*Map<String, dynamic> chaptersCreateData =
+              style: TextButton.styleFrom(
+                backgroundColor: FlutterFlowTheme.of(context).primaryColor,
+              ),
+              onPressed: () async {
+                if (linkTonewChapterTitleControllerD.text.length == 0) {
+                  toast(
+                    context,
+                    'Please enter title for new chapter',
+                    ToastKind.warning,
+                  );
+                  return;
+                }
+                /*Map<String, dynamic> chaptersCreateData =
                       createChaptersRecordData(
                     title: newTitleController.text,
                     body: '',
@@ -261,7 +276,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                     createdTime: DateTime.now(),
                     modifiedTime: DateTime.now(),
                   );*/
-                        /*chapterToLinkTo = await createChapterX(
+                /*chapterToLinkTo = await createChapterX(
                     title: linkNewChapterController.text,
                     body: '',
                     author: currentUser!.reference,
@@ -275,18 +290,18 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                     authorDisplayName: currentUser!.displayName,
                   );*/
 
-                        /*            await createReadReferenceX(
+                /*            await createReadReferenceX(
                       chapter: chapterToLinkTo!.reference,
                       hyperbook: localDB.getWorkingHyperbook().reference,
                       readStateIndex: kNotVisitedIndex,
                       xCoord: chapterToLinkTo!.xCoord,
                       yCoord: chapterToLinkTo!.yCoord,
                       parent: currentUser!.reference);*/
-                        /*  DocumentReference doc =
+                /*  DocumentReference doc =
                       ChaptersRecord.createDoc(FFAppState().currentHyperbook!);
                   await doc.set(chaptersCreateData);*/
 
-                        /*#await updateDocument(
+                /*#await updateDocument(
                       collection: chaptersRef,
                       document: widget.chapter,
                       data: {
@@ -294,57 +309,53 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                         'modifiedTime': DateTime.now().toIso8601String(),
                         'title': FFAppState().currentChapterTitle,
                       });*/
-                        //# invalidateHyperbookCache();
-                        setState(() {});
-                        context.pop();
-                      },
-                child: Text('Insert link to new chapter',
-                    style: TextStyle(color: Colors.white))),
+                //# invalidateHyperbookCache();
+                setState(() {});
+                context.pop();
+              },
+              child: Text(
+                'Insert link to new chapter',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
           ),
-        ]));
+        ],
+      ),
+    );
   }
 
   Widget insertFormField(
-      TextEditingController controller, String labelText, String hintText) {
+    TextEditingController controller,
+    String labelText,
+    String hintText,
+  ) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: FlutterFlowTheme.of(context).bodyMedium.override(
-              fontFamily: 'Rubik',
-              color: const Color(0xFF95A1AC),
-            ),
+          fontFamily: 'Rubik',
+          color: const Color(0xFF95A1AC),
+        ),
         hintText: hintText,
         hintStyle: FlutterFlowTheme.of(context).bodyMedium.override(
-              fontFamily: 'Rubik',
-              color: const Color(0xFF95A1AC),
-            ),
+          fontFamily: 'Rubik',
+          color: const Color(0xFF95A1AC),
+        ),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Color(0xFFDBE2E7),
-            width: 2.0,
-          ),
+          borderSide: const BorderSide(color: Color(0xFFDBE2E7), width: 2.0),
           borderRadius: BorderRadius.circular(8.0),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Color(0x00000000),
-            width: 2.0,
-          ),
+          borderSide: const BorderSide(color: Color(0x00000000), width: 2.0),
           borderRadius: BorderRadius.circular(8.0),
         ),
         errorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Color(0x00000000),
-            width: 2.0,
-          ),
+          borderSide: const BorderSide(color: Color(0x00000000), width: 2.0),
           borderRadius: BorderRadius.circular(8.0),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Color(0x00000000),
-            width: 2.0,
-          ),
+          borderSide: const BorderSide(color: Color(0x00000000), width: 2.0),
           borderRadius: BorderRadius.circular(8.0),
         ),
         filled: true,
@@ -352,9 +363,9 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
         contentPadding: const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 8),
       ),
       style: FlutterFlowTheme.of(context).bodyMedium.override(
-            fontFamily: 'Rubik',
-            color: const Color(0xFF2B343A),
-          ),
+        fontFamily: 'Rubik',
+        color: const Color(0xFF2B343A),
+      ),
     );
   }
 
@@ -367,53 +378,62 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
-                width: 150,
-                child: insertFormField(
-                  newChapterTitleControllerA,
-                  'New title',
-                  currentChapterTitle,
-                )
-                // textInputField(context, 'New chapter title',
-                //     FFAppState().currentChapterTitle, newChapterTitleController),
-                ),
+              width: 150,
+              child: insertFormField(
+                newChapterTitleControllerA,
+                'New title',
+                currentChapterTitle,
+              ),
+              // textInputField(context, 'New chapter title',
+              //     FFAppState().currentChapterTitle, newChapterTitleController),
+            ),
           ),
           TextButton(
-              style: TextButton.styleFrom(
-                  backgroundColor: FlutterFlowTheme.of(context).primaryColor),
-              //   FFButtonWidget(
+            style: TextButton.styleFrom(
+              backgroundColor: FlutterFlowTheme.of(context).primaryColor,
+            ),
 
-              onPressed: () async {
-                if (newChapterTitleControllerA.text.length == 0){
-                  toast(context, 'Please enter new title for chapter', ToastKind.warning);
-                  return;
-                }
-                //%//>//>print('(N80)${FFAppState().currentChapter}');
-                FFAppState().currentChapterTitle =
-                    newChapterTitleControllerA.text;
-                /* final Map<String, dynamic> chaptersUpdateData =
+            //   FFButtonWidget(
+            onPressed: () async {
+              if (newChapterTitleControllerA.text.length == 0) {
+                toast(
+                  context,
+                  'Please enter new title for chapter',
+                  ToastKind.warning,
+                );
+                return;
+              }
+              //%//>//>print('(N80)${FFAppState().currentChapter}');
+              FFAppState().currentChapterTitle =
+                  newChapterTitleControllerA.text;
+              /* final Map<String, dynamic> chaptersUpdateData =
                     createChaptersRecordData(
                   title: newTitleController.text,
                   // blurb: newBlurbControlle
                 );*/
-                print(
-                    '(N81)${FFAppState().currentChapterTitle}%%%%%${FFAppState().currentChapter}');
-                //await FFAppState().currentChapter!.update(chaptersUpdateData);
+              print(
+                '(N81)${FFAppState().currentChapterTitle}%%%%%${FFAppState().currentChapter}',
+              );
+              //await FFAppState().currentChapter!.update(chaptersUpdateData);
 
-
-/*                await updateDocument(
+              /*                await updateDocument(
                     collection: chaptersRef,
                     document: FFAppState().currentChapter,
                     data: {'title': newChapterTitleController.text});*/
-                toast(
-                    context,
-                    'xx4',//'Chapter ${FFAppState().currentChapterTitle} of hyperbook ${localDB.getWorkingHyperbook().title} saved',
-                    ToastKind.success);
-                setState(() {});
-                //%//>//>print('(N33)${controller.getText()}');
-                context.pop();
-              },
-              child: Text('Change chapter title',
-                  style: TextStyle(color: Colors.white))),
+              toast(
+                context,
+                'xx4', //'Chapter ${FFAppState().currentChapterTitle} of hyperbook ${localDB.getWorkingHyperbook().title} saved',
+                ToastKind.success,
+              );
+              setState(() {});
+              //%//>//>print('(N33)${controller.getText()}');
+              context.pop();
+            },
+            child: Text(
+              'Change chapter title',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ],
       ),
     );
@@ -421,78 +441,84 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
 
   Widget insertExistingChapterDropdown() {
     return Padding(
-        // key: intro!.keys[5],
-        padding: const EdgeInsets.all(8.0),
-        child: Column(children: [
+      // key: intro!.keys[5],
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
           SizedBox(
-              width: 150,
-              child: insertFormField(linkExistingChapterControllerB,
-                  'Link caption', 'If blank, the chapter title will be used')
-/*
+            width: 150,
+            child: insertFormField(
+              linkExistingChapterControllerB,
+              'Link caption',
+              'If blank, the chapter title will be used',
+            ),
+            /*
             textInputField(
                 context,
                 'Link caption',
                 'If blank, the chapter title will be used',
                 linkExistingChapterController),*/
-              ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: dropdownWidget(),
           ),
+          Padding(padding: const EdgeInsets.all(8.0), child: dropdownWidget()),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextButton(
               style: TextButton.styleFrom(
-                  backgroundColor: FlutterFlowTheme.of(context).primaryColor),
+                backgroundColor: FlutterFlowTheme.of(context).primaryColor,
+              ),
               onPressed: () async {
-
                 String linkText = linkExistingChapterControllerB.text;
 
                 context.pop();
               },
-              child: const Text('Insert link to existing chapter',
-                  style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Insert link to existing chapter',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ),
-        ]));
+        ],
+      ),
+    );
   }
 
   Widget insertImageButton() {
     return Padding(
-        // key: intro!.keys[7],
-        padding: const EdgeInsets.all(8.0),
-        child: TextButton(
-          style: TextButton.styleFrom(
-              backgroundColor: FlutterFlowTheme.of(context).primaryColor),
-          //   FFButtonWidget(
-          onPressed: () async {
-            const selectedMedia = null;
-            if (selectedMedia != null) {
-              final List<String> downloadUrls = <String>[];
-              try {} finally {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                isMediaUploading = false;
-              }
-              if (downloadUrls.length == selectedMedia.length) {
-                setState(() => uploadedFileUrl = downloadUrls.first);
-              } else {
-                setState(() {});
-                return;
-              }
+      // key: intro!.keys[7],
+      padding: const EdgeInsets.all(8.0),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: FlutterFlowTheme.of(context).primaryColor,
+        ),
+        //   FFButtonWidget(
+        onPressed: () async {
+          const selectedMedia = null;
+          if (selectedMedia != null) {
+            final List<String> downloadUrls = <String>[];
+            try {} finally {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              isMediaUploading = false;
             }
+            if (downloadUrls.length == selectedMedia.length) {
+              setState(() => uploadedFileUrl = downloadUrls.first);
+            } else {
+              setState(() {});
+              return;
+            }
+          }
 
-            /*£final Map<String, dynamic> usersUpdateData = createUsersRecordData(
+          /*£final Map<String, dynamic> usersUpdateData = createUsersRecordData(
             photoUrl: uploadedFileUrl,
           );*/
-            //%//>//>print('(D700)$uploadedFileUrl');
-            hTMLController.insertNetworkImage(uploadedFileUrl,
-                filename: 'IMAGE');
-          },
-          child: const Text(
-            'Insert Image',
-            style: TextStyle(color: Colors.white),
-          ),
-        ));
+          //%//>//>print('(D700)$uploadedFileUrl');
+          hTMLController.insertNetworkImage(uploadedFileUrl, filename: 'IMAGE');
+        },
+        child: const Text(
+          'Insert Image',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
   }
 
   TextEditingController titleController = TextEditingController();
@@ -507,97 +533,119 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
   Widget dropdownWidget() {
     List<DropdownMenuEntry<String>> listOfEntries = [];
     return PointerInterceptor(
-        child: DropdownMenu(
-      inputDecorationTheme: InputDecorationTheme(
+      child: DropdownMenu(
+        inputDecorationTheme: InputDecorationTheme(
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           constraints: BoxConstraints.tight(const Size.fromHeight(40)),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          )),
-      //key: GlobalKey(),
-      dropdownMenuEntries: listOfEntries,
-      onSelected: ( value) {
-        setState(() {
-          print('AAT3');
-        });
-      },
-    ));
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        //key: GlobalKey(),
+        dropdownMenuEntries: listOfEntries,
+        onSelected: (value) {
+          setState(() {
+            print('AAT3');
+          });
+        },
+      ),
+    );
   }
 
   Widget insertImageList(String chapterBody, Function setState) {
     imageWidgetList.clear();
     for (int i = 0; i < imageHtmlList.length; i++) {
       //>//>print('(MI70)${i}++++${imageHtmlList[i].float}');
-      imageWidgetList.add(Column(children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(imageHtmlList[i].filename ?? ''),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-              // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Row(
+      imageWidgetList.add(
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(imageHtmlList[i].filename ?? ''),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textInputField(context, 'Width', '',
-                          imageHtmlList[i].imageWidthTextEditingController!,
-                          width: 70, height: 30),
-                      textInputField(context, 'Height', '',
-                          imageHtmlList[i].imageHeightTextEditingController!,
-                          width: 70, height: 30),
-                    ]),
-                Text('Float'),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ChoiceChip(
-                      visualDensity:
-                          VisualDensity(horizontal: -4, vertical: -4),
-                      showCheckmark: false,
-                      selectedColor: FlutterFlowTheme.of(context).tertiary,
-                      selected: (imageHtmlList[i].float == FloatEnum.none),
-                      // height: kChickletHeight,
-                      onSelected: (ok) {
-                        imageHtmlList[i].float = FloatEnum.none;
-                        setState(() {});
-                      },
-                      label: Text('Inline'),
-                    ),
-                    ChoiceChip(
-                      visualDensity:
-                          VisualDensity(horizontal: -4, vertical: -4),
-                      showCheckmark: false,
-                      selectedColor: FlutterFlowTheme.of(context).tertiary,
-                      selected: (imageHtmlList[i].float == FloatEnum.left),
-                      // height: kChickletHeight,
-                      onSelected: (ok) {
-                        imageHtmlList[i].float = FloatEnum.left;
-                        setState(() {});
-                      },
-                      label: Text('Left'),
-                    ),
-                    ChoiceChip(
-                      visualDensity:
-                          VisualDensity(horizontal: -4, vertical: -4),
-                      showCheckmark: false,
-                      selectedColor: FlutterFlowTheme.of(context).tertiary,
-                      selected: (imageHtmlList[i].float == FloatEnum.right),
-                      // height: kChickletHeight,
-                      onSelected: (ok) {
-                        imageHtmlList[i].float = FloatEnum.right;
-                        setState(() {});
-                      },
-                      label: Text('Right'),
-                    ),
-                  ],
-                ),
-              ]),
+                      textInputField(
+                        context,
+                        'Width',
+                        '',
+                        imageHtmlList[i].imageWidthTextEditingController!,
+                        width: 70,
+                        height: 30,
+                      ),
+                      textInputField(
+                        context,
+                        'Height',
+                        '',
+                        imageHtmlList[i].imageHeightTextEditingController!,
+                        width: 70,
+                        height: 30,
+                      ),
+                    ],
+                  ),
+                  Text('Float'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ChoiceChip(
+                        visualDensity: VisualDensity(
+                          horizontal: -4,
+                          vertical: -4,
+                        ),
+                        showCheckmark: false,
+                        selectedColor: FlutterFlowTheme.of(context).tertiary,
+                        selected: (imageHtmlList[i].float == FloatEnum.none),
+                        // height: kChickletHeight,
+                        onSelected: (ok) {
+                          imageHtmlList[i].float = FloatEnum.none;
+                          setState(() {});
+                        },
+                        label: Text('Inline'),
+                      ),
+                      ChoiceChip(
+                        visualDensity: VisualDensity(
+                          horizontal: -4,
+                          vertical: -4,
+                        ),
+                        showCheckmark: false,
+                        selectedColor: FlutterFlowTheme.of(context).tertiary,
+                        selected: (imageHtmlList[i].float == FloatEnum.left),
+                        // height: kChickletHeight,
+                        onSelected: (ok) {
+                          imageHtmlList[i].float = FloatEnum.left;
+                          setState(() {});
+                        },
+                        label: Text('Left'),
+                      ),
+                      ChoiceChip(
+                        visualDensity: VisualDensity(
+                          horizontal: -4,
+                          vertical: -4,
+                        ),
+                        showCheckmark: false,
+                        selectedColor: FlutterFlowTheme.of(context).tertiary,
+                        selected: (imageHtmlList[i].float == FloatEnum.right),
+                        // height: kChickletHeight,
+                        onSelected: (ok) {
+                          imageHtmlList[i].float = FloatEnum.right;
+                          setState(() {});
+                        },
+                        label: Text('Right'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Divider(height: 3, thickness: 3, color: Colors.black),
+          ],
         ),
-        Divider(height: 3, thickness: 3, color: Colors.black),
-      ]));
+      );
     }
     //>//>print('(MI50)${imageWidgetList.length}');
     return Column(children: imageWidgetList);
@@ -610,41 +658,38 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
   Widget insertInsertIcon() {
     List<DropdownMenuEntry<String>> listOfEntries = [];
     for (var key in kIconMapStandard.keys) {
-      listOfEntries.add(DropdownMenuEntry(
-        value: key,
-        label: key,
-      ));
+      listOfEntries.add(DropdownMenuEntry(value: key, label: key));
     }
     return PointerInterceptor(
-        child: DropdownMenu<String>(
-      inputDecorationTheme: InputDecorationTheme(
+      child: DropdownMenu<String>(
+        inputDecorationTheme: InputDecorationTheme(
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           constraints: BoxConstraints.tight(const Size.fromHeight(40)),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          )),
-      //key: GlobalKey(),
-      dropdownMenuEntries: listOfEntries,
-      onSelected: (value) {
-        setState(() {
-          const String before =
-              "<span style=\"font-family:'material-icons';font-size:30px;\">";
-          const String after = "</span>";
-          String iconString = before + value! + after;
-          //>//>print('(N3930A)${iconString}');
-          try {
-            hTMLController.insertHtml(iconString);
-          } on Exception catch (e) {
-            //>//>print('(N3930B)${e}');
-          }
-          hTMLController.getText().then((text) {
-            //>//>print('(N3930C)${text}');
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        //key: GlobalKey(),
+        dropdownMenuEntries: listOfEntries,
+        onSelected: (value) {
+          setState(() {
+            const String before =
+                "<span style=\"font-family:'material-icons';font-size:30px;\">";
+            const String after = "</span>";
+            String iconString = before + value! + after;
+            //>//>print('(N3930A)${iconString}');
+            try {
+              hTMLController.insertHtml(iconString);
+            } on Exception {
+              //>//>print('(N3930B)${e}');
+            }
+            hTMLController.getText().then((text) {
+              //>//>print('(N3930C)${text}');
+            });
+            //>//>print('(N3930D)');
           });
-          //>//>print('(N3930D)');
-        });
-      },
-    ));
+        },
+      ),
+    );
   }
 
   Widget insertInsertRawHTMLFromCliboard() {
@@ -664,23 +709,26 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
         iconPadding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
         color: FlutterFlowTheme.of(context).primary,
         textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-              fontFamily: 'Rubik',
-              color: Colors.white,
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold,
-            ),
-        elevation: 2.0,
-        borderSide: const BorderSide(
-          color: Colors.transparent,
+          fontFamily: 'Rubik',
+          color: Colors.white,
+          fontSize: 18.0,
+          fontWeight: FontWeight.bold,
         ),
+        elevation: 2.0,
+        borderSide: const BorderSide(color: Colors.transparent),
         borderRadius: BorderRadius.circular(8.0),
       ),
     );
   }
 
-  Widget textInputField(BuildContext context, String label, String hint,
-      TextEditingController controller,
-      {double width = 200, double height = 40}) {
+  Widget textInputField(
+    BuildContext context,
+    String label,
+    String hint,
+    TextEditingController controller, {
+    double width = 200,
+    double height = 40,
+  }) {
     //%//>//>print('(D20)$label');
     return Container(
       height: height,
@@ -690,14 +738,14 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: FlutterFlowTheme.of(context).bodyText1.override(
-                fontFamily: 'Overpass',
-                color: FlutterFlowTheme.of(context).primaryColor,
-              ),
+            fontFamily: 'Overpass',
+            color: FlutterFlowTheme.of(context).primaryColor,
+          ),
           hintText: hint,
           hintStyle: FlutterFlowTheme.of(context).bodyText1.override(
-                fontFamily: 'Overpass',
-                color: FlutterFlowTheme.of(context).primaryColor,
-              ),
+            fontFamily: 'Overpass',
+            color: FlutterFlowTheme.of(context).primaryColor,
+          ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
               color: FlutterFlowTheme.of(context).primaryColor,
@@ -729,86 +777,94 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
           filled: true,
           fillColor: FlutterFlowTheme.of(context).white,
           contentPadding: const EdgeInsetsDirectional.fromSTEB(
-              5, 0, 10, 0) /*(16, 24, 0, 24)*/,
+            5,
+            0,
+            10,
+            0,
+          ) /*(16, 24, 0, 24)*/,
         ),
         style: FlutterFlowTheme.of(context).bodyText1.override(
-              fontFamily: 'Overpass',
-              color: const Color(0xFF2B343A),
-            ),
+          fontFamily: 'Overpass',
+          color: const Color(0xFF2B343A),
+        ),
       ),
     );
   }
 
   Widget insertCancel() {
     return TextButton(
-        style: TextButton.styleFrom(
-            backgroundColor: FlutterFlowTheme.of(context).alternate),
-        onPressed: () async {
-          context.pop();
-        },
-        child: Text('Cancel',
-            style:
-                TextStyle(color: FlutterFlowTheme.of(context).primaryColor)));
+      style: TextButton.styleFrom(
+        backgroundColor: FlutterFlowTheme.of(context).alternate,
+      ),
+      onPressed: () async {
+        context.pop();
+      },
+      child: Text(
+        'Cancel',
+        style: TextStyle(color: FlutterFlowTheme.of(context).primaryColor),
+      ),
+    );
   }
 
   void showSettingsDialog(String currentChapterTitle) async {
     String chapterBody = await hTMLController.getText();
     showDialog<String>(
-        context: context,
-        builder: (context) {
-          bool chapterCreateRequested = false;
-          //  return StatefulBuilder(builder: (context, setState) {
-          return PointerInterceptor(
-              child: AlertDialog(
-                  title: Row(
-                    children: [
-                      Text('Editor controls'),
-                      FlutterFlowIconButton(
-                        tooltipMessage: 'Exit',
-                        borderColor:
-                            FlutterFlowTheme.of(context).primaryBtnText,
-                        borderRadius: kAbbBarButtonSize / 2.0,
-                        borderWidth: 1,
-                        buttonSize: kAbbBarButtonSize,
-                        icon: kIconCancel,
-                        onPressed: () async {
-                          context.pop();
-                        },
-                      ),
-                    ],
-                  ),
-                  content: SingleChildScrollView(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          insertChangeTitle(currentChapterTitle),
-                          Divider(height: 3, thickness: 3, color: Colors.black),
-                          insertExistingChapterDropdown(),
+      context: context,
+      builder: (context) {
+        bool chapterCreateRequested = false;
+        //  return StatefulBuilder(builder: (context, setState) {
+        return PointerInterceptor(
+          child: AlertDialog(
+            title: Row(
+              children: [
+                Text('Editor controls'),
+                FlutterFlowIconButton(
+                  tooltipMessage: 'Exit',
+                  borderColor: FlutterFlowTheme.of(context).primaryBtnText,
+                  borderRadius: kAbbBarButtonSize / 2.0,
+                  borderWidth: 1,
+                  buttonSize: kAbbBarButtonSize,
+                  icon: kIconCancel,
+                  onPressed: () async {
+                    context.pop();
+                  },
+                ),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  insertChangeTitle(currentChapterTitle),
+                  Divider(height: 3, thickness: 3, color: Colors.black),
+                  insertExistingChapterDropdown(),
 
-                          Divider(height: 3, thickness: 3, color: Colors.black),
-                          // insertImageList(chapterBody),
-                          insertNewChapter(),
-                          Divider(height: 3, thickness: 3, color: Colors.black),
+                  Divider(height: 3, thickness: 3, color: Colors.black),
+                  // insertImageList(chapterBody),
+                  insertNewChapter(),
+                  Divider(height: 3, thickness: 3, color: Colors.black),
 
-                          currentUser!.userLevel == kUserLevelSupervisor
-                              ? insertInsertIcon()
-                              : Container(),
-                          currentUser!.userLevel == kUserLevelSupervisor
-                              ? Divider(
-                                  height: 3, thickness: 3, color: Colors.black)
-                              : Container(),
-                          currentUser!.userLevel == kUserLevelSupervisor
-                              ? insertInsertRawHTMLFromCliboard()
-                              : Container(),
-                          currentUser!.userLevel == kUserLevelSupervisor
-                              ? Divider(
-                                  height: 3, thickness: 3, color: Colors.black)
-                              : Container(),
-                          insertCancel()
-                          //  insertImageButton(),
-                        ]),
-                  )));
-        });
+                  currentUser!.userLevel == kUserLevelSupervisor
+                      ? insertInsertIcon()
+                      : Container(),
+                  currentUser!.userLevel == kUserLevelSupervisor
+                      ? Divider(height: 3, thickness: 3, color: Colors.black)
+                      : Container(),
+                  currentUser!.userLevel == kUserLevelSupervisor
+                      ? insertInsertRawHTMLFromCliboard()
+                      : Container(),
+                  currentUser!.userLevel == kUserLevelSupervisor
+                      ? Divider(height: 3, thickness: 3, color: Colors.black)
+                      : Container(),
+                  insertCancel(),
+                  //  insertImageButton(),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget insertSettingsButton(String currentChapterTitle) {
@@ -842,95 +898,93 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
         String chapterBody = await hTMLController.getText();
 
         showDialog<String>(
-            context: context,
-            builder: (context) {
-              bool chapterCreateRequested = false;
-              return StatefulBuilder(builder: (context, setState) {
+          context: context,
+          builder: (context) {
+            bool chapterCreateRequested = false;
+            return StatefulBuilder(
+              builder: (context, setState) {
                 //   child:
                 return PointerInterceptor(
                   child: AlertDialog(
-                      title: Text('Images editor'),
-                      content: SingleChildScrollView(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: FFButtonWidget(
-                                  tooltipMessage: 'Change',
-                                  onPressed: () async {
-                                    //>//>print('(MI40)');
-                                    bool changed = false;
-                                    for (int i = 0;
-                                        i < imageHtmlList.length;
-                                        i++) {
-                                      //  String imageString = imageHtmlList[i].htmlSegment!;
-                                      double? newWidth = double.tryParse(
-                                          imageHtmlList[i]
-                                              .imageWidthTextEditingController
-                                              .text);
-                                      //>//>print('(MI41)${newWidth}');
-                                      if (newWidth != null) {
-                                        String newWidthString = newWidth
-                                            .floor()
-                                            .toDouble()
-                                            .toString()
-                                            .padLeft(4);
-                                        //>//>print('(MI42)${newWidthString}%');
+                    title: Text('Images editor'),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: FFButtonWidget(
+                              tooltipMessage: 'Change',
+                              onPressed: () async {
+                                //>//>print('(MI40)');
+                                bool changed = false;
+                                for (int i = 0; i < imageHtmlList.length; i++) {
+                                  //  String imageString = imageHtmlList[i].htmlSegment!;
+                                  double? newWidth = double.tryParse(
+                                    imageHtmlList[i]
+                                        .imageWidthTextEditingController
+                                        .text,
+                                  );
+                                  //>//>print('(MI41)${newWidth}');
+                                  if (newWidth != null) {
+                                    String newWidthString = newWidth
+                                        .floor()
+                                        .toDouble()
+                                        .toString()
+                                        .padLeft(4);
+                                    //>//>print('(MI42)${newWidthString}%');
 
-                                        imageHtmlList[i].htmlSegment =
-                                            imageHtmlList[i]
-                                                .htmlSegment!
-                                                .replaceRange(
-                                                    imageHtmlList[i]
-                                                            .widthStartPos +
-                                                        6,
-                                                    imageHtmlList[i]
-                                                            .widthStartPos +
-                                                        10,
-                                                    newWidthString);
-                                        print(
-                                            '(MI43)${imageHtmlList[i].widthStartPos}****${imageHtmlList[i].heightStartPos}++++${imageHtmlList[i].htmlSegment}');
+                                    imageHtmlList[i]
+                                        .htmlSegment = imageHtmlList[i]
+                                        .htmlSegment!
+                                        .replaceRange(
+                                          imageHtmlList[i].widthStartPos + 6,
+                                          imageHtmlList[i].widthStartPos + 10,
+                                          newWidthString,
+                                        );
+                                    print(
+                                      '(MI43)${imageHtmlList[i].widthStartPos}****${imageHtmlList[i].heightStartPos}++++${imageHtmlList[i].htmlSegment}',
+                                    );
 
-                                        changed = true;
-                                      }
-                                      double? newHeight = double.tryParse(
-                                          imageHtmlList[i]
-                                              .imageHeightTextEditingController
-                                              .text);
-                                      if (newHeight != null) {
-                                        String newHeightString = newHeight
-                                            .floor()
-                                            .toDouble()
-                                            .toString()
-                                            .padLeft(4);
-                                        imageHtmlList[i].htmlSegment =
-                                            imageHtmlList[i]
-                                                .htmlSegment!
-                                                .replaceRange(
-                                                    imageHtmlList[i]
-                                                            .heightStartPos +
-                                                        7,
-                                                    imageHtmlList[i]
-                                                            .heightStartPos +
-                                                        11,
-                                                    newHeightString);
-                                        changed = true;
-                                      }
-                                      FloatEnum float = imageHtmlList[i].float;
-                                      int floatPos = imageHtmlList[i].floatPos;
-                                      print(
-                                          'MI90${floatPos}++++${float}----${floatPos}');
-                                      /* if (floatPos != -1) {
+                                    changed = true;
+                                  }
+                                  double? newHeight = double.tryParse(
+                                    imageHtmlList[i]
+                                        .imageHeightTextEditingController
+                                        .text,
+                                  );
+                                  if (newHeight != null) {
+                                    String newHeightString = newHeight
+                                        .floor()
+                                        .toDouble()
+                                        .toString()
+                                        .padLeft(4);
+                                    imageHtmlList[i]
+                                        .htmlSegment = imageHtmlList[i]
+                                        .htmlSegment!
+                                        .replaceRange(
+                                          imageHtmlList[i].heightStartPos + 7,
+                                          imageHtmlList[i].heightStartPos + 11,
+                                          newHeightString,
+                                        );
+                                    changed = true;
+                                  }
+                                  FloatEnum float = imageHtmlList[i].float;
+                                  int floatPos = imageHtmlList[i].floatPos;
+                                  print(
+                                    'MI90${floatPos}++++${float}----${floatPos}',
+                                  );
+                                  /* if (floatPos != -1) {
                                         String floatString = imageHtmlList[i]
                                             .htmlSegment!
                                             .substring(floatPos, floatPos + 5);
                                         FloatEnum oldFloatValue =
                                             FloatEnum.none;
                                      */
-                                      print(
-                                          'MI91${floatPos}----${imageHtmlList[i].htmlSegment}');
-                                      /*   switch (floatString) {
+                                  print(
+                                    'MI91${floatPos}----${imageHtmlList[i].htmlSegment}',
+                                  );
+                                  /*   switch (floatString) {
                                           case ' none':
                                           case '     ':
                                             oldFloatValue = FloatEnum.none;
@@ -946,85 +1000,94 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                                             break;
                                         }
                                      */
-                                      // if (oldFloatValue !=
-                                      //     imageHtmlList[i].float) {
-                                      String newFloatString = ' none';
-                                      switch (float) {
-                                        case FloatEnum.none:
-                                          newFloatString = ' none';
-                                          break;
-                                        case FloatEnum.left:
-                                          newFloatString = ' left';
-                                          break;
-                                        case FloatEnum.right:
-                                          newFloatString = 'right';
-                                          break;
-                                      }
-                                      imageHtmlList[i].htmlSegment =
-                                          imageHtmlList[i]
-                                              .htmlSegment!
-                                              .replaceRange(
-                                                  imageHtmlList[i].floatPos + 6,
-                                                  imageHtmlList[i].floatPos +
-                                                      11,
-                                                  newFloatString);
-                                      changed = true;
+                                  // if (oldFloatValue !=
+                                  //     imageHtmlList[i].float) {
+                                  String newFloatString = ' none';
+                                  switch (float) {
+                                    case FloatEnum.none:
+                                      newFloatString = ' none';
+                                      break;
+                                    case FloatEnum.left:
+                                      newFloatString = ' left';
+                                      break;
+                                    case FloatEnum.right:
+                                      newFloatString = 'right';
+                                      break;
+                                  }
+                                  imageHtmlList[i].htmlSegment =
+                                      imageHtmlList[i].htmlSegment!
+                                          .replaceRange(
+                                            imageHtmlList[i].floatPos + 6,
+                                            imageHtmlList[i].floatPos + 11,
+                                            newFloatString,
+                                          );
+                                  changed = true;
 
-                                      print(
-                                          '(MI80)${float}++++${floatPos}&&&&${imageHtmlList[i].htmlSegment}');
-                                    }
-                                    String newEditorText = preImageHtml;
-                                    for (int i = 0;
-                                        i < imageHtmlList.length;
-                                        i++) {
-                                      newEditorText = newEditorText +
-                                          kImageTag +
-                                          imageHtmlList[i].htmlSegment!;
-                                      //>//>print('(MI45)${newEditorText}}');
-                                    }
-                                    hTMLController.clear();
-                                    hTMLController.insertHtml(newEditorText);
-                                    setState(() {});
-                                    //>//>print('(MI46)${newEditorText}}');
-                                    context.pop();
-                                  },
-                                  text: 'Change',
-                                  options: FFButtonOptions(
-                                    width: 100.0,
-                                    height: 50.0,
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            8.0, 8.0, 8.0, 8.0),
-                                    iconPadding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            0.0, 0.0, 0.0, 0.0),
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    textStyle: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .override(
-                                          fontFamily: 'Rubik',
-                                          color: Colors.white,
-                                          fontSize: 18.0,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                    elevation: 2.0,
-                                    borderSide: const BorderSide(
-                                      color: Colors.transparent,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
+                                  print(
+                                    '(MI80)${float}++++${floatPos}&&&&${imageHtmlList[i].htmlSegment}',
+                                  );
+                                }
+                                String newEditorText = preImageHtml;
+                                for (int i = 0; i < imageHtmlList.length; i++) {
+                                  newEditorText =
+                                      newEditorText +
+                                      kImageTag +
+                                      imageHtmlList[i].htmlSegment!;
+                                  //>//>print('(MI45)${newEditorText}}');
+                                }
+                                hTMLController.clear();
+                                hTMLController.insertHtml(newEditorText);
+                                setState(() {});
+                                //>//>print('(MI46)${newEditorText}}');
+                                context.pop();
+                              },
+                              text: 'Change',
+                              options: FFButtonOptions(
+                                width: 100.0,
+                                height: 50.0,
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                  8.0,
+                                  8.0,
+                                  8.0,
+                                  8.0,
                                 ),
+                                iconPadding:
+                                    const EdgeInsetsDirectional.fromSTEB(
+                                      0.0,
+                                      0.0,
+                                      0.0,
+                                      0.0,
+                                    ),
+                                color: FlutterFlowTheme.of(context).primary,
+                                textStyle: FlutterFlowTheme.of(context)
+                                    .titleSmall
+                                    .override(
+                                      fontFamily: 'Rubik',
+                                      color: Colors.white,
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                elevation: 2.0,
+                                borderSide: const BorderSide(
+                                  color: Colors.transparent,
+                                ),
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
-                              Divider(
-                                  height: 3, thickness: 3, color: Colors.black),
-                              insertImageList(chapterBody, setState),
-                              insertCancel()
-                              //  insertImageButton(),
-                            ]),
-                      )),
+                            ),
+                          ),
+                          Divider(height: 3, thickness: 3, color: Colors.black),
+                          insertImageList(chapterBody, setState),
+                          insertCancel(),
+                          //  insertImageButton(),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
-              });
-            });
+              },
+            );
+          },
+        );
       },
     );
   }
@@ -1042,13 +1105,16 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
     for (int i = 1; i < imageStrings.length; i++) {
       String imageString = imageStrings[i];
       //>//>print('(MI12)${imageString}');
-      final int startFilenamePos =
-          imageString.indexOf(kStorageFilenameStartString);
+      final int startFilenamePos = imageString.indexOf(
+        kStorageFilenameStartString,
+      );
       //>//>print('(MI13)${startFilenamePos}');
       final int endFilenamePos = imageString.indexOf(kStorageFilenameEndString);
       //>//>print('(MI14)${endFilenamePos}');
-      final String filename =
-          imageString.substring(startFilenamePos + 2, endFilenamePos);
+      final String filename = imageString.substring(
+        startFilenamePos + 2,
+        endFilenamePos,
+      );
       //>//>print('(MI15)${filename}');
       imageFilenameList.add(filename);
       final int widthStartPos = imageString.indexOf('width:');
@@ -1085,30 +1151,33 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
           float = FloatEnum.none;
           break;
       }
-      imageHtmlList.add(ImageHtmlValues(
-        widthStartPos: widthStartPos,
-        // widthEndPos: widthEndPos,
-        width: double.tryParse(widthString),
-        imageWidthTextEditingController: TextEditingController(),
-        heightStartPos: heightStartPos,
-        // heightEndPos: heightEndPos,
-        height: double.tryParse(heightString),
-        imageHeightTextEditingController: TextEditingController(),
-        filename: filename,
-        htmlSegment: imageString,
-        float: float,
-        floatPos: floatPos,
-      ));
+      imageHtmlList.add(
+        ImageHtmlValues(
+          widthStartPos: widthStartPos,
+          // widthEndPos: widthEndPos,
+          width: double.tryParse(widthString),
+          imageWidthTextEditingController: TextEditingController(),
+          heightStartPos: heightStartPos,
+          // heightEndPos: heightEndPos,
+          height: double.tryParse(heightString),
+          imageHeightTextEditingController: TextEditingController(),
+          filename: filename,
+          htmlSegment: imageString,
+          float: float,
+          floatPos: floatPos,
+        ),
+      );
       imageHtmlList.last.imageWidthTextEditingController.text = widthString;
       imageHtmlList.last.imageHeightTextEditingController.text = heightString;
       //>//>print('(MI99A)${floatPos}++++${floatString}^^^^${float}');
     }
     for (var x in imageHtmlList)
       print(
-          '(MI60)${x.filename}****${x.widthStartPos}++++${x.widthStartPos + 4}====${x.width}@@@@${x.floatPos}');
+        '(MI60)${x.filename}****${x.widthStartPos}++++${x.widthStartPos + 4}====${x.width}@@@@${x.floatPos}',
+      );
   }
 
-/*  FutureOr<bool> imageCaptor(*/ /*PlatformFile*/ /* PlatformFile, String insertFileType) async {
+  /*  FutureOr<bool> imageCaptor(*/ /*PlatformFile*/ /* PlatformFile, String insertFileType) async {
     //>//>print('(IC1)${PlatformFile.runtimeType}++++${insertFileType}');
     //String? url = await createStorageImageFile(user: currentUser!.reference, path: PlatformFile.path,  name: platformFile.name, bytes: platformFile.bytes! );
     ////>//>print('(IC2)${url}');
@@ -1122,17 +1191,9 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
     toolbarType: ToolbarType.nativeScrollable,
     defaultToolbarButtons: [
       StyleButtons(style: true),
-      FontSettingButtons(
-        fontName: false,
-        fontSize: true,
-        fontSizeUnit: false,
-      ),
+      FontSettingButtons(fontName: false, fontSize: true, fontSizeUnit: false),
       ColorButtons(foregroundColor: true, highlightColor: true),
-      ListButtons(
-        ul: false,
-        ol: false,
-        listStyles: false,
-      ),
+      ListButtons(ul: false, ol: false, listStyles: false),
       ParagraphButtons(
         caseConverter: false,
         alignCenter: false,
@@ -1172,11 +1233,12 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
               .chapterList[currentCachedChapterIndex!]
               .reference!;*/
       String? url = await createStorageImageFile(
-          chapter: null,
-          user: currentUser!.reference,
-          path: '',
-          name: file.name,
-          bytes: file.bytes!);
+        chapter: null,
+        user: currentUser!.reference,
+        path: '',
+        name: file.name,
+        bytes: file.bytes!,
+      );
       //>//>print('(MI2)${url}');
       final String imageHTML =
           //        '<img style="width:    px;height:    px;float:     ;border:10px solid grey;border-radius:20px;padding: 10px;/*${file.name}*/" src="${url}">';
@@ -1186,26 +1248,16 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
       return false;
     },
   );
-//<h1>Hello</h1>
+  //<h1>Hello</h1>
   late HtmlToolbarOptions largeScreenHtmlToolbarOptions = HtmlToolbarOptions(
     toolbarPosition: ToolbarPosition.aboveEditor,
     toolbarType: ToolbarType.nativeGrid,
     defaultToolbarButtons: [
       StyleButtons(style: true),
-      FontSettingButtons(
-        fontName: true,
-        fontSize: true,
-        fontSizeUnit: false,
-      ),
+      FontSettingButtons(fontName: true, fontSize: true, fontSizeUnit: false),
       ColorButtons(foregroundColor: true, highlightColor: true),
-      ListButtons(
-        ul: true,
-        ol: true,
-        listStyles: false,
-      ),
-      ParagraphButtons(
-        caseConverter: false,
-      ),
+      ListButtons(ul: true, ol: true, listStyles: false),
+      ParagraphButtons(caseConverter: false),
       InsertButtons(
         table: true,
         link: false,
@@ -1213,10 +1265,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
         video: false,
         otherFile: false,
       ),
-      OtherButtons(
-        help: false,
-        fullscreen: false,
-      )
+      OtherButtons(help: false, fullscreen: false),
     ],
     mediaUploadInterceptor: (PlatformFile file, InsertFileType type) async {
       //>//>print('(MI1A)');
@@ -1230,11 +1279,12 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
               .chapterList[currentCachedChapterIndex!]
               .reference!;*/
       String? url = await createStorageImageFile(
-          chapter: null,
-          user: currentUser!.reference,
-          path: '',
-          name: file.name,
-          bytes: file.bytes!);
+        chapter: null,
+        user: currentUser!.reference,
+        path: '',
+        name: file.name,
+        bytes: file.bytes!,
+      );
       //>//>print('(MI2)${url}');
       final String imageHTML =
           '<img style="width:    px;height:    px;float:     ;border:10px solid grey;border-radius:20px;padding: 10px;/*${file.name}*/" src="${url}">';
@@ -1250,52 +1300,58 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
         getCurrentCachedHyperbookIndex(hyperbook: widget.hyperbook!);
     */ //# setCurrentCachedChapterIndex(chapter: widget.chapter!);
     // //>//>print('(CC1)${currentCachedChapterIndex}....${localDB.getWorkingChapter().body}');
-    MenuDetails chapterEditMenuDetails = MenuDetails(menuLabelList: [
-      'Login',
-      'Hyperbook list',
-      'Map',
-      'Editor controls',
-      'Chapter list',
-      'Save',
-    ], menuIconList: [
-      kIconLogin,
-      kIconHyperbooks,
-      kIconHyperbookMap,
-      kIconSettings,
-      kIconList,
-      kIconSave,
-    ], menuColorList: [
-      kDefaultColor,
-      kDefaultColor,
-      kDefaultColor,
-      kDefaultColor,
-      kDefaultColor,
-      kDefaultColor,
-    ], menuTargets: [
-      (context) {
-        // context.goNamedAuth('login', context.mounted);
-        Navigator.push(
+    MenuDetails chapterEditMenuDetails = MenuDetails(
+      menuLabelList: [
+        'Login',
+        'Hyperbook list',
+        'Map',
+        'Editor controls',
+        'Chapter list',
+        'Save',
+      ],
+      menuIconList: [
+        kIconLogin,
+        kIconHyperbooks,
+        kIconHyperbookMap,
+        kIconSettings,
+        kIconList,
+        kIconSave,
+      ],
+      menuColorList: [
+        kDefaultColor,
+        kDefaultColor,
+        kDefaultColor,
+        kDefaultColor,
+        kDefaultColor,
+        kDefaultColor,
+      ],
+      menuTargets: [
+        (context) {
+          // context.goNamedAuth('login', context.mounted);
+          Navigator.push(
             context,
             PageTransition(
               type: kStandardPageTransitionType,
               duration: kStandardTransitionTime,
               reverseDuration: kStandardReverseTransitionTime,
               child: LoginWidget(),
-            ));
-      },
-      (context) {
-        // context.goNamedAuth('hyperbook_display', context.mounted);
-        Navigator.push(
+            ),
+          );
+        },
+        (context) {
+          // context.goNamedAuth('hyperbook_display', context.mounted);
+          Navigator.push(
             context!,
             PageTransition(
               type: kStandardPageTransitionType,
               duration: kStandardTransitionTime,
               reverseDuration: kStandardReverseTransitionTime,
               child: SessionDisplayWidget(),
-            ));
-      },
-      (context) {
-        /*context.pushNamed(
+            ),
+          );
+        },
+        (context) {
+          /*context.pushNamed(
           'map_display',
           queryParameters: <String, String?>{
             'hyperbook': serializeParam(
@@ -1312,21 +1368,22 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
             ),
           }.withoutNulls,
         );*/
-        Navigator.push(
+          Navigator.push(
             context!,
             PageTransition(
               type: kStandardPageTransitionType,
               duration: kStandardTransitionTime,
               reverseDuration: kStandardReverseTransitionTime,
               child: LoginWidget(),
-            ));
-      },
-      (context) {
-        showSettingsDialog(titleController.text);
-      },
-      (context) {
-        //>//>print('(PN1)');
-/*        context.pushNamed(
+            ),
+          );
+        },
+        (context) {
+          showSettingsDialog(titleController.text);
+        },
+        (context) {
+          //>//>print('(PN1)');
+          /*        context.pushNamed(
           'chapter_display',
           queryParameters: <String, String?>{
             'hyperbook': serializeParam(
@@ -1343,57 +1400,65 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
             ),
           }.withoutNulls,
         );*/
-        Navigator.push(
+          Navigator.push(
             context!,
             PageTransition(
               type: kStandardPageTransitionType,
               duration: kStandardTransitionTime,
               reverseDuration: kStandardReverseTransitionTime,
               child: ChapterDisplayWidget(),
-            ));
-      },
-      (context) async {
-        //>//>print('(PN2)');
-        await saveText();
-      }
-    ]);
+            ),
+          );
+        },
+        (context) async {
+          //>//>print('(PN2)');
+          await saveText();
+        },
+      ],
+    );
 
     AppBar appBar = AppBar(
       leading: BackButton(
-          color: Colors.white,
-          onPressed: () async {
-            if (hasChanged) {
-              //>//>print('(PH2)');
-              bool? confirmDialogResponse = await showDialog<bool>(
-                  context: context,
-                  builder: (BuildContext alertDialogContext) {
-                    return StatefulBuilder(builder: (context, setState) {
-                      return PointerInterceptor(
-                          child: AlertDialog(
-                              title: Text('Save modified text?'),
-                              content: Text(''),
-                              actions: [
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.pop(alertDialogContext, false),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.pop(alertDialogContext, true),
-                              child: const Text('Confirm'),
-                            ),
-                          ]));
-                    });
-                  });
-              if (confirmDialogResponse!) {
-                //>//>print('(PH3)');
-                await saveText();
-              }
-              //Navigator.pop(context, true);
+        color: Colors.white,
+        onPressed: () async {
+          if (hasChanged) {
+            //>//>print('(PH2)');
+            bool? confirmDialogResponse = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext alertDialogContext) {
+                return StatefulBuilder(
+                  builder: (context, setState) {
+                    return PointerInterceptor(
+                      child: AlertDialog(
+                        title: Text('Save modified text?'),
+                        content: Text(''),
+                        actions: [
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.pop(alertDialogContext, false),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.pop(alertDialogContext, true),
+                            child: const Text('Confirm'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+            if (confirmDialogResponse!) {
+              //>//>print('(PH3)');
+              await saveText();
             }
-            Navigator.pop(context, true);
-          }),
+            //Navigator.pop(context, true);
+          }
+          Navigator.pop(context, true);
+        },
+      ),
       backgroundColor: FlutterFlowTheme.of(context).primary,
       title: Text(
         'Edit: ' +
@@ -1402,11 +1467,11 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                 .title!,*/
             'XXX6',
         style: FlutterFlowTheme.of(context).headlineMedium.override(
-              fontFamily: 'Rubik',
-              color: Colors.white,
-              fontSize: 22.0,
-              fontStyle: FontStyle.italic,
-            ),
+          fontFamily: 'Rubik',
+          color: Colors.white,
+          fontSize: 22.0,
+          fontStyle: FontStyle.italic,
+        ),
       ),
       actions: <Widget>[
         /*  IconButton(
@@ -1418,7 +1483,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                 hTMLController.editorController!.reload();
               }
             }),*/
-/*
+        /*
         FlutterFlowIconButton(
           key: intro!.keys[0],
           tooltipMessage: 'Click to see list of chapters',
@@ -1483,7 +1548,7 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
 */
         insertMenu(context, chapterEditMenuDetails, setState),
         //insertSaveButton(),
-/*        InkWell(
+        /*        InkWell(
           onTap: () async {
             //  //%//>//>print('(XI5)${intro!.stepCount}');
             intro!.start(context);
@@ -1513,60 +1578,58 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
 
     //>//>print('(CH111)${hasJustLoaded}');
     // hTMLController.getText().then((value) {//>//>print('(CH112)${value}');});
-   /* if (localDB.getWorkingChapter() == null) {
+    /* if (localDB.getWorkingChapter() == null) {
       toast(context, 'Error in Chapter selection', ToastKind.error);
     }*/
     return Title(
-        title: 'chapterEdit',
-        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
-        child: GestureDetector(
-            onTap: () =>
-                FocusScope.of(context).requestFocus(_model.unfocusNode),
-            child: Scaffold(
-                //  key: scaffoldKey,
-                // floatingActionButton: FloatingActionButton(
-                //   onPressed: () {
-                //     //>//>print('(FAB1)');
-                //     hTMLController.toggleCodeView();
-                //   },
-                //   child: Text(r'<\>',
-                //       style:
-                //           TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                // ),
-                backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-                appBar: appBar,
-                body:
-                    /*GestureDetector(
+      title: 'chapterEdit',
+      color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+        child: Scaffold(
+          //  key: scaffoldKey,
+          // floatingActionButton: FloatingActionButton(
+          //   onPressed: () {
+          //     //>//>print('(FAB1)');
+          //     hTMLController.toggleCodeView();
+          //   },
+          //   child: Text(r'<\>',
+          //       style:
+          //           TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          // ),
+          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+          appBar: appBar,
+          body:
+              /*GestureDetector(
                   onTap: () {
                     if (!kIsWeb) {
                       controller.clearFocus();
                     }
                   },
                   child: */
-                    SingleChildScrollView(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                      HtmlEditor(
-                        controller: hTMLController,
-                        htmlEditorOptions: HtmlEditorOptions(
-                          hint: 'Your text here...',
-                          shouldEnsureVisible: true,
-                          initialText:
-                              /*# cachedHyperbookList[currentCachedHyperbookIndex!]
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    HtmlEditor(
+                      controller: hTMLController,
+                      htmlEditorOptions: HtmlEditorOptions(
+                        hint: 'Your text here...',
+                        shouldEnsureVisible: true,
+                        initialText:
+                            /*# cachedHyperbookList[currentCachedHyperbookIndex!]
                                   .chapterList[currentCachedChapterIndex!]
                                   .body,*/
-                           'XXX7',//   localDB.getWorkingChapter()!.body!,
-                          autoAdjustHeight: true,
-                          spellCheck: true,
-                          // filePath: "assets/summernote.html",
-                        ),
-                        htmlToolbarOptions:
-                            (screenWidth < kPhonewWidthThreashold)
-                                ? smallScreenHtmlToolbarOptions
-                                : largeScreenHtmlToolbarOptions,
+                            'XXX7', //   localDB.getWorkingChapter()!.body!,
+                        autoAdjustHeight: true,
+                        spellCheck: true,
+                        // filePath: "assets/summernote.html",
+                      ),
+                      htmlToolbarOptions: (screenWidth < kPhonewWidthThreashold)
+                          ? smallScreenHtmlToolbarOptions
+                          : largeScreenHtmlToolbarOptions,
 
-                        /* HtmlToolbarOptions(
+                      /* HtmlToolbarOptions(
                           toolbarPosition: ToolbarPosition.aboveEditor,
                           toolbarType: ToolbarType.nativeGrid,
                           defaultToolbarButtons: [
@@ -1598,66 +1661,76 @@ class _HtmlEditorClassState extends State<HtmlEditorClass> {
                               fullscreen: false,
                             )
                           ],*/
-
-                        otherOptions: OtherOptions(
-                            height: MediaQuery.of(context).size.height -
-                                appBar.preferredSize.height),
-                        callbacks: Callbacks(
-                          onEnter: () {
-                            if (hasJustLoaded) {
-                              hTMLController.clear();
-                             /* hTMLController.insertHtml(
+                      otherOptions: OtherOptions(
+                        height:
+                            MediaQuery.of(context).size.height -
+                            appBar.preferredSize.height,
+                      ),
+                      callbacks: Callbacks(
+                        onEnter: () {
+                          if (hasJustLoaded) {
+                            hTMLController.clear();
+                            /* hTMLController.insertHtml(
                                   localDB.getWorkingChapter()!.body!);*/
-                              hasJustLoaded = false;
-                            }
-                            //>//>print('(CH114)${hasJustLoaded}');
-                          },
-                          onBeforeCommand: (String? currentHtml) {
-                            //%//>//>print('html before change is $currentHtml');
-                          },
-                          onChangeContent: (String? changed) async {
-                            // if (await hTMLController.getText() !=
-                                /*#    cachedHyperbookList[
+                            hasJustLoaded = false;
+                          }
+                          //>//>print('(CH114)${hasJustLoaded}');
+                        },
+                        onBeforeCommand: (String? currentHtml) {
+                          //%//>//>print('html before change is $currentHtml');
+                        },
+                        onChangeContent: (String? changed) async {
+                          // if (await hTMLController.getText() !=
+                          /*#    cachedHyperbookList[
                                         currentCachedHyperbookIndex!]
                                     .chapterList[currentCachedChapterIndex!]
                                     .body*/
-                         /*       localDB.getWorkingChapter()!.body!) {
+                          /*       localDB.getWorkingChapter()!.body!) {
                               // print(
                               //     '(PH1)$changed****${await hTMLController.getText()}++++${currentCachedChapterList[currentCachedChapterIndex!].body}');
                               hasChanged = true;
                               print('(IU9)${changed}');
                             }*/
-                          },
+                        },
 
-                            onImageLinkInsert:(String? link){
-                             print('(IU6)${link}');
-                            },
-                            onImageUpload: (FileUpload? file){
+                        onImageLinkInsert: (String? link) {
+                          print('(IU6)${link}');
+                        },
+                        onImageUpload: (FileUpload? file) {
+                          if (file != null) {
+                            print('(IU2)${file.name}');
+                            print('(IU3)${file.size}');
+                            print('(IU4)${file.type}');
+                          } else {
+                            print('(IU5)');
+                          }
+                        },
+                        onImageUploadError:
+                            (
+                              FileUpload? file,
+                              String? base64Str,
+                              UploadError error,
+                            ) {
+                              print('(IU1)${describeEnum(error)}');
+                              print(base64Str ?? '');
                               if (file != null) {
-                                print('(IU2)${file.name}');
-                                print('(IU3)${file.size}');
-                                print('(IU4)${file.type}');
-                              } else {
-                                print('(IU5)');
+                                //%print(file.name);
+                                //%print(file.size);
+                                //%print(file.type);
                               }
                             },
-                          onImageUploadError: (FileUpload? file,
-                              String? base64Str, UploadError error) {
-                            print('(IU1)${describeEnum(error)}');
-                            print(base64Str ?? '');
-                            if (file != null) {
-                              //%print(file.name);
-                              //%print(file.size);
-                              //%print(file.type);
-                            }
-                          },
-                          onNavigationRequestMobile: (String url) {
-                            //%print(url);
-                            return NavigationActionPolicy.ALLOW;
-                          },
-                        ),
+                        onNavigationRequestMobile: (String url) {
+                          //%print(url);
+                          return NavigationActionPolicy.ALLOW;
+                        },
                       ),
-                    ])))));
+                    ),
+                  ],
+                ),
+              ),
+        ),
+      ),
+    );
   }
 }
 

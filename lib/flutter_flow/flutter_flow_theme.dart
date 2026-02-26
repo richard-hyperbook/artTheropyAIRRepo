@@ -141,31 +141,31 @@ class LightModeTheme extends FlutterFlowTheme {
   @Deprecated('Use tertiary instead')
   Color get tertiaryColor => tertiary;
 
-  late Color primary = const Color(0xFF27415B);
-  late Color secondary = const Color(0xFF0A2B42);
-  late Color tertiary = const Color(0xFFA96D51);
-  late Color alternate = const Color(0xFFEBDBCE);
-  late Color primaryText = const Color(0xFF0E151B);
-  late Color secondaryText = const Color(0xFF8B9BA8);
-  late Color primaryBackground = const Color(0xFFFDF9F7);
+  late Color primary = const Color(0xFF4F46E5);
+  late Color secondary = const Color(0xFF3B82F6);
+  late Color tertiary = const Color(0xFFEC4899);
+  late Color alternate = const Color(0xFFEEF2F6);
+  late Color primaryText = const Color(0xFF0F172A);
+  late Color secondaryText = const Color(0xFF64748B);
+  late Color primaryBackground = const Color(0xFFF8FAFC);
   late Color secondaryBackground = const Color(0xFFFFFFFF);
   late Color accent1 = const Color(0xFF616161);
   late Color accent2 = const Color(0xFF757575);
   late Color accent3 = const Color(0xFFE0E0E0);
   late Color accent4 = const Color(0xFFEEEEEE);
-  late Color success = const Color(0xFF04A24C);
-  late Color warning = const Color(0xFFFCDC0C);
-  late Color error = const Color(0xFFE21C3D);
-  late Color info = const Color(0xFF1C4494);
+  late Color success = const Color(0xFF10B981);
+  late Color warning = const Color(0xFFF59E0B);
+  late Color error = const Color(0xFFEF4444);
+  late Color info = const Color(0xFF3B82F6);
 
   late Color white = const Color(0xFFFFFFFF);
-  late Color iconGray = const Color(0xFF8B97A2);
-  late Color grayDark = const Color(0xFF57636C);
-  late Color darkBG = const Color(0xFF111417);
-  late Color background = const Color(0xFFF1F4F8);
-  late Color grayLines = const Color(0xFFDBE2E7);
+  late Color iconGray = const Color(0xFF94A3B8);
+  late Color grayDark = const Color(0xFF475569);
+  late Color darkBG = const Color(0xFF0F172A);
+  late Color background = const Color(0xFFF1F5F9);
+  late Color grayLines = const Color(0xFFE2E8F0);
   late Color primaryBtnText = const Color(0xFFFFFFFF);
-  late Color lineColor = const Color(0xFFE0E3E7);
+  late Color lineColor = const Color(0xFFE2E8F0);
   late Color richBlackFOGRA39 = const Color(0xFF070707);
   late Color blue = const Color(0xFF3A28DE);
   late Color turquoise = const Color(0xFF34D1BF);
@@ -211,107 +211,107 @@ class ThemeTypography extends Typography {
 
   final FlutterFlowTheme theme;
 
-  String get displayLargeFamily => 'Montserrat';
+  String get displayLargeFamily => 'Outfit';
   TextStyle get displayLarge => GoogleFonts.getFont(
-        'Montserrat',
+        'Outfit',
         color: theme.primaryText,
         fontWeight: FontWeight.normal,
         fontSize: 57.0,
       );
-  String get displayMediumFamily => 'Montserrat';
+  String get displayMediumFamily => 'Outfit';
   TextStyle get displayMedium => GoogleFonts.getFont(
-        'Montserrat',
+        'Outfit',
         color: theme.primaryText,
         fontWeight: FontWeight.normal,
         fontSize: 45.0,
       );
-  String get displaySmallFamily => 'Montserrat';
+  String get displaySmallFamily => 'Outfit';
   TextStyle get displaySmall => GoogleFonts.getFont(
-        'Montserrat',
+        'Outfit',
         color: theme.primaryText,
         fontWeight: FontWeight.w500,
         fontSize: 34.0,
       );
-  String get headlineLargeFamily => 'Montserrat';
+  String get headlineLargeFamily => 'Outfit';
   TextStyle get headlineLarge => GoogleFonts.getFont(
-        'Montserrat',
+        'Outfit',
         color: theme.primaryText,
         fontWeight: FontWeight.normal,
         fontSize: 32.0,
       );
-  String get headlineMediumFamily => 'Rubik';
+  String get headlineMediumFamily => 'Inter';
   TextStyle get headlineMedium => GoogleFonts.getFont(
-        'Rubik',
+        'Inter',
         color: theme.primaryText,
         fontWeight: FontWeight.w300,
         fontSize: 40.0,
       );
-  String get headlineSmallFamily => 'Montserrat';
+  String get headlineSmallFamily => 'Outfit';
   TextStyle get headlineSmall => GoogleFonts.getFont(
-        'Montserrat',
+        'Outfit',
         color: theme.primaryText,
         fontWeight: FontWeight.w500,
         fontSize: 20.0,
       );
-  String get titleLargeFamily => 'Montserrat';
+  String get titleLargeFamily => 'Outfit';
   TextStyle get titleLarge => GoogleFonts.getFont(
-        'Montserrat',
+        'Outfit',
         color: theme.primaryText,
         fontWeight: FontWeight.w500,
         fontSize: 22.0,
       );
-  String get titleMediumFamily => 'Rubik';
+  String get titleMediumFamily => 'Inter';
   TextStyle get titleMedium => GoogleFonts.getFont(
-        'Rubik',
+        'Inter',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 18.0,
       );
-  String get titleSmallFamily => 'Rubik';
+  String get titleSmallFamily => 'Inter';
   TextStyle get titleSmall => GoogleFonts.getFont(
-        'Rubik',
+        'Inter',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 16.0,
       );
-  String get labelLargeFamily => 'Montserrat';
+  String get labelLargeFamily => 'Outfit';
   TextStyle get labelLarge => GoogleFonts.getFont(
-        'Montserrat',
+        'Outfit',
         color: theme.primaryText,
         fontWeight: FontWeight.w500,
         fontSize: 14.0,
       );
-  String get labelMediumFamily => 'Montserrat';
+  String get labelMediumFamily => 'Outfit';
   TextStyle get labelMedium => GoogleFonts.getFont(
-        'Montserrat',
+        'Outfit',
         color: theme.primaryText,
         fontWeight: FontWeight.w500,
         fontSize: 12.0,
       );
-  String get labelSmallFamily => 'Montserrat';
+  String get labelSmallFamily => 'Outfit';
   TextStyle get labelSmall => GoogleFonts.getFont(
-        'Montserrat',
+        'Outfit',
         color: theme.primaryText,
         fontWeight: FontWeight.w500,
         fontSize: 11.0,
       );
-  String get bodyLargeFamily => 'Montserrat';
+  String get bodyLargeFamily => 'Outfit';
   TextStyle get bodyLarge => GoogleFonts.getFont(
-        'Montserrat',
+        'Outfit',
         color: theme.primaryText,
         fontWeight: FontWeight.normal,
         fontSize: 16.0,
       );
-  String get bodyMediumFamily => 'Rubik';
+  String get bodyMediumFamily => 'Inter';
   TextStyle get bodyMedium => GoogleFonts.getFont(
-        'Rubik',
+        'Inter',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 14.0,
       );
-  String get bodySmallFamily => 'Rubik';
+  String get bodySmallFamily => 'Inter';
   TextStyle get bodySmall => GoogleFonts.getFont(
-        'Rubik',
+        'Inter',
         color: theme.secondaryText,
         fontWeight: FontWeight.w600,
         fontSize: 14.0,
@@ -326,31 +326,31 @@ class DarkModeTheme extends FlutterFlowTheme {
   @Deprecated('Use tertiary instead')
   Color get tertiaryColor => tertiary;
 
-  late Color primary = const Color(0xFF27415B);
-  late Color secondary = const Color(0xFF0A2B42);
-  late Color tertiary = const Color(0xFFA96D51);
-  late Color alternate = const Color(0xFF232F3C);
-  late Color primaryText = const Color(0xFFFFFFFF);
-  late Color secondaryText = const Color(0xFFACB9C4);
-  late Color primaryBackground = const Color(0xFF111D28);
-  late Color secondaryBackground = const Color(0xFF0E151B);
+  late Color primary = const Color(0xFF6366F1);
+  late Color secondary = const Color(0xFF3B82F6);
+  late Color tertiary = const Color(0xFFF472B6);
+  late Color alternate = const Color(0xFF1E293B);
+  late Color primaryText = const Color(0xFFF8FAFC);
+  late Color secondaryText = const Color(0xFF94A3B8);
+  late Color primaryBackground = const Color(0xFF0F172A);
+  late Color secondaryBackground = const Color(0xFF1E293B);
   late Color accent1 = const Color(0xFFEEEEEE);
   late Color accent2 = const Color(0xFFE0E0E0);
   late Color accent3 = const Color(0xFF757575);
   late Color accent4 = const Color(0xFF616161);
-  late Color success = const Color(0xFF04A24C);
-  late Color warning = const Color(0xFFFCDC0C);
-  late Color error = const Color(0xFFE21C3D);
-  late Color info = const Color(0xFF1C4494);
+  late Color success = const Color(0xFF10B981);
+  late Color warning = const Color(0xFFF59E0B);
+  late Color error = const Color(0xFFEF4444);
+  late Color info = const Color(0xFF3B82F6);
 
   late Color white = const Color(0xFFFFFFFF);
-  late Color iconGray = const Color(0xFF8B97A2);
-  late Color grayDark = const Color(0xFF57636C);
-  late Color darkBG = const Color(0xFF111417);
-  late Color background = const Color(0xFFF1F4F8);
-  late Color grayLines = const Color(0xFFDBE2E7);
+  late Color iconGray = const Color(0xFF94A3B8);
+  late Color grayDark = const Color(0xFF475569);
+  late Color darkBG = const Color(0xFF020617);
+  late Color background = const Color(0xFF0F172A);
+  late Color grayLines = const Color(0xFF334155);
   late Color primaryBtnText = const Color(0xFFFFFFFF);
-  late Color lineColor = const Color(0xFF22282F);
+  late Color lineColor = const Color(0xFF334155);
   late Color richBlackFOGRA39 = const Color(0xFF070707);
   late Color blue = const Color(0xFF3A28DE);
   late Color turquoise = const Color(0xFF34D1BF);

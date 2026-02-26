@@ -22,8 +22,8 @@ environment:
   sdk: ">=3.6.0 <4.0.0"
 
 dependencies:
-  #flutter:
-  #  sdk: flutter
+  flutter:
+    sdk: flutter
   #flutter_localizations:
   #  sdk: flutter
   #algolia: ^1.1.2

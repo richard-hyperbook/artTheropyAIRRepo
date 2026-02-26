@@ -1,13 +1,8 @@
-import 'appwrite_interface.dart';
-import 'app_state.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as models;
 
-import 'custom_code/widgets/permissions.dart';
 import '/flutter_flow/random_data_util.dart' as random_data;
 import '../../appwrite_interface.dart';
-
-
 
 const kAttHyperbookReference = 'reference';
 const kAttHyperbookModerator = 'moderator';
@@ -23,12 +18,12 @@ const kDBupdatedAt = '\$updatedAt';
 const kSessionClientId = 'clientId';
 const kSessionTherapistId = 'therapistId';
 const kSessionStepSessionId = 'sessionId';
-const kSessionStepPhoto= 'photo';
-const kSessionStepAudio= 'audio';
-const kSessionStepCompleted= 'completed';
-const kSessionStepTranscription= 'transcription';
-const kSessionStepIndex= 'index';
-const kSessionStepQuestion= 'question';
+const kSessionStepPhoto = 'photo';
+const kSessionStepAudio = 'audio';
+const kSessionStepCompleted = 'completed';
+const kSessionStepTranscription = 'transcription';
+const kSessionStepIndex = 'index';
+const kSessionStepQuestion = 'question';
 const kUserEmail = 'email';
 const kUserDisplayName = 'displayName';
 const kUserPhoneNumber = 'phoneNumber';
@@ -113,5 +108,5 @@ const double kIconButtonWidth = 150;
 const double kIconButtonHeight = 40;
 const double kIconButtonGap = 20;
 
-const kAttrStorageName ='name';
-const kAttrStorageId ='\$id';
+const kAttrStorageName = 'name';
+const kAttrStorageId = '\$id';
