@@ -42,6 +42,13 @@ import 'package:ffmpeg_kit_flutter_new/statistics.dart';
 import '../../platform/audio_recorder_platform.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
+import 'dart:convert';
+import 'package:ffmpeg_kit_flutter_new/return_code.dart';
+import 'package:image/image.dart' as image2;
+import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:io' as Io;
+import 'package:image/image.dart' as superImage;
 
 int _count = 0;
 bool _iHaveRequests = false;
@@ -104,7 +111,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
         margin: EdgeInsets.all(5),
         padding: EdgeInsets.all(5),
         width: MediaQuery.sizeOf(context).width * 1.0,
-        height: 400.0,
+        height: 600.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(16)),
           color: FlutterFlowTheme.of(context).secondaryBackground,
@@ -190,6 +197,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
               ]),
               SizedBox(height: kIconButtonGap),
               FlutterFlowIconButton(
+                showLoadingIndicator: true,
                 caption: 'Make video',
                 tooltipMessage: 'Speech to text',
                 borderColor: Colors.transparent,
@@ -203,7 +211,29 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                   List<SessionStepsRecord> sessionStepsList =
                       await listSessionStepList(justCurrentSession: true);
                   String tempDirPath = await getTempDirPath();
-                  print('(VC1)${tempDirPath}');
+                  print('(VC1A)${tempDirPath}');
+                  final utf8Encoder = utf8.encoder;
+                  var dir =
+                      Directory.fromRawPath(utf8Encoder.convert(tempDirPath));
+                  await for (var entity
+                      in dir.list(recursive: true, followLinks: false)) {
+                    print('(VC1B)${entity.path}');
+                    if (entity.path.contains('audio')) {
+                      File file = File(entity.path);
+                      print('(VC1CA)${entity.path}');
+                      await file.delete();
+                    }
+                    if (entity.path.contains('photo')) {
+                      File file = File(entity.path);
+                      print('(VC1CB)${entity.path}');
+                      await file.delete();
+                    }
+                    if (entity.path.contains('video')) {
+                      File file = File(entity.path);
+                      print('(VC1CC)${entity.path}');
+                      await file.delete();
+                    }
+                  }
                   for (int i = 0; i < 1 /*sessionStepsList.length*/; i++) {
                     SessionStepsRecord sessionStep = sessionStepsList[i];
                     currentSessionStep = sessionStepsList[i];
@@ -213,11 +243,12 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                     final maxPhotoVersion =
                         currentSessionStep!.maxPhotoVersion!;
                     final String audioPath =
-                        '${tempDirPath}/audio_${i.toString()}.wav';
+                        '${tempDirPath}/audio_${(i + 1).toString()}.wav';
                     final String photoPath =
-                        '${tempDirPath}/photo_${i.toString()}.jpg';
+                        '${tempDirPath}/photo_${(i + 1).toString()}.jpg';
                     final String videoPath =
-                        '${tempDirPath}/video_${i.toString()}.mp4';
+                        '${tempDirPath}/video_${(i + 1).toString()}.mp4';
+                    print('(VC1D)');
                     bool okAudio = await copyStorageFiletoLocal(
                       bucketId: artTheopyAIRaudiosRef.path,
                       fileId: generateAudioStorageFilename(
@@ -226,9 +257,9 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                       fileKind: FileKind.audio,
                     );
                     print(
-                        '(VC2)${i}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====');
+                        '(VC2)${i}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====${generateAudioStorageFilename(sessionStep, maxAudioVersion)}');
                     print(
-                        '(VC3)${i}~~~~${generatePhotoStorageFilename(sessionStep, maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
+                        '(VC3A)${i}~~~~${generatePhotoStorageFilename(sessionStep, maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
                     bool okPhoto = await copyStorageFiletoLocal(
                       bucketId: artTheopyAIRphotosRef.path,
                       fileId: generatePhotoStorageFilename(
@@ -236,15 +267,96 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                       localPath: photoPath,
                       fileKind: FileKind.photo,
                     );
+                    // Image photoImage = Image.file(File(photoPath));
+                    superImage.Image? image = superImage.decodeImage(File(photoPath).readAsBytesSync());
+                    superImage.Image? resizedImage = superImage.copyResize(image!, width: 500, height: 500);
+                    File(photoPath).writeAsBytesSync(superImage.encodeJpg(resizedImage));
+                    print('(VC3P)${resizedImage.frameType}');
+
+                    Image modifiedImage = Image(
+                      image: ResizeImage(
+                        FileImage(File(photoPath)),
+                        width: 500,
+                        height: 500,
+                      ),
+                    );
+
                     print(
-                        '(VC4)${i}~~~~${okPhoto}....${maxPhotoVersion},,,,${photoPath}====');
+                        '(VC4A)${i}~~~~${okPhoto}....${maxPhotoVersion},,,,${photoPath}<');
+                    dir =
+                        Directory.fromRawPath(utf8Encoder.convert(tempDirPath));
+                    await for (var entity
+                        in dir.list(recursive: true, followLinks: false)) {
+                      print(
+                          '(VC4B)${entity.path}....${entity.statSync().size}');
+                    }
                     final String command =
                         '-loop 1 -i ${photoPath} -i ${audioPath} -shortest ${videoPath}';
-
+                    print('(VC4C)${command}');
                     String logString = 'Logs will appear here...';
-                    await FFmpegKit.executeAsync(
+
+                    var ffMpegResponse = await FFmpegKit.executeAsync(
                       command,
                       (Session session) async {
+                        print('(VC9A)${logString}');
+
+                        final output = await session.getOutput();
+                        final returnCode = await session.getReturnCode();
+                        final duration = await session.getDuration();
+                        print(
+                            '(VC9B)${returnCode!.toString()}....${returnCode.getValue()},,,,${output!.length}----${output.characters.length}>>>>${duration}');
+                        //  setState(() {
+                        logString += '\n✅ Processing completed!\n';
+                        logString += 'Return code: $returnCode\n';
+                        logString += 'Duration: ${duration}ms\n';
+                        logString += 'Output: $output\n';
+                        //  isProcessing = false;
+                        //});
+
+                        debugPrint('session: $output');
+                        print('(VC9C)${logString}');
+
+                        //  print('(VC5A)${ffMpegResponse.getReturnCode()}....${ffMpegResponse.getState()},,,,${videoPath}');
+                        int maxVideoVersion = await getMaxVersionNumber(
+                            bucketId: artTheopyAIRvideosRef.path!,
+                            fileId: currentSession!.reference!.path!);
+                        String videoStorageId = generateVideoStorageFilename(
+                            currentSession!, maxVideoVersion + 1);
+                        print(
+                            '(VC9D)${maxVideoVersion}....${videoStorageId},,,,${videoPath}');
+                        await storeStorageFile(
+                          bucketId: artTheopyAIRvideosRef.path,
+                          storageFileId: videoStorageId,
+                          localFilePath: videoPath,
+                        );
+                      },
+                      (Log log) {
+                        // setState(() {
+                        logString += log.getMessage();
+                        // });
+                        debugPrint('log: ${log.getMessage()}');
+                      },
+                      (Statistics statistics) {
+                        // setState(() {
+                        logString +=
+                            '\n📊 Progress: ${statistics.getSize()} bytes, ${statistics.getTime()}ms\n';
+                        // });
+                        debugPrint('statistics: ${statistics.getSize()}');
+                      },
+                    );
+
+                    /*  var ffmpegResponse = await FFmpegKit.execute(
+                      command).then((session) async {
+                      final returnCode = await session.getReturnCode();
+                      if (ReturnCode.isSuccess(returnCode)) {
+                        print('(FF1)${returnCode}');
+                      } else if (ReturnCode.isCancel(returnCode)) {
+                        print('(FF2)${returnCode}');
+                      } else {
+                        print('(FF3)${returnCode}....${await session.getState()}====${await session.getCommand()}----${await session.getAllLogsAsString()}');
+                      }
+                    });*/
+                    /* (Session session) async
                         final output = await session.getOutput();
                         final returnCode = await session.getReturnCode();
                         final duration = await session.getDuration();
@@ -258,34 +370,60 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                         });
 
                         debugPrint('session: $output');
-                      },
-                      (Log log) {
+                      },*/
+                    /*(Log log) {
                         setState(() {
                           logString += log.getMessage();
                         });
                         debugPrint('log: ${log.getMessage()}');
-                      },
-                      (Statistics statistics) {
+                      },*/
+                    /*(Statistics statistics) {
                         setState(() {
                           logString +=
                               '\n📊 Progress: ${statistics.getSize()} bytes, ${statistics.getTime()}ms\n';
                         });
                         debugPrint('statistics: ${statistics.getSize()}');
-                      },
-                    );
-                    print('(VC4)${logString}');
-                    videoController =
-                        VideoPlayerController.file(File(videoPath))
-                          ..initialize().then((_) {
-                            //    Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-                          });
+                      },*/
                   }
-                  ;
-
                   // String  command =
                   // " -y -framerate 1 -pattern_type sequence -i $pictureFilenames -c:v libx264 -r 30 -pix_fmt yuv420p ${generatedFile.path}";
                 },
               ),
+              SizedBox(height: kIconButtonGap),
+              FlutterFlowIconButton(
+                  caption: 'Play video',
+                  tooltipMessage: 'Play video',
+                  borderColor: Colors.transparent,
+                  borderRadius: 0.0,
+                  borderWidth: 1.0,
+                  buttonSize: 40.0,
+                  buttonWidth: kIconButtonWidth,
+                  icon: Icon(Icons.video_camera_back_outlined),
+                  onPressed: () async {
+                    int maxVideoVersion = await getMaxVersionNumber(
+                        bucketId: artTheopyAIRvideosRef.path!,
+                        fileId: currentSession!.reference!.path!);
+                    String videoStorageId = generateVideoStorageFilename(
+                        currentSession!, maxVideoVersion);
+                    String tempDirPath = await getTempDirPath();
+                    String videoPlayPath = '${tempDirPath}/video_play.mp4';
+                    print(
+                        '(VC12)${maxVideoVersion}....${videoStorageId},,,,${videoPlayPath}');
+                    bool okVideo = await copyStorageFiletoLocal(
+                      bucketId: artTheopyAIRvideosRef.path,
+                      fileId: videoStorageId,
+                      localPath: videoPlayPath,
+                      fileKind: FileKind.video,
+                    );
+                    print('(VC13)${maxVideoVersion}....${videoPlayPath}');
+                    videoController =
+                        VideoPlayerController.file(File(videoPlayPath))
+                          ..initialize().then((_) {
+                            //    Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+                          });
+                    // setState(() {
+                    // });
+                  }),
               // SizedBox(
               //   width: 300,
               //   height: 200,
@@ -306,18 +444,21 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
               //     ),*/
               //   )
               // )
-
-              SizedBox(
-                width: 300,
-                height: 200,
-                child: FittedBox(
-                  alignment: Alignment.center,
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    height: videoController.value.size.height,
-                    width: videoController.value.size.width,
-                    child: VideoPlayer(
-                      videoController,
+              SizedBox(height: 100),
+              Container(
+                color: Colors.amber,
+                child: SizedBox(
+                  width: 300,
+                  height: 200,
+                  child: FittedBox(
+                    alignment: Alignment.center,
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      height: videoController.value.size.height,
+                      width: videoController.value.size.width,
+                      child: VideoPlayer(
+                        videoController,
+                      ),
                     ),
                   ),
                 ),

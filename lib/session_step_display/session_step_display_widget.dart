@@ -47,6 +47,7 @@ import 'package:appwrite/appwrite.dart' as appwrite;
 
 import 'package:appwrite/models.dart' as models;
 import 'package:appwrite/enums.dart' as enums;
+import 'package:compressor/compressor.dart';
 
 http.Client _http = http.Client();
 
@@ -209,18 +210,18 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                       onStart: () async {
                         currentSessionStep = sessionStep;
                         await setMaxVersionNumbersCurrentSessionStep();
-                        print('(DE3A)${currentSessionStep!.reference!.path}');
+                        print('(DE3A)${currentSessionStep!.reference!.path}....${currentSessionStep!.maxAudioVersion!}');
                         return currentSessionStep!.maxAudioVersion!;
                       },
                       onStop: (path) async {
                         print(
-                          '(DE1)$path....${currentSessionStep!.maxPhotoVersion!}',
+                          '(DE1)$path....${currentSessionStep!.maxAudioVersion!}',
                         );
                         await storeStorageFile(
                           bucketId: artTheopyAIRaudiosRef.path!,
-                          storageFilename: generateAudioStorageFilename(
+                          storageFileId: generateAudioStorageFilename(
                             sessionStep,
-                            currentSessionStep!.maxPhotoVersion! + 1,
+                            currentSessionStep!.maxAudioVersion! + 1,
                           ),
                           localFilePath: path,
                         );
@@ -247,7 +248,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                       onPlay: (String localPath) async {
                         currentSessionStep = sessionStep;
                         await setMaxVersionNumbersCurrentSessionStep();
-                        if (currentSessionStep!.maxPhotoVersion! < 1) {
+                        if (currentSessionStep!.maxAudioVersion! < 1) {
                           toast(
                             context,
                             'No recording stored',
@@ -256,29 +257,29 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                         } else {
                           String correctedLocalPath = localPath.replaceAll(
                             '999999',
-                            maxVersion.toString(),
+                            (currentSessionStep!.maxAudioVersion!).toString(),
                           );
                           print(
-                            '(DE33A)${sessionStep.reference!.path!}....${localPath},,,,${maxVersion}++++${correctedLocalPath}oooo${generateAudioStorageFilename(sessionStep, maxVersion)}',
+                            '(DE33A)${sessionStep.reference!.path!}....${localPath},,,,${currentSessionStep!.maxAudioVersion!}++++${correctedLocalPath}~~~~${generateAudioStorageFilename(sessionStep, currentSessionStep!.maxAudioVersion!)}',
                           );
                           bool ok = await copyStorageFiletoLocal(
                             bucketId: artTheopyAIRaudiosRef.path,
                             fileId: generateAudioStorageFilename(
                               sessionStep,
-                              maxVersion,
+                              currentSessionStep!.maxAudioVersion!,
                             ),
                             localPath: correctedLocalPath,
                             fileKind: FileKind.audio,
                           );
                           print(
-                            '(DE33B)${generateAudioStorageFilename(sessionStep, maxVersion)}',
+                            '(DE33B)${generateAudioStorageFilename(sessionStep, currentSessionStep!.maxAudioVersion!)}',
                           );
                           if (maxVersion < 1) {
                             toast(context, 'Error in replay', ToastKind.error);
                           }
                         }
-                        print('(DE39)${maxVersion}');
-                        return maxVersion;
+                        print('(DE39)${currentSessionStep!.maxAudioVersion!}');
+                        return currentSessionStep!.maxAudioVersion!;
                       },
                       onDelete: () {
                         print('(DE7)');
@@ -295,6 +296,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                 Column(
                   children: [
                     FlutterFlowIconButton(
+                      showLoadingIndicator: true,
                       caption: 'Select photo',
                       tooltipMessage: 'Select photo from gallery',
                       borderColor: Colors.transparent,
@@ -312,6 +314,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                     ),
                     SizedBox(height: kIconButtonGap),
                     FlutterFlowIconButton(
+                      showLoadingIndicator: true,
                       caption: 'Transcribe',
                       tooltipMessage: 'Speech to text',
                       borderColor: Colors.transparent,
@@ -418,7 +421,22 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
       picker = ImagePicker();
       PickedFile pickedFile;
 
-      XFile? imageFile = await picker.pickImage(source: ImageSource.gallery);
+      XFile? imageFile = await picker.pickImage(
+          source: ImageSource.gallery, maxWidth: 500, maxHeight: 500, imageQuality: 50);
+      print('(FF20)${await imageFile!.length()}....${imageFile.path}');
+
+     /* var result = await FlutterImageCompress.compressWithFile(
+        imageFile.path,
+        minWidth: 500,
+        minHeight: 500,
+        quality: 94,
+      );
+      print('(FF21)${imageFile.length()}....${result!.length}...${result}');
+*/
+      Compressor compressor = Compressor(path: imageFile.path, isLocal: true);
+      String result = compressor.compressVideo(); // Replace with a real image compression method in future updates
+
+      print('(FF20)${await imageFile!.length()}....${imageFile.path},,,,${result}');
 
       String localFilePath = imageFile!
           .path; //= await getPath(sessionStepId: sessionStep.reference!.path!, fileKind: FileKind.photo);
@@ -427,7 +445,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
       );
       await storeStorageFile(
         bucketId: artTheopyAIRphotosRef.path!,
-        storageFilename: generatePhotoStorageFilename(
+        storageFileId: generatePhotoStorageFilename(
           sessionStep,
           currentSessionStep!.maxPhotoVersion! + 1,
         ),

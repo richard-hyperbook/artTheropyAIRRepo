@@ -99,6 +99,12 @@ final DocumentReference artTheopyAIRphotosRef = DocumentReference(
 final DocumentReference artTheopyAIRaudiosRef = DocumentReference(
   path: '698c93a00006c743c31f',
 );
+final DocumentReference artTheopyAIRvideosRef = DocumentReference(
+  path: '69a00b070018aac953fa',
+);
+
+
+
 final DocumentReference constraintsRef = DocumentReference(path: '');
 
 // LocalDB localDB = LocalDB();
@@ -831,10 +837,17 @@ String generateAudioStorageFilename(
 }
 
 String generatePhotoStorageFilename(
-  SessionStepsRecord sessionStep,
-  int version,
-) {
+    SessionStepsRecord sessionStep,
+    int version,
+    ) {
   return 'photo${sessionStep.reference!.path}_${version}.jpg';
+}
+
+String generateVideoStorageFilename(
+    SessionsRecord session,
+    int version,
+    ) {
+  return 'video${session.reference!.path}_${version}.mp4';
 }
 
 Future<List<SessionsRecord>> listSessionList({
@@ -881,11 +894,11 @@ Future<List<SessionsRecord>> listSessionList({
 Future<void> setMaxVersionNumbersCurrentSessionStep() async {
   final int maxAudioVersion = await getMaxVersionNumber(
     bucketId: artTheopyAIRaudiosRef.path!,
-    sessionStepId: currentSessionStep!.reference!.path!,
+    fileId: currentSessionStep!.reference!.path!,
   );
   final int maxPhotoVersion = await getMaxVersionNumber(
     bucketId: artTheopyAIRphotosRef.path!,
-    sessionStepId: currentSessionStep!.reference!.path!,
+    fileId: currentSessionStep!.reference!.path!,
   );
   currentSessionStep!.maxAudioVersion = maxAudioVersion;
   currentSessionStep!.maxPhotoVersion = maxPhotoVersion;
@@ -896,15 +909,15 @@ Future<void> setMaxVersionNumbersCurrentSessionStep() async {
 
 Future<int> getMaxVersionNumber({
   required String bucketId,
-  required String sessionStepId,
+  required String fileId,
 }) async {
-  print('(DE79)${bucketId}....${sessionStepId}');
+  print('(DE79)${bucketId}....${fileId}');
   models.FileList? fileList;
   try {
     fileList = await storage.listFiles(
       bucketId: bucketId,
       queries: [
-        Query.contains(kAttrStorageId, sessionStepId),
+        Query.contains(kAttrStorageId, fileId),
         Query.limit(kLimitStorageListDocuments),
       ],
     );
@@ -966,11 +979,11 @@ Future<List<SessionStepsRecord>> listSessionStepList({
   for (models.Document d in docs.documents) {
     int maxPhotoVersion = await getMaxVersionNumber(
       bucketId: artTheopyAIRphotosRef.path!,
-      sessionStepId: d.$id,
+      fileId: d.$id,
     );
     int maxAudioVersion = await getMaxVersionNumber(
       bucketId: artTheopyAIRaudiosRef.path!,
-      sessionStepId: d.$id,
+      fileId: d.$id,
     );
     print(
       '(SS13)${d.$id}&&&&${d.data[kSessionStepPhoto]}^^^^${maxPhotoVersion}',
@@ -1314,20 +1327,20 @@ Future<String?> createStorageImageFile({
 
 Future<String?> storeStorageFile({
   required String? bucketId,
-  required String? storageFilename,
+  required String? storageFileId,
   required String? localFilePath,
 }) async {
-  print('(AU30)${bucketId},,,,${storageFilename}...${localFilePath}');
+  print('(AU30)${bucketId},,,,${storageFileId}...${localFilePath}');
   models.File result = await storage.createFile(
     bucketId: bucketId!,
-    fileId: storageFilename!,
+    fileId: storageFileId!,
     file: InputFile.fromPath(path: localFilePath!),
   );
-  var file = await storage.getFile(bucketId: bucketId, fileId: storageFilename);
+  var file = await storage.getFile(bucketId: bucketId, fileId: storageFileId);
   print('(AU62)${file.toString()}++++${result.name}@@@@${file.name}~~~~');
   const String head = imageFilenameHead;
   final b_id = artTheopyAIRphotosRef.path!;
-  final f_id = storageFilename;
+  final f_id = storageFileId;
   final p_id = kProjectID;
   final String url =
       '${head}/${b_id}/files/${f_id}/preview?project=${p_id}&mode=admin';

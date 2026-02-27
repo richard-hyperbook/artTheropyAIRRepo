@@ -237,10 +237,10 @@ packages:
     dependency: transitive
     description:
       name: characters
-      sha256: faf38497bda5ead2a8c7615f4f7939df04333478bf32e4173fcb06d428b5716b
+      sha256: f71061c654a3380576a52b451dd5532377954cf9dbd272a78fc8479606670803
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.1"
+    version: "1.4.0"
   charcode:
     dependency: transitive
     description:
@@ -313,6 +313,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+  compressor:
+    dependency: "direct main"
+    description:
+      name: compressor
+      sha256: "58e1b8e81c9338d9ac1ce5de238ea4da552a2f4b3d9d41d864437d1936c170a7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   convert:
     dependency: transitive
     description:
@@ -896,6 +904,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.15.6"
+  gallery_saver_plus:
+    dependency: "direct main"
+    description:
+      name: gallery_saver_plus
+      sha256: fd4a50eb7b90b1dd8d926ab34dc62abd428feb72f780d4aaf17dcaae12f6743f
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.9"
   get_it:
     dependency: transitive
     description:
@@ -1025,13 +1041,13 @@ packages:
     source: hosted
     version: "4.1.2"
   image:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: image
-      sha256: "492bd52f6c4fbb6ee41f781ff27765ce5f627910e1e0cbecfa3d9add5562604c"
+      sha256: f9881ff4998044947ec38d098bc7c8316ae1186fa786eddffdb867b9bc94dfce
       url: "https://pub.dev"
     source: hosted
-    version: "4.7.2"
+    version: "4.8.0"
   image_picker:
     dependency: "direct main"
     description:
@@ -1236,10 +1252,10 @@ packages:
     dependency: transitive
     description:
       name: material_color_utilities
-      sha256: "9c337007e82b1889149c82ed242ed1cb24a66044e30979c44912381e9be4c48b"
+      sha256: f7142bb1154231d7ea5f96bc7bde4bda2a0945d2806bb11670e30b850d56bdec
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.0"
+    version: "0.11.1"
   maybe_just_nothing:
     dependency: transitive
     description:
