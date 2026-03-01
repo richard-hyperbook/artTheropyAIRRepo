@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../appwrite_interface.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_icon_button.dart';
+import '../../app_state.dart';
 
 class TemplatesPageWidget extends StatefulWidget {
   const TemplatesPageWidget({super.key});
@@ -128,7 +130,7 @@ class _TemplatesPageWidgetState extends State<TemplatesPageWidget> {
   }
 
   void _deleteTemplate(TemplatesRecord template) async {
-    bool confirm = await showDialog(
+    bool? confirm = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
               title: Text('Delete Template'),
@@ -144,7 +146,7 @@ class _TemplatesPageWidgetState extends State<TemplatesPageWidget> {
               ],
             ));
 
-    if (confirm) {
+    if (confirm!) {
       await deleteTemplate(template.reference!);
       _loadTemplates();
     }
@@ -158,6 +160,21 @@ class _TemplatesPageWidgetState extends State<TemplatesPageWidget> {
         title: Text('Templates', style: TextStyle(color: Colors.white)),
         backgroundColor: FlutterFlowTheme.of(context).primary,
         iconTheme: IconThemeData(color: Colors.white),
+        actions:[
+          FlutterFlowIconButton(
+            enabled: true,
+            fillColor: Colors.white,
+            tooltipMessage: 'Create Session',
+            borderColor: FlutterFlowTheme.of(context).primary,
+            borderRadius: 30,
+            borderWidth: 1,
+            buttonSize: 40,
+            onPressed: () {
+              _addTemplate(null);
+            },
+            icon: kIconAdd,
+          ),
+        ]
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -167,6 +184,7 @@ class _TemplatesPageWidgetState extends State<TemplatesPageWidget> {
                 final template = _allTemplates![index];
                 final isOwner =
                     template.creatorId?.path == currentUser?.reference?.path;
+                print('(TP1)${template.creatorId?.path}....${currentUser?.reference?.path}');
                 // Supervisors can also delete/edit master templates if needed, but per requirements: "all users access these as read-only. Each user can only access master templates and those they created."
                 // Wait, if a supervisor created a master template, they are its owner, so they can delete it anyway!
                 return Card(
@@ -201,11 +219,11 @@ class _TemplatesPageWidgetState extends State<TemplatesPageWidget> {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _addTemplate(null),
-        child: Icon(Icons.add),
-        backgroundColor: FlutterFlowTheme.of(context).primary,
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () => _addTemplate(null),
+      //   child: Icon(Icons.add),
+      //   backgroundColor: FlutterFlowTheme.of(context).primary,
+      // ),
     );
   }
 }

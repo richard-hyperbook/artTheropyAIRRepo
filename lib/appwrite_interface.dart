@@ -868,17 +868,30 @@ Future<List<TemplatesRecord>> listTemplateList() async {
   models.DocumentList docs = await listDocuments(
     collection: templatesRef,
   );
-  
+  print('(TP2)${docs.documents.length}');
   List<TemplatesRecord> items = [];
   for (models.Document doc in docs.documents) {
-    List<dynamic>? q = doc.data['questions'];
+    print('(TP4)${doc.$id}');
+    print('(TP5)${doc.data['questions']}');
+    print('(TP6)${doc.data['name']}');
+    // List<String>? q = doc.data['questions'] as List<dynamic>;
+    var qq = doc.data['questions'] as List<dynamic>;
+    List<String> qqq = [];
+    if (qq.length > 0){
+      for(int i = 0; i < qq.length; i++){
+        qqq.add(qq[i] as String);
+        print('(TP7)${qqq}');
+      }
+    }
     items.add(TemplatesRecord(
       reference: DocumentReference(path: doc.$id),
-      name: doc.data['name'],
-      questions: q?.map((e) => e.toString()).toList() ?? [],
-      isMaster: doc.data['isMaster'] ?? false,
-      creatorId: DocumentReference(path: doc.data['creatorId']),
+      name: doc.data['name'] as String,
+      questions: qqq, //q?.map((e) => e.toString()).toList() ?? [],
+      isMaster: (doc.data['isMaster'] as bool?) ?? false,
+      creatorId:  DocumentReference(path: (doc.data['creatorId'] as String)),
+
     ));
+    print('(TP3)${doc.$id}');
   }
   return items;
 }

@@ -12,7 +12,7 @@ import 'flutter_flow/flutter_flow_theme.dart';
 import 'dart:math';
 import 'appwrite_interface.dart';
 
-final int versionNumber = 19;
+final int versionNumber = 20;
 
 late SharedPreferences globalSharedPrefs;
 DocumentReference? _introductionHyperbook;
@@ -411,6 +411,7 @@ final kIconMinimizeAllWhite = Container(
 const kIconMenu = Icon(Icons.menu);
 const kIconCancel = Icon(Icons.cancel);
 const kIconUpgrade = Icon(Icons.upgrade);
+const kIconAdd = Icon(Icons.add);
 
 const Map<String, Icon> kIconMapStandard = {
   'thumb_down': Icon(Icons.thumb_down),
@@ -449,6 +450,7 @@ const Map<String, Icon> kIconMapStandard = {
   'menu': Icon(Icons.menu),
   'cancel': Icon(Icons.cancel),
   'upgrade': Icon(Icons.upgrade),
+  'add': Icon(Icons.add),
 };
 
 const Map<String, Widget> kIconMap = {
@@ -502,6 +504,7 @@ const Map<String, Widget> kIconMap = {
   "kIconMenu": kIconMenu,
   "kIconCancel": kIconCancel,
   "kIconUpgrade": kIconUpgrade,
+  "kIconAdd": kIconAdd,
   // "kIconImageReverse": kIconImageReverse,
 };
 

@@ -575,35 +575,22 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                       ),
                       actions: [
                         // insertOutstandingRequestsButton(context),
+
+                        FlutterFlowIconButton(
+                          enabled: true,
+                          fillColor: Colors.white,
+                          tooltipMessage: 'Create Session',
+                          borderColor: FlutterFlowTheme.of(context).primary,
+                          borderRadius: 30,
+                          borderWidth: 1,
+                          buttonSize: 40,
+                          onPressed: () {
+
+                          },
+                          icon: kIconAdd,
+                        ),
                         insertMenu(
                             context, hyperbookDisplayMenuDetails, setState),
-                        GestureDetector(
-                            onTap: () async {
-                              //# await loadCachedChaptersReadReferencesCachedHyperbookIndex(
-                              //#     hyperbook: tutorialHyperbook, user: currentUser);
-                              // localDB.setTutorialAsWorkingHyperbook();
-                              toast(
-                                  context,
-                                  'Please wait while Hyperbook Tutorial loads',
-                                  ToastKind.success);
-
-                              Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    type: kStandardPageTransitionType,
-                                    duration: kStandardTransitionTime,
-                                    reverseDuration:
-                                        kStandardReverseTransitionTime,
-                                    child: LoginWidget(),
-                                  ));
-                            },
-                            child: Text(
-                                'XXX16') /*SvgPicture.asset(
-                            'assets/images/hyperbooklogosvg10.svg',
-                            width: 40,
-                            height: 40,
-                          ),*/
-                            ),
                       ],
                       centerTitle: false,
                       elevation: 2.0,
