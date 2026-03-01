@@ -102,6 +102,9 @@ final DocumentReference artTheopyAIRaudiosRef = DocumentReference(
 final DocumentReference artTheopyAIRvideosRef = DocumentReference(
   path: '69a00b070018aac953fa',
 );
+final DocumentReference templatesRef = DocumentReference(
+  path: 'templates',
+);
 
 
 
@@ -333,11 +336,15 @@ class UsersRecord {
   DateTime? $createdAt;
   DateTime? $updatedAt;
 
+  DocumentReference? userReference;
+
   UsersRecord({
     this.reference,
     this.email,
     this.displayName,
     this.phoneNumber,
+    this.userReference,
+    this.userLevel,
     this.userMessage,
     this.role,
     this.$createdAt,
@@ -348,6 +355,27 @@ class UsersRecord {
       _$UsersRecordFromJson(json);
   Map<String, dynamic> toJson() => _$UsersRecordToJson(this);
 }*/
+}
+
+@JsonSerializable()
+class TemplatesRecord {
+  DocumentReference? reference;
+  String? name;
+  List<String>? questions;
+  bool? isMaster;
+  DocumentReference? creatorId;
+  DateTime? $createdAt;
+  DateTime? $updatedAt;
+
+  TemplatesRecord({
+    this.reference,
+    this.name,
+    this.questions,
+    this.isMaster,
+    this.creatorId,
+    this.$createdAt,
+    this.$updatedAt,
+  });
 }
 
 Future<models.Document> createDocument({
@@ -798,19 +826,85 @@ Future<UsersRecord> createUser({
       'userReference': userReference!.path,
       'userLevel': userLevel,
       'userMessage': userMessage,
+      'role': role,
+      'createdAt': DateTime.now().toIso8601String(),
     },
     id: id,
   );
-  UsersRecord u = UsersRecord(
+  return UsersRecord(
     reference: DocumentReference(path: doc.$id),
-    email: email,
-    displayName: displayName,
-    phoneNumber: phoneNumber,
-    role: role,
-    userMessage: userMessage,
   );
-  return u;
 }
+
+Future<TemplatesRecord> createTemplate({
+  required String name,
+  required List<String> questions,
+  required bool isMaster,
+  required DocumentReference creatorId,
+  String id = '',
+}) async {
+  models.Document doc = await createDocument(
+    collection: templatesRef,
+    data: {
+      'name': name,
+      'questions': questions,
+      'isMaster': isMaster,
+      'creatorId': creatorId.path,
+    },
+    id: id,
+  );
+  return TemplatesRecord(
+    reference: DocumentReference(path: doc.$id),
+    name: name,
+    questions: questions,
+    isMaster: isMaster,
+    creatorId: creatorId,
+    $createdAt: DateTime.now(),
+    $updatedAt: DateTime.now(),
+  );
+}
+
+Future<List<TemplatesRecord>> listTemplateList() async {
+  models.DocumentList docs = await listDocuments(
+    collection: templatesRef,
+  );
+  
+  List<TemplatesRecord> items = [];
+  for (models.Document doc in docs.documents) {
+    List<dynamic>? q = doc.data['questions'];
+    items.add(TemplatesRecord(
+      reference: DocumentReference(path: doc.$id),
+      name: doc.data['name'],
+      questions: q?.map((e) => e.toString()).toList() ?? [],
+      isMaster: doc.data['isMaster'] ?? false,
+      creatorId: DocumentReference(path: doc.data['creatorId']),
+    ));
+  }
+  return items;
+}
+
+Future<void> updateTemplateQuestions(DocumentReference templateRef, List<String> newQuestions) async {
+  await updateDocument(collection: templatesRef, document: templateRef, data: {
+    'questions': newQuestions,
+  });
+}
+
+Future<void> deleteTemplate(DocumentReference templateRef) async {
+  await deleteDocument(collection: templatesRef, document: templateRef);
+}
+    // },
+    // id: id,
+  // );
+  // UsersRecord u = UsersRecord(
+  //   reference: DocumentReference(path: doc.$id),
+  //   email: email,
+  //   displayName: displayName,
+  //   phoneNumber: phoneNumber,
+  //   role: role,
+  //   userMessage: userMessage,
+  // );
+  // return u;
+// }
 
 Future<UsersRecord> getUser({DocumentReference? document}) async {
   models.Row row = await getRow(collection: usersRef, document: document);

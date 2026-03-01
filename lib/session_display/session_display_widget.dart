@@ -35,6 +35,7 @@ import '../../hyperbook_edit/hyperbook_edit_widget.dart';
 import '../../chapter_display/chapter_display_widget.dart';
 import '../../paypal/paypal_widget.dart';
 import '../../session_step_display/session_step_display_widget.dart';
+import '../../templates_page/templates_page_widget.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/log.dart';
 import 'package:ffmpeg_kit_flutter_new/session.dart';
@@ -268,9 +269,12 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                       fileKind: FileKind.photo,
                     );
                     // Image photoImage = Image.file(File(photoPath));
-                    superImage.Image? image = superImage.decodeImage(File(photoPath).readAsBytesSync());
-                    superImage.Image? resizedImage = superImage.copyResize(image!, width: 500, height: 500);
-                    File(photoPath).writeAsBytesSync(superImage.encodeJpg(resizedImage));
+                    superImage.Image? image = superImage
+                        .decodeImage(File(photoPath).readAsBytesSync());
+                    superImage.Image? resizedImage =
+                        superImage.copyResize(image!, width: 500, height: 500);
+                    File(photoPath)
+                        .writeAsBytesSync(superImage.encodeJpg(resizedImage));
                     print('(VC3P)${resizedImage.frameType}');
 
                     Image modifiedImage = Image(
@@ -488,12 +492,24 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
     int infoCount = 0;
     MenuDetails hyperbookDisplayMenuDetails = MenuDetails(
       menuLabelList: [
+        'Templates',
         'Login',
       ],
       menuIconList: [
+        Icon(Icons.list_alt),
         kIconLogin,
       ],
       menuTargets: [
+        (context) {
+          Navigator.push(
+              context,
+              PageTransition(
+                type: kStandardPageTransitionType,
+                duration: kStandardTransitionTime,
+                reverseDuration: kStandardReverseTransitionTime,
+                child: TemplatesPageWidget(),
+              ));
+        },
         (context) {
           //# context.goNamedAuth('login', context.mounted);
           Navigator.push(
