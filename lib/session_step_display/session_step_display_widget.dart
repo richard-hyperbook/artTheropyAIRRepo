@@ -47,7 +47,7 @@ import 'package:appwrite/appwrite.dart' as appwrite;
 
 import 'package:appwrite/models.dart' as models;
 import 'package:appwrite/enums.dart' as enums;
-import 'package:compressor/compressor.dart';
+// import 'package:compressor/compressor.dart';
 
 http.Client _http = http.Client();
 
@@ -433,8 +433,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
       );
       print('(FF21)${imageFile.length()}....${result!.length}...${result}');
 */
-      Compressor compressor = Compressor(path: imageFile.path, isLocal: true);
-      String result = compressor.compressVideo(); // Replace with a real image compression method in future updates
+      // Compressor compressor = Compressor(path: imageFile.path, isLocal: true);
+      // String result = compressor.compressVideo(); // Replace with a real image compression method in future updates
 
       print('(FF20)${await imageFile!.length()}....${imageFile.path},,,,${result}');
 
