@@ -29,6 +29,7 @@ const kUserDisplayName = 'displayName';
 const kUserPhoneNumber = 'phoneNumber';
 const kUserUserMessage = 'userMessage';
 const kUserRole = 'role';
+const kUserTherapistId = 'therapistId';
 const kTemplateName = 'name';
 const kTemplateQuestions = 'questions';
 const kTemplateIsMater = 'isMaster';

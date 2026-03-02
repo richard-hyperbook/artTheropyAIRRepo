@@ -36,6 +36,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:universal_html/html.dart' as html;
 import 'dart:io';
 import 'dart:convert';
+import '../app_state.dart';
 
 // part 'appwrite_interface.g.dart';
 
@@ -328,11 +329,12 @@ class UsersRecord {
   DocumentReference? reference;
   String? email;
   String? displayName;
-  DateTime? createdTime;
+
   String? phoneNumber;
   int? userLevel;
   String? userMessage;
   String? role;
+  String? therapistId;
   DateTime? $createdAt;
   DateTime? $updatedAt;
 
@@ -347,6 +349,7 @@ class UsersRecord {
     this.userLevel,
     this.userMessage,
     this.role,
+    this.therapistId,
     this.$createdAt,
     this.$updatedAt,
   });
@@ -387,14 +390,14 @@ Future<models.Document> createDocument({
     id = ID.unique();
   }
   appwriteDatabases = Databases(client!);
-  //>print('(N100A)${id}////${data}::::${collection!.path}');
+  print('(N100A)${id}////${data}::::${collection!.path},,,,${databaseRef.path}@@@@${collection.path}');
   models.Document doc = await appwriteDatabases!.createDocument(
     databaseId: databaseRef.path!,
-    collectionId: collection!.path!,
+    collectionId: collection.path!,
     documentId: id,
     data: data!,
   );
-  //>print('(N100B)${doc}');
+  print('(N100B)${doc}');
   return doc;
 }
 
@@ -768,6 +771,7 @@ Future<models.DocumentList> listDocumentsWithOneQueryBool({
 Future<SessionsRecord> createSession({
   required DocumentReference? clientId,
   required DocumentReference? therapistId,
+  required DocumentReference? templateId,
   String id = '',
 }) async {
   //>//>('(NW60)${id}');
@@ -776,8 +780,6 @@ Future<SessionsRecord> createSession({
     data: {
       kSessionClientId: clientId!.path,
       kSessionTherapistId: therapistId!.path,
-      kDBcreatedAt: DateTime.now(),
-      kDBupdatedAt: DateTime.now(),
     },
     id: id,
   );
@@ -836,30 +838,66 @@ Future<UsersRecord> createUser({
   DocumentReference? reference,
   String? email,
   String? displayName,
-  DateTime? createdTime,
+
   String? phoneNumber,
   DocumentReference? userReference,
   int? userLevel,
   String? userMessage,
   String? role,
   String id = '',
+  String? therapistId,
 }) async {
-  //>print('(M10`)${createdTime!.hour}');
+  //>print('(M10`)${email}');
   models.Document doc = await createDocument(
     collection: usersRef,
     data: {
       'email': email,
       'displayName': displayName,
-      'createdTime': createdTime!.toIso8601String(),
+
       'phoneNumber': phoneNumber,
       'userReference': userReference!.path,
       'userLevel': userLevel,
       'userMessage': userMessage,
       'role': role,
       'createdAt': DateTime.now().toIso8601String(),
+      'therapistId': therapistId,
     },
     id: id,
   );
+  return UsersRecord(
+    reference: DocumentReference(path: doc.$id),
+  );
+}
+
+Future<UsersRecord> createClient({
+  DocumentReference? reference,
+  String? email,
+  String? displayName,
+
+  String? phoneNumber,
+  // int? userLevel,
+  String? userMessage,
+  // String? role,
+  String id = '',
+  String? therapistId,
+}) async {
+  print('(M2110`)${getRandomString(20)}....${displayName}....${DateTime.now().toIso8601String()}....${phoneNumber?? ''}....${userMessage?? ''}....${therapistId}');
+  models.Document doc = await createDocument(
+    collection: usersRef,
+    data: {
+      'email': email?? getRandomString(20),
+      'displayName': displayName,
+
+      'phoneNumber': phoneNumber?? '',
+      // 'userLevel': kUserLevelNotLoggedIn,
+      'userMessage': userMessage?? '',
+      'role': kRoleClient,
+
+      'therapistId': therapistId,
+    },
+    id: id,
+  );
+  print('(M2111)${doc.data}');
   return UsersRecord(
     reference: DocumentReference(path: doc.$id),
   );
@@ -1005,8 +1043,9 @@ Future<UsersRecord> getUser({DocumentReference? document}) async {
     phoneNumber: ((row.data[kUserPhoneNumber]) ?? '') as String,
     role: (row.data[kUserRole]) as String,
     userMessage: (row.data[kUserUserMessage] as String?),
+      therapistId: (row.data[kUserTherapistId] as String?),
   );
-  print('(N2005)${u}');
+  print('(N2005)${u.email}');
   return u;
 }
 
@@ -1272,15 +1311,46 @@ Future<List<UsersRecord>> listUsersListWithEmail({String? email}) async {
     }
     //>print('(NY7)${cCListInt}');
     UsersRecord u = UsersRecord(
-      reference: DocumentReference(path: d.$id),
-      email: (d.data[kUserEmail] as String?),
-      displayName: (d.data[kUserDisplayName] as String?),
-      phoneNumber: (d.data[kUserPhoneNumber] as String?),
-      role: (d.data[kUserRole] as String?),
-      userMessage: (d.data[kUserUserMessage] as String?),
+        reference: DocumentReference(path: d.$id),
+        email: (d.data[kUserEmail] as String?),
+        displayName: (d.data[kUserDisplayName] as String?),
+        phoneNumber: (d.data[kUserPhoneNumber] as String?),
+        role: (d.data[kUserRole] as String?),
+        userMessage: (d.data[kUserUserMessage] as String?),
+        therapistId: (d.data[kUserTherapistId] as String?)
     );
     uu.add(u);
   }
+  return uu;
+}
+
+Future<List<UsersRecord>> listUsersClientsOfUser({DocumentReference? therapist}) async {
+  models.DocumentList docs;
+  print('(N22106)${therapist}¤¤¤¤${usersRef}');
+  if (therapist == null) {
+    docs = await listDocuments(collection: usersRef);
+  } else {
+    docs = await listDocumentsWithOneQueryString(
+      collection: usersRef,
+      attribute: kUserTherapistId,
+      value: therapist.path,
+    );
+  }
+  List<UsersRecord> uu = [];
+  for (models.Document d in docs.documents) {
+    print('(NY227)${docs.documents.length}');
+    UsersRecord u = UsersRecord(
+        reference: DocumentReference(path: d.$id),
+        email: (d.data[kUserEmail] as String?),
+        displayName: (d.data[kUserDisplayName] as String?),
+        phoneNumber: (d.data[kUserPhoneNumber] as String?),
+        role: (d.data[kUserRole] as String?),
+        userMessage: (d.data[kUserUserMessage] as String?),
+        therapistId: (d.data[kUserTherapistId] as String?)
+    );
+    uu.add(u);
+  }
+  print('(NY228)${uu.length}');
   return uu;
 }
 
@@ -1418,12 +1488,13 @@ Future<UsersRecord> appwriteCreateAccount(String email, String password) async {
     reference: DocumentReference(path: id),
     email: email,
     displayName: 'Unknown',
-    createdTime: DateTime.now(),
+
     phoneNumber: '',
     userReference: DocumentReference(path: id),
     id: id,
     userLevel: kUserLevelFree,
     userMessage: 'Welcome to the Hyperbook App',
+      therapistId: currentUser!.reference!.path,
   );
 
   loggedInUser = user;

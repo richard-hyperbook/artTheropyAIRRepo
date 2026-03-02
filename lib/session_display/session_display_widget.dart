@@ -50,6 +50,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:io' as Io;
 import 'package:image/image.dart' as superImage;
+import '../../clients_page/clients_page_widget.dart';
 
 int _count = 0;
 bool _iHaveRequests = false;
@@ -480,99 +481,113 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
 
   List<BackupFileDetail> backupFileDetailList = [];
   TemplatesRecord? chosenTemplate;
-
+  UsersRecord? chosenClient;
 
   void createSessionPopUp() async {
     TextEditingController clientController = TextEditingController();
-    List<TemplatesRecord> templatesList = await listOwnedPlusMasterTemplateList();
-    if ((templatesList.length?? 0) > 0){
+    List<TemplatesRecord> templatesList =
+        await listOwnedPlusMasterTemplateList();
+    if ((templatesList.length ?? 0) > 0) {
       chosenTemplate = templatesList.first;
+    }
+    List<UsersRecord> clientsList = await listUsersClientsOfUser();
+    if ((clientsList.length ?? 0) > 0) {
+      chosenClient = clientsList.first;
     }
     showDialog<bool>(
         context: context,
-        builder: (BuildContext
-        context) {
+        builder: (BuildContext context) {
           // currentCachedHyperbookIndex = getCurrentHyperbookIndex(widget.hyperbook!);
           //>print('(UM6)${message}');
-          return StatefulBuilder(
-              builder: (context,
-                  setState) {
-                return AlertDialog(
-                  title:
-                  Text('Create Session'),
-                  content: Column(
-                    mainAxisSize:
-                    MainAxisSize
-                        .min,
-                    children: [
-                      TextField(
-                        controller: clientController,
-                        decoration: InputDecoration(hintText: "Client's name"),
-                      ),
-                      (templatesList == 0)?
-                          Text('No templates available') :
-                      DropdownButton<TemplatesRecord>(
-                        key: ValueKey(widget),
-                        value: chosenTemplate,
-                        hint: const Text('Please select template'),
-                        items: templatesList!
-                            .map<DropdownMenuItem<TemplatesRecord>>((TemplatesRecord item) {
-                          return DropdownMenuItem<TemplatesRecord>(
-                            value: item,
-                            child: Text(
-                              item.name!,
-                              // style: FlutterFlowTheme.bodyText1,
-                            ),
-                          );
-                        }).toList(),
-                        elevation: 2,
-                        onChanged: (TemplatesRecord? value) {
-                          setState(() {
-                            chosenTemplate = value;
-                           // FFAppState().chosenModerator = chosenModerator!.reference;
-                          });
-                          //%//>//>print('(D352)chosenTemplate');
-                        },
-                        isExpanded: true,
-                        focusColor: Colors.transparent,
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.pop(
-                              context,
-                              false),
-                      child: const Text(
-                          'Cancel'),
-                    ),
-                    TextButton(
-                      onPressed:
-                          () async {
-                        await createSession
-                          (clientId: DocumentReference(path:clientId), therapistId: currentUser!.reference);
-
-
-
-                        toast(
-                            context,
-                            '',
-                            ToastKind
-                                .success);
-                        context.pop();
-                      },
-                      child: const Text(
-                          'Confirm'),
-                    ),
-                  ],
-                );
-              });
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Create Session'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Please select client'),
+                  (clientsList.length == 0)
+                      ? Text('No clients available')
+                      : DropdownButton<UsersRecord>(
+                          //   key: ValueKey(widget),
+                          value: chosenClient,
+                          hint: const Text('Please select client'),
+                          items: clientsList!
+                              .map<DropdownMenuItem<UsersRecord>>(
+                                  (UsersRecord item) {
+                            return DropdownMenuItem<UsersRecord>(
+                              value: item,
+                              child: Text(
+                                item.displayName!,
+                                // style: FlutterFlowTheme.bodyText1,
+                              ),
+                            );
+                          }).toList(),
+                          elevation: 2,
+                          onChanged: (UsersRecord? value) {
+                            setState(() {
+                              chosenClient = value;
+                              // FFAppState().chosenModerator = chosenModerator!.reference;
+                            });
+                            //%//>//>print('(D352)chosenTemplate');
+                          },
+                          isExpanded: true,
+                          focusColor: Colors.transparent,
+                        ),
+                  SizedBox(height: kIconButtonGap),
+                  Text('Please select template'),
+                  (templatesList.length == 0)
+                      ? Text('No templates available')
+                      : DropdownButton<TemplatesRecord>(
+                          //  key: ValueKey(widget),
+                          value: chosenTemplate,
+                          hint: const Text('Please select template'),
+                          items: templatesList!
+                              .map<DropdownMenuItem<TemplatesRecord>>(
+                                  (TemplatesRecord item) {
+                            return DropdownMenuItem<TemplatesRecord>(
+                              value: item,
+                              child: Text(
+                                item.name!,
+                                // style: FlutterFlowTheme.bodyText1,
+                              ),
+                            );
+                          }).toList(),
+                          elevation: 2,
+                          onChanged: (TemplatesRecord? value) {
+                            setState(() {
+                              chosenTemplate = value;
+                              // FFAppState().chosenModerator = chosenModerator!.reference;
+                            });
+                            //%//>//>print('(D352)chosenTemplate');
+                          },
+                          isExpanded: true,
+                          focusColor: Colors.transparent,
+                        ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    SessionsRecord session = await createSession(
+                        clientId: chosenClient!.reference,
+                        therapistId: currentUser!.reference,
+                        templateId: chosenTemplate!.reference);
+                    print('(CC12)${session.reference}');
+                    toast(context, 'Created session', ToastKind.success);
+                    context.pop();
+                  },
+                  child: const Text('Confirm'),
+                ),
+              ],
+            );
+          });
         });
-
-
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -584,13 +599,15 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
     void showRoleRequestDialog() {}
 
     int infoCount = 0;
-    MenuDetails hyperbookDisplayMenuDetails = MenuDetails(
+    MenuDetails sessionDisplayMenuDetails = MenuDetails(
       menuLabelList: [
         'Templates',
+        'Clients',
         'Login',
       ],
       menuIconList: [
         Icon(Icons.list_alt),
+        kIconProfile,
         kIconLogin,
       ],
       menuTargets: [
@@ -602,6 +619,16 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                 duration: kStandardTransitionTime,
                 reverseDuration: kStandardReverseTransitionTime,
                 child: TemplatesPageWidget(),
+              ));
+        },
+        (context) {
+          Navigator.push(
+              context,
+              PageTransition(
+                type: kStandardPageTransitionType,
+                duration: kStandardTransitionTime,
+                reverseDuration: kStandardReverseTransitionTime,
+                child: ClientsPageWidget(),
               ));
         },
         (context) {
@@ -685,7 +712,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                         ),
                         SizedBox(width: kIconButtonGap),
                         insertMenu(
-                            context, hyperbookDisplayMenuDetails, setState),
+                            context, sessionDisplayMenuDetails, setState),
                       ],
                       centerTitle: false,
                       elevation: 2.0,
