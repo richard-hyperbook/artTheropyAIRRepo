@@ -29,6 +29,11 @@ const kUserDisplayName = 'displayName';
 const kUserPhoneNumber = 'phoneNumber';
 const kUserUserMessage = 'userMessage';
 const kUserRole = 'role';
+const kTemplateName = 'name';
+const kTemplateQuestions = 'questions';
+const kTemplateIsMater = 'isMaster';
+const kTemplateCreatorId = 'creatorId';
+
 
 /*
 const Map<String, HyperbookParameters> kHyperbookParametersMap = {

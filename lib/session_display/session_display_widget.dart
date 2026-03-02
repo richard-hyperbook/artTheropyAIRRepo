@@ -479,6 +479,100 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
   }) async {}
 
   List<BackupFileDetail> backupFileDetailList = [];
+  TemplatesRecord? chosenTemplate;
+
+
+  void createSessionPopUp() async {
+    TextEditingController clientController = TextEditingController();
+    List<TemplatesRecord> templatesList = await listOwnedPlusMasterTemplateList();
+    if ((templatesList.length?? 0) > 0){
+      chosenTemplate = templatesList.first;
+    }
+    showDialog<bool>(
+        context: context,
+        builder: (BuildContext
+        context) {
+          // currentCachedHyperbookIndex = getCurrentHyperbookIndex(widget.hyperbook!);
+          //>print('(UM6)${message}');
+          return StatefulBuilder(
+              builder: (context,
+                  setState) {
+                return AlertDialog(
+                  title:
+                  Text('Create Session'),
+                  content: Column(
+                    mainAxisSize:
+                    MainAxisSize
+                        .min,
+                    children: [
+                      TextField(
+                        controller: clientController,
+                        decoration: InputDecoration(hintText: "Client's name"),
+                      ),
+                      (templatesList == 0)?
+                          Text('No templates available') :
+                      DropdownButton<TemplatesRecord>(
+                        key: ValueKey(widget),
+                        value: chosenTemplate,
+                        hint: const Text('Please select template'),
+                        items: templatesList!
+                            .map<DropdownMenuItem<TemplatesRecord>>((TemplatesRecord item) {
+                          return DropdownMenuItem<TemplatesRecord>(
+                            value: item,
+                            child: Text(
+                              item.name!,
+                              // style: FlutterFlowTheme.bodyText1,
+                            ),
+                          );
+                        }).toList(),
+                        elevation: 2,
+                        onChanged: (TemplatesRecord? value) {
+                          setState(() {
+                            chosenTemplate = value;
+                           // FFAppState().chosenModerator = chosenModerator!.reference;
+                          });
+                          //%//>//>print('(D352)chosenTemplate');
+                        },
+                        isExpanded: true,
+                        focusColor: Colors.transparent,
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.pop(
+                              context,
+                              false),
+                      child: const Text(
+                          'Cancel'),
+                    ),
+                    TextButton(
+                      onPressed:
+                          () async {
+                        await createSession
+                          (clientId: DocumentReference(path:clientId), therapistId: currentUser!.reference);
+
+
+
+                        toast(
+                            context,
+                            '',
+                            ToastKind
+                                .success);
+                        context.pop();
+                      },
+                      child: const Text(
+                          'Confirm'),
+                    ),
+                  ],
+                );
+              });
+        });
+
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -585,10 +679,11 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                           borderWidth: 1,
                           buttonSize: 40,
                           onPressed: () {
-
+                            createSessionPopUp();
                           },
                           icon: kIconAdd,
                         ),
+                        SizedBox(width: kIconButtonGap),
                         insertMenu(
                             context, hyperbookDisplayMenuDetails, setState),
                       ],

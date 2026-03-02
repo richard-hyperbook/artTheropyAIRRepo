@@ -736,6 +736,35 @@ Future<models.DocumentList> listDocumentsWithOneQueryString({
   return docs!;
 }
 
+Future<models.DocumentList> listDocumentsWithOneQueryBool({
+  DocumentReference? collection,
+  String attribute = '',
+  bool? value,
+}) async {
+  appwriteDatabases = Databases(client!);
+  models.DocumentList? docs;
+  //> print(
+  //>   '(N207A)${attribute}&&&&${value}////${databaseRef.path}ÅÅÅÅ${collection!.path}',
+  //>  );
+  //>print('(N7ZB)${appwriteDatabases}>>>>${collection}<<<<${value}');
+  try {
+    docs = await appwriteDatabases!.listDocuments(
+      databaseId: databaseRef.path!,
+      collectionId: collection!.path!,
+      queries: [
+        Query.equal(attribute, value!),
+        Query.limit(kLimitDatabaseListDocuments),
+      ],
+    );
+  } on AppwriteException {
+    //  //>print('(N8A)${e.message}&&&&${e.code}====${e.code}');
+    //>print('(N208B)${e}');
+  }
+  //> print(
+  //>     '(N2009)${appwriteDatabases!.client.endPoint}>>>>${collection.path}<<<<${value}');
+  return docs!;
+}
+
 Future<SessionsRecord> createSession({
   required DocumentReference? clientId,
   required DocumentReference? therapistId,
@@ -892,6 +921,51 @@ Future<List<TemplatesRecord>> listTemplateList() async {
 
     ));
     print('(TP3)${doc.$id}');
+  }
+  return items;
+}
+
+Future<List<TemplatesRecord>> listOwnedPlusMasterTemplateList() async {
+  models.DocumentList docsUser = await listDocumentsWithOneQueryDocumentReference(
+    collection: templatesRef,
+    attribute: kTemplateCreatorId,
+    value: currentUser!.reference,
+  );
+  models.DocumentList docsMaster = await listDocumentsWithOneQueryBool(
+    collection: templatesRef,
+    attribute: kTemplateIsMater,
+    value: true,
+  );
+  List<models.Document> docs = List.from(docsUser.documents);
+  for(int i = 0; i < docsMaster.documents.length; i++){
+    docs.add(docsMaster.documents[i]);
+  }
+  print('(TP21)${docs.length}');
+  List<TemplatesRecord> items = [];
+  for (models.Document doc in docs) {
+    print('(TP24)${doc.$id}');
+    print('(TP25)${doc.data['questions']}');
+    print('(TP26)${doc.data['name']}');
+    // List<String>? q = doc.data['questions'] as List<dynamic>;
+    var qq = doc.data['questions'] as List<dynamic>;
+    List<String> qqq = [];
+    if (qq.length > 0){
+      for(int i = 0; i < qq.length; i++){
+        var p = qq[i];
+        print('(TP27)${p.runtimeType}...${p}');
+        //qqq.add(qq[i] as String);
+
+      }
+    }
+    items.add(TemplatesRecord(
+      reference: DocumentReference(path: doc.$id),
+      name: doc.data['name'] as String,
+      questions: qqq, //q?.map((e) => e.toString()).toList() ?? [],
+      isMaster: (doc.data['isMaster'] as bool?) ?? false,
+      creatorId:  DocumentReference(path: (doc.data['creatorId'] as String)),
+
+    ));
+    print('(TP23)${doc.$id}');
   }
   return items;
 }
