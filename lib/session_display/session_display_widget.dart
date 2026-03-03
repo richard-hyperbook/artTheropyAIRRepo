@@ -490,7 +490,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
     if ((templatesList.length ?? 0) > 0) {
       chosenTemplate = templatesList.first;
     }
-    List<UsersRecord> clientsList = await listUsersClientsOfUser();
+    List<UsersRecord> clientsList = await listUsersClientsOfUser(therapist: currentUser!.reference);
     if ((clientsList.length ?? 0) > 0) {
       chosenClient = clientsList.first;
     }
@@ -578,6 +578,9 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                         therapistId: currentUser!.reference,
                         templateId: chosenTemplate!.reference);
                     print('(CC12)${session.reference}');
+
+
+
                     toast(context, 'Created session', ToastKind.success);
                     context.pop();
                   },
@@ -921,7 +924,9 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     20.0, 0.0, 20.0, 0.0),
                                 child: Container(
-                                  child: ListView.builder(
+                                  child: (sessions!.length < 1)?
+                                  Text('No sessions available', style:FlutterFlowTheme.of(context).bodyMedium )
+                                  : ListView.builder(
                                       physics: NeverScrollableScrollPhysics(),
                                       padding: EdgeInsets.zero,
                                       shrinkWrap: true,

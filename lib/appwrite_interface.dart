@@ -4,6 +4,8 @@
 
 // import 'dart:js_interop';
 
+// import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as models;
@@ -445,13 +447,13 @@ Future<models.Document> getDocument({
   models.Document? doc;
   try {
     doc =
-        await tablesDB!.getRow(
+        await appwriteDatabases!.getDocument(
               databaseId: databaseRef.path!,
-              tableId: collection.path!,
-              rowId: document.path!,
+              collectionId: collection.path!,
+              documentId: document.path!,
               queries: [],
             )
-            as models.Document;
+            /*as models.Document*/;
   } on AppwriteException catch (e) {
     print('(AAT42)${e.type}****${e.message}');
     //   toast(context, 'Login failure: ${e.message}', ToastKind.error);
@@ -784,12 +786,24 @@ Future<SessionsRecord> createSession({
     id: id,
   );
   //>print('(NW61)${doc}');
-  SessionsRecord h = SessionsRecord(
+  SessionsRecord session = SessionsRecord(
     reference: DocumentReference(path: doc.$id),
     clientId: clientId,
     therapistId: therapistId,
   );
-  return h;
+  TemplatesRecord template = await getTemplate(document: templateId);
+  List<String> questions = template.questions!;
+  for(int i = 0; i < questions.length; i++){
+    await createSessionStep(
+        sessionId: session.reference,
+        photo: null,
+        audio: null,
+        completed: false,
+        transcription: null,
+        index: i,
+        question: questions[i]);
+  }
+  return session;
 }
 
 Future<SessionStepsRecord> createSessionStep({
@@ -804,17 +818,15 @@ Future<SessionStepsRecord> createSessionStep({
 }) async {
   //>//>('(NW60)${id}');
   models.Document doc = await createDocument(
-    collection: sessionsRef,
+    collection: sessionStepsRef,
     data: {
-      kSessionStepSessionId: sessionId,
-      kSessionStepPhoto: photo,
-      kSessionStepAudio: audio,
+      kSessionStepSessionId: sessionId!.path,
+      kSessionStepPhoto: '',
+      kSessionStepAudio: '',
       kSessionStepCompleted: completed,
-      kSessionStepTranscription: transcription,
+      kSessionStepTranscription: '',
       kSessionStepIndex: index,
       kSessionStepQuestion: question,
-      kDBcreatedAt: DateTime.now(),
-      kDBupdatedAt: DateTime.now(),
     },
     id: id,
   );
@@ -931,6 +943,37 @@ Future<TemplatesRecord> createTemplate({
   );
 }
 
+
+Future<TemplatesRecord> getTemplate({DocumentReference? document}) async {
+  models.Document doc = await getDocument(
+    collection: templatesRef,
+    document: document,
+  );
+  ////>print('(M221)${doc.data['chapterColorInts'].runtimeType}****${doc.data['chapterColorInts']}');
+  List<String> qqq = extractQuestions(doc.data['questions']);
+  TemplatesRecord t = TemplatesRecord(
+    reference: DocumentReference(path: doc.$id),
+    name: doc.data['name'] as String,
+    questions: qqq, //q?.map((e) => e.toString()).toList() ?? [],
+    isMaster: (doc.data['isMaster'] as bool?) ?? false,
+    creatorId:  DocumentReference(path: (doc.data['creatorId'] as String)),
+  );
+  //>print('(N5005)${h}');
+  return t;
+}
+
+List<String> extractQuestions( List<dynamic> qq){
+  //List<dynamic> qq = doc.data['questions'] as List<dynamic>;
+  List<String> qqq = [];
+  if (qq.length > 0){
+    for(int i = 0; i < qq.length; i++){
+      qqq.add(qq[i] as String);
+      print('(TP7)${qqq}');
+    }
+  }
+  return qqq;
+}
+
 Future<List<TemplatesRecord>> listTemplateList() async {
   models.DocumentList docs = await listDocuments(
     collection: templatesRef,
@@ -942,14 +985,7 @@ Future<List<TemplatesRecord>> listTemplateList() async {
     print('(TP5)${doc.data['questions']}');
     print('(TP6)${doc.data['name']}');
     // List<String>? q = doc.data['questions'] as List<dynamic>;
-    var qq = doc.data['questions'] as List<dynamic>;
-    List<String> qqq = [];
-    if (qq.length > 0){
-      for(int i = 0; i < qq.length; i++){
-        qqq.add(qq[i] as String);
-        print('(TP7)${qqq}');
-      }
-    }
+    List<String> qqq = extractQuestions(doc.data['questions']);
     items.add(TemplatesRecord(
       reference: DocumentReference(path: doc.$id),
       name: doc.data['name'] as String,
@@ -1178,7 +1214,7 @@ Future<int> getMaxVersionNumber({
 Future<List<SessionStepsRecord>> listSessionStepList({
   bool justCurrentSession = true,
 }) async {
-  print('(SS12)${justCurrentSession}');
+  print('(SS12)${sessionStepsRef.path}....${currentSession!.reference!.path}');
   models.DocumentList docs;
   if (justCurrentSession) {
     docs = await listDocumentsWithOneQueryDocumentReference(
