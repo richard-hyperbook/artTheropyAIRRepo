@@ -236,7 +236,8 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
   //     kIsWeb ? ap.UrlSource(localPath) : ap.DeviceFileSource(localPath!);
 
   Future<Source> _source() async {
-    print('(DE34)${widget.sessionStepId!}....${await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!)}');
+    //....${await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!)}
+    print('(DE34)${widget.sessionStepId}');
     return kIsWeb
         ? ap.UrlSource(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!))
         : ap.DeviceFileSource(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!));

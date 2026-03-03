@@ -792,9 +792,10 @@ Future<SessionsRecord> createSession({
     therapistId: therapistId,
   );
   TemplatesRecord template = await getTemplate(document: templateId);
-  List<String> questions = template.questions!;
+  List<String> questions = extractQuestions(template.questions);
+  print('(QQ2)${templateId!.path},,,,${questions}....${questions.length}');
   for(int i = 0; i < questions.length; i++){
-    await createSessionStep(
+    var ss = await createSessionStep(
         sessionId: session.reference,
         photo: null,
         audio: null,
@@ -802,6 +803,7 @@ Future<SessionsRecord> createSession({
         transcription: null,
         index: i,
         question: questions[i]);
+    print('(QQ3)${ss}');
   }
   return session;
 }
@@ -962,15 +964,19 @@ Future<TemplatesRecord> getTemplate({DocumentReference? document}) async {
   return t;
 }
 
-List<String> extractQuestions( List<dynamic> qq){
-  //List<dynamic> qq = doc.data['questions'] as List<dynamic>;
+List<String> extractQuestions(dynamic q){
+
+  List<dynamic> qq = q as List<dynamic>;
+  print('(QQ6)${qq}....${qq.length}');
   List<String> qqq = [];
+
   if (qq.length > 0){
     for(int i = 0; i < qq.length; i++){
       qqq.add(qq[i] as String);
-      print('(TP7)${qqq}');
+      print('(QQ5)${qqq}');
     }
   }
+  print('(QQ1)${qqq}');
   return qqq;
 }
 
@@ -1096,7 +1102,11 @@ String generatePhotoStorageFilename(
     SessionStepsRecord sessionStep,
     int version,
     ) {
-  return 'photo${sessionStep.reference!.path}_${version}.jpg';
+  if(version > 0) {
+    return 'photo${sessionStep.reference!.path}_${version}.jpg';
+  } else {
+    return '';
+  }
 }
 
 String generateVideoStorageFilename(

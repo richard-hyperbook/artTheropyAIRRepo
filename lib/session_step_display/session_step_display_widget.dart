@@ -129,14 +129,20 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
 
   Widget displayThumbnail() {
     print('(DE410)${imageNetworkPath}');
-    return Image.network(
-      imageNetworkPath,
-      width: (MediaQuery.sizeOf(context).width * 0.9) -
-          kIconButtonWidth -
-          kIconButtonGap,
-      height: (kIconButtonHeight * 2) + kIconButtonGap,
-      fit: BoxFit.contain,
-    );
+    if(imageNetworkPath.length > 0) {
+      return Image.network(
+        imageNetworkPath,
+        width: (MediaQuery
+            .sizeOf(context)
+            .width * 0.9) -
+            kIconButtonWidth -
+            kIconButtonGap,
+        height: (kIconButtonHeight * 2) + kIconButtonGap,
+        fit: BoxFit.contain,
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget displaySessionStep(
@@ -402,8 +408,12 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
       localMaxVersion,
     );
     final String PROJECT_ID = kProjectID;
-    imageNetworkPath =
-        'https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${FILE_ID}/view?project=${PROJECT_ID}';
+    if(FILE_ID.length > 0) {
+      imageNetworkPath =
+      'https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${FILE_ID}/view?project=${PROJECT_ID}';
+    } else {
+      imageNetworkPath = '';
+    }
   }
 
   void insertPicture(
@@ -452,7 +462,10 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
         localFilePath: localFilePath,
       );
       setState(() {
-        loadImageNetworkPath(sessionStep, currentSessionStep!.maxPhotoVersion!);
+        if ((currentSessionStep!.maxPhotoVersion ?? 0) > 0){
+          loadImageNetworkPath(
+              sessionStep, currentSessionStep!.maxPhotoVersion!);
+      }
       });
 
       print(
@@ -509,7 +522,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
           sessionSteps = snapshot.data;
           print('(SS81)${sessionSteps}');
           print(
-            '(SS82)${sessionSteps!.length}....${sessionSteps!.first.reference!.path}',
+            '(SS82)${sessionSteps!.length}',
           );
 
           return Title(

@@ -105,6 +105,140 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
     super.dispose();
   }
 
+  showAlertDialog(BuildContext context) {
+    AlertDialog alert = AlertDialog(
+      content: new Row(
+        children: [
+          CircularProgressIndicator(),
+          Container(margin: EdgeInsets.only(left: 5), child: Text("Loading")),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  List<SessionStepsRecord>? sessionStepsList;
+  String? tempDirPath;
+  Utf8Encoder? utf8Encoder;
+  Directory? dir;
+
+  Future<void> generateStepVideo(int step) async {
+    SessionStepsRecord sessionStep = sessionStepsList![step];
+    currentSessionStep = sessionStepsList![step];
+    print('(QQ31)${currentSessionStep}....${(currentSessionStep!.audio!.path ?? '').length}');
+    if ((currentSessionStep!.audio!.path ?? '').length > 0) {
+      await setMaxVersionNumbersCurrentSessionStep();
+      final int maxAudioVersion = currentSessionStep!.maxAudioVersion!;
+      final maxPhotoVersion = currentSessionStep!.maxPhotoVersion!;
+      final String audioPath =
+          '${tempDirPath}/audio_${(step + 1).toString()}.wav';
+      final String photoPath =
+          '${tempDirPath}/photo_${(step + 1).toString()}.jpg';
+      final String videoPath =
+          '${tempDirPath}/video_${(step + 1).toString()}.mp4';
+      print('(VC1D)');
+      bool okAudio = await copyStorageFiletoLocal(
+        bucketId: artTheopyAIRaudiosRef.path,
+        fileId: generateAudioStorageFilename(sessionStep, maxAudioVersion),
+        localPath: audioPath,
+        fileKind: FileKind.audio,
+      );
+      print(
+          '(VC2)${step}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====${generateAudioStorageFilename(sessionStep, maxAudioVersion)}');
+      print(
+          '(VC3A)${step}~~~~${generatePhotoStorageFilename(sessionStep, maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
+      bool okPhoto = await copyStorageFiletoLocal(
+        bucketId: artTheopyAIRphotosRef.path,
+        fileId: generatePhotoStorageFilename(sessionStep, maxPhotoVersion),
+        localPath: photoPath,
+        fileKind: FileKind.photo,
+      );
+      // Image photoImage = Image.file(File(photoPath));
+      superImage.Image? image =
+          superImage.decodeImage(File(photoPath).readAsBytesSync());
+      superImage.Image? resizedImage =
+          superImage.copyResize(image!, width: 500, height: 500);
+      File(photoPath).writeAsBytesSync(superImage.encodeJpg(resizedImage));
+      print('(VC3P)${resizedImage.frameType}');
+
+      Image modifiedImage = Image(
+        image: ResizeImage(
+          FileImage(File(photoPath)),
+          width: 500,
+          height: 500,
+        ),
+      );
+
+      print(
+          '(VC4A)${step}~~~~${okPhoto}....${maxPhotoVersion},,,,${photoPath}<');
+      dir = Directory.fromRawPath(utf8Encoder!.convert(tempDirPath!));
+      await for (var entity in dir!.list(recursive: true, followLinks: false)) {
+        print('(VC4B)${entity.path}....${entity.statSync().size}');
+      }
+      final String command =
+          '-loop 1 -i ${photoPath} -i ${audioPath} -shortest ${videoPath}';
+      print('(VC4C)${command}');
+      String logString = 'Logs will appear here...';
+
+      var ffMpegResponse = await FFmpegKit.executeAsync(
+        command,
+        (Session session) async {
+          print('(VC9A)${logString}');
+
+          final output = await session.getOutput();
+          final returnCode = await session.getReturnCode();
+          final duration = await session.getDuration();
+          print(
+              '(VC9B)${returnCode!.toString()}....${returnCode.getValue()},,,,${output!.length}----${output.characters.length}>>>>${duration}');
+          //  setState(() {
+          logString += '\n✅ Processing completed!\n';
+          logString += 'Return code: $returnCode\n';
+          logString += 'Duration: ${duration}ms\n';
+          logString += 'Output: $output\n';
+          //  isProcessing = false;
+          //});
+
+          debugPrint('session: $output');
+          print('(VC9C)${logString}');
+
+          //  print('(VC5A)${ffMpegResponse.getReturnCode()}....${ffMpegResponse.getState()},,,,${videoPath}');
+          int maxVideoVersion = await getMaxVersionNumber(
+              bucketId: artTheopyAIRvideosRef.path!,
+              fileId: currentSession!.reference!.path!);
+          String videoStorageId = generateVideoStorageFilename(
+              currentSession!, maxVideoVersion + 1);
+          print(
+              '(VC9D)${maxVideoVersion}....${videoStorageId},,,,${videoPath}');
+          await storeStorageFile(
+            bucketId: artTheopyAIRvideosRef.path,
+            storageFileId: videoStorageId,
+            localFilePath: videoPath,
+          );
+
+        },
+        (Log log) {
+          // setState(() {
+          logString += log.getMessage();
+          // });
+          debugPrint('log: ${log.getMessage()}');
+        },
+        (Statistics statistics) {
+          // setState(() {
+          logString +=
+              '\n📊 Progress: ${statistics.getSize()} bytes, ${statistics.getTime()}ms\n';
+          // });
+          debugPrint('statistics: ${statistics.getSize()}');
+        },
+      );
+    }
+  }
+
   Widget displaySession(SessionsRecord session, int index) {
     return Material(
       color: Colors.transparent,
@@ -199,7 +333,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
               ]),
               SizedBox(height: kIconButtonGap),
               FlutterFlowIconButton(
-                showLoadingIndicator: true,
+                // showLoadingIndicator: true,
                 caption: 'Make video',
                 tooltipMessage: 'Speech to text',
                 borderColor: Colors.transparent,
@@ -209,16 +343,19 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                 buttonWidth: kIconButtonWidth,
                 icon: Icon(Icons.video_camera_back_outlined),
                 onPressed: () async {
-                  currentSession = session;
-                  List<SessionStepsRecord> sessionStepsList =
+                  showAlertDialog(context);
+                  sessionStepsList =
                       await listSessionStepList(justCurrentSession: true);
-                  String tempDirPath = await getTempDirPath();
+                  tempDirPath = await getTempDirPath();
                   print('(VC1A)${tempDirPath}');
-                  final utf8Encoder = utf8.encoder;
-                  var dir =
-                      Directory.fromRawPath(utf8Encoder.convert(tempDirPath));
+                  utf8Encoder = utf8.encoder;
+                  dir =
+                      Directory.fromRawPath(utf8Encoder!.convert(tempDirPath!));
+
+                  currentSession = session;
+
                   await for (var entity
-                      in dir.list(recursive: true, followLinks: false)) {
+                      in dir!.list(recursive: true, followLinks: false)) {
                     print('(VC1B)${entity.path}');
                     if (entity.path.contains('audio')) {
                       File file = File(entity.path);
@@ -236,160 +373,11 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                       await file.delete();
                     }
                   }
-                  for (int i = 0; i < 1 /*sessionStepsList.length*/; i++) {
-                    SessionStepsRecord sessionStep = sessionStepsList[i];
-                    currentSessionStep = sessionStepsList[i];
-                    await setMaxVersionNumbersCurrentSessionStep();
-                    final int maxAudioVersion =
-                        currentSessionStep!.maxAudioVersion!;
-                    final maxPhotoVersion =
-                        currentSessionStep!.maxPhotoVersion!;
-                    final String audioPath =
-                        '${tempDirPath}/audio_${(i + 1).toString()}.wav';
-                    final String photoPath =
-                        '${tempDirPath}/photo_${(i + 1).toString()}.jpg';
-                    final String videoPath =
-                        '${tempDirPath}/video_${(i + 1).toString()}.mp4';
-                    print('(VC1D)');
-                    bool okAudio = await copyStorageFiletoLocal(
-                      bucketId: artTheopyAIRaudiosRef.path,
-                      fileId: generateAudioStorageFilename(
-                          sessionStep, maxAudioVersion),
-                      localPath: audioPath,
-                      fileKind: FileKind.audio,
-                    );
-                    print(
-                        '(VC2)${i}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====${generateAudioStorageFilename(sessionStep, maxAudioVersion)}');
-                    print(
-                        '(VC3A)${i}~~~~${generatePhotoStorageFilename(sessionStep, maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
-                    bool okPhoto = await copyStorageFiletoLocal(
-                      bucketId: artTheopyAIRphotosRef.path,
-                      fileId: generatePhotoStorageFilename(
-                          sessionStep, maxPhotoVersion),
-                      localPath: photoPath,
-                      fileKind: FileKind.photo,
-                    );
-                    // Image photoImage = Image.file(File(photoPath));
-                    superImage.Image? image = superImage
-                        .decodeImage(File(photoPath).readAsBytesSync());
-                    superImage.Image? resizedImage =
-                        superImage.copyResize(image!, width: 500, height: 500);
-                    File(photoPath)
-                        .writeAsBytesSync(superImage.encodeJpg(resizedImage));
-                    print('(VC3P)${resizedImage.frameType}');
-
-                    Image modifiedImage = Image(
-                      image: ResizeImage(
-                        FileImage(File(photoPath)),
-                        width: 500,
-                        height: 500,
-                      ),
-                    );
-
-                    print(
-                        '(VC4A)${i}~~~~${okPhoto}....${maxPhotoVersion},,,,${photoPath}<');
-                    dir =
-                        Directory.fromRawPath(utf8Encoder.convert(tempDirPath));
-                    await for (var entity
-                        in dir.list(recursive: true, followLinks: false)) {
-                      print(
-                          '(VC4B)${entity.path}....${entity.statSync().size}');
-                    }
-                    final String command =
-                        '-loop 1 -i ${photoPath} -i ${audioPath} -shortest ${videoPath}';
-                    print('(VC4C)${command}');
-                    String logString = 'Logs will appear here...';
-
-                    var ffMpegResponse = await FFmpegKit.executeAsync(
-                      command,
-                      (Session session) async {
-                        print('(VC9A)${logString}');
-
-                        final output = await session.getOutput();
-                        final returnCode = await session.getReturnCode();
-                        final duration = await session.getDuration();
-                        print(
-                            '(VC9B)${returnCode!.toString()}....${returnCode.getValue()},,,,${output!.length}----${output.characters.length}>>>>${duration}');
-                        //  setState(() {
-                        logString += '\n✅ Processing completed!\n';
-                        logString += 'Return code: $returnCode\n';
-                        logString += 'Duration: ${duration}ms\n';
-                        logString += 'Output: $output\n';
-                        //  isProcessing = false;
-                        //});
-
-                        debugPrint('session: $output');
-                        print('(VC9C)${logString}');
-
-                        //  print('(VC5A)${ffMpegResponse.getReturnCode()}....${ffMpegResponse.getState()},,,,${videoPath}');
-                        int maxVideoVersion = await getMaxVersionNumber(
-                            bucketId: artTheopyAIRvideosRef.path!,
-                            fileId: currentSession!.reference!.path!);
-                        String videoStorageId = generateVideoStorageFilename(
-                            currentSession!, maxVideoVersion + 1);
-                        print(
-                            '(VC9D)${maxVideoVersion}....${videoStorageId},,,,${videoPath}');
-                        await storeStorageFile(
-                          bucketId: artTheopyAIRvideosRef.path,
-                          storageFileId: videoStorageId,
-                          localFilePath: videoPath,
-                        );
-                      },
-                      (Log log) {
-                        // setState(() {
-                        logString += log.getMessage();
-                        // });
-                        debugPrint('log: ${log.getMessage()}');
-                      },
-                      (Statistics statistics) {
-                        // setState(() {
-                        logString +=
-                            '\n📊 Progress: ${statistics.getSize()} bytes, ${statistics.getTime()}ms\n';
-                        // });
-                        debugPrint('statistics: ${statistics.getSize()}');
-                      },
-                    );
-
-                    /*  var ffmpegResponse = await FFmpegKit.execute(
-                      command).then((session) async {
-                      final returnCode = await session.getReturnCode();
-                      if (ReturnCode.isSuccess(returnCode)) {
-                        print('(FF1)${returnCode}');
-                      } else if (ReturnCode.isCancel(returnCode)) {
-                        print('(FF2)${returnCode}');
-                      } else {
-                        print('(FF3)${returnCode}....${await session.getState()}====${await session.getCommand()}----${await session.getAllLogsAsString()}');
-                      }
-                    });*/
-                    /* (Session session) async
-                        final output = await session.getOutput();
-                        final returnCode = await session.getReturnCode();
-                        final duration = await session.getDuration();
-
-                        setState(() {
-                          logString += '\n✅ Processing completed!\n';
-                          logString += 'Return code: $returnCode\n';
-                          logString += 'Duration: ${duration}ms\n';
-                          logString += 'Output: $output\n';
-                          //  isProcessing = false;
-                        });
-
-                        debugPrint('session: $output');
-                      },*/
-                    /*(Log log) {
-                        setState(() {
-                          logString += log.getMessage();
-                        });
-                        debugPrint('log: ${log.getMessage()}');
-                      },*/
-                    /*(Statistics statistics) {
-                        setState(() {
-                          logString +=
-                              '\n📊 Progress: ${statistics.getSize()} bytes, ${statistics.getTime()}ms\n';
-                        });
-                        debugPrint('statistics: ${statistics.getSize()}');
-                      },*/
+                  for (int i = 0; i < 1/*sessionStepsList!.length*/; i++) {
+                    print('(QQ30)${i}');
+                    await generateStepVideo(i);
                   }
+                  Navigator.pop(context);
                   // String  command =
                   // " -y -framerate 1 -pattern_type sequence -i $pictureFilenames -c:v libx264 -r 30 -pix_fmt yuv420p ${generatedFile.path}";
                 },
@@ -451,10 +439,10 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
               // )
               SizedBox(height: 100),
               Container(
-                color: Colors.amber,
+                //color: Colors.amber,
                 child: SizedBox(
-                  width: 300,
-                  height: 200,
+                  width: MediaQuery.sizeOf(context).width * 0.9,
+                  height: 130,
                   child: FittedBox(
                     alignment: Alignment.center,
                     fit: BoxFit.cover,
@@ -490,7 +478,8 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
     if ((templatesList.length ?? 0) > 0) {
       chosenTemplate = templatesList.first;
     }
-    List<UsersRecord> clientsList = await listUsersClientsOfUser(therapist: currentUser!.reference);
+    List<UsersRecord> clientsList =
+        await listUsersClientsOfUser(therapist: currentUser!.reference);
     if ((clientsList.length ?? 0) > 0) {
       chosenClient = clientsList.first;
     }
@@ -559,7 +548,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                               chosenTemplate = value;
                               // FFAppState().chosenModerator = chosenModerator!.reference;
                             });
-                            //%//>//>print('(D352)chosenTemplate');
+                            print('(D352)chosenTemplate');
                           },
                           isExpanded: true,
                           focusColor: Colors.transparent,
@@ -573,13 +562,12 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                 ),
                 TextButton(
                   onPressed: () async {
+                    print('(QQ4)${chosenTemplate!.reference!.path}');
                     SessionsRecord session = await createSession(
                         clientId: chosenClient!.reference,
                         therapistId: currentUser!.reference,
                         templateId: chosenTemplate!.reference);
                     print('(CC12)${session.reference}');
-
-
 
                     toast(context, 'Created session', ToastKind.success);
                     context.pop();
@@ -660,8 +648,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
             print('(AAT80)${snapshot}');
             sessions = snapshot.data;
             print('(AAT81)${sessions}');
-            print(
-                '(AAT82)${sessions!.length}....${sessions!.first.clientId!.path}');
+            print('(AAT82)${sessions!.length}');
 
             return Title(
                 title: 'session_display',
@@ -924,20 +911,23 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     20.0, 0.0, 20.0, 0.0),
                                 child: Container(
-                                  child: (sessions!.length < 1)?
-                                  Text('No sessions available', style:FlutterFlowTheme.of(context).bodyMedium )
-                                  : ListView.builder(
-                                      physics: NeverScrollableScrollPhysics(),
-                                      padding: EdgeInsets.zero,
-                                      shrinkWrap: true,
-                                      itemCount: sessions!.length,
-                                      //#cachedHyperbookList.length,
-                                      itemBuilder: (BuildContext context,
-                                          int listViewIndex) {
-                                        return displaySession(
-                                            sessions![listViewIndex],
-                                            listViewIndex);
-                                      }),
+                                  child: (sessions!.length < 1)
+                                      ? Text('No sessions available',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyMedium)
+                                      : ListView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          itemCount: sessions!.length,
+                                          //#cachedHyperbookList.length,
+                                          itemBuilder: (BuildContext context,
+                                              int listViewIndex) {
+                                            return displaySession(
+                                                sessions![listViewIndex],
+                                                listViewIndex);
+                                          }),
                                 ),
                               ),
                             ],
