@@ -263,22 +263,15 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               fit: BoxFit.contain,
                                               child: Text(
                                                   'Art Therapy AIR\nApp',
+                                                  style:FlutterFlowTheme.of(context).headlineMedium.override(
+                                                    fontFamily: 'Rubik',
+                                                    color: Colors.white,
+                                                    fontSize: 22.0,
+                                                  ),
                                                   overflow: TextOverflow.fade,
                                                   //   style: FlutterFlowTheme.of(context)
                                                   //      .headlineMedium,),
-                                                  style: TextStyle(
-                                                    fontSize: MediaQuery.sizeOf(
-                                                                    context)
-                                                                .width <
-                                                            1000
-                                                        ? (MediaQuery.sizeOf(
-                                                                        context)
-                                                                    .width <
-                                                                500
-                                                            ? 20
-                                                            : 30)
-                                                        : 55,
-                                                  )))),
+                                                  ))),
                                       insertMenu(
                                           context, loginMenuDetails, setState),
                                     ],
@@ -872,6 +865,73 @@ class _LoginWidgetState extends State<LoginWidget> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
+                                      FlutterFlowIconButton(
+                                          enabled: true,
+                                          fillColor: Colors.white,
+                                          tooltipMessage: 'Delete videos',
+                                          borderColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .primary,
+                                          borderRadius: 30,
+                                          borderWidth: 1,
+                                          buttonSize: 40,
+                                          icon: kIconDelete,
+                                          onPressed: () {
+                                            showDialog<bool>(
+                                                context: context,
+                                                builder: (BuildContext
+                                                    alertDialogContext) {
+                                                  return AlertDialog(
+                                                      title: const Text(
+                                                          'Delete videos?'),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  alertDialogContext,
+                                                                  false),
+                                                          child: const Text(
+                                                              'Cancel'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () async {
+                                                            models.FileList
+                                                                fileList =
+                                                                await listStorageFiles(
+                                                                    bucketId:
+                                                                        artTheopyAIRvideosRef
+                                                                            .path);
+                                                            if (fileList.files
+                                                                    .length >
+                                                                0) {
+                                                              for (int i = 0;
+                                                                  i <
+                                                                      fileList
+                                                                          .files
+                                                                          .length;
+                                                                  i++) {
+                                                                print(
+                                                                    '(DF1)${fileList.files[i].$id}');
+                                                                await storage.deleteFile(
+                                                                    bucketId:
+                                                                        artTheopyAIRvideosRef
+                                                                            .path!,
+                                                                    fileId: fileList
+                                                                        .files[
+                                                                            i]
+                                                                        .$id);
+                                                                Navigator.pop(
+                                                                    alertDialogContext,
+                                                                    false);
+                                                              }
+                                                            }
+                                                          },
+                                                          child: const Text(
+                                                              'Confirm'),
+                                                        ),
+                                                      ]);
+                                                });
+                                          }),
                                       Padding(
                                         padding: const EdgeInsetsDirectional
                                             .fromSTEB(0.0, 0.0, 0.0, 12.0),

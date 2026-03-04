@@ -131,95 +131,107 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
   Future<void> generateStepVideo(int step) async {
     SessionStepsRecord sessionStep = sessionStepsList![step];
     currentSessionStep = sessionStepsList![step];
+
     print(
-        '(QQ31)${currentSessionStep!.reference!.path}....${(currentSessionStep!.audio!.path ?? '').length}');
+        '(QQ31A)${currentSessionStep!.reference!.path}....${(currentSessionStep!
+            .audio!.path ?? '').length}');
     if (true /*(currentSessionStep!.audio!.path ?? '').length > 0*/) {
-      await setMaxVersionNumbersCurrentSessionStep();
-      final int maxAudioVersion = currentSessionStep!.maxAudioVersion!;
-      final maxPhotoVersion = currentSessionStep!.maxPhotoVersion!;
-      final String audioPath =
-          '${tempDirPath}/audio_${(step + 1).toString()}.wav';
-      final String photoPath =
-          '${tempDirPath}/photo_${(step + 1).toString()}.jpg';
-      final String videoPath =
-          '${tempDirPath}/video_${(step + 1).toString()}.mp4';
-      print('(VC1D)');
-      bool okAudio = await copyStorageFiletoLocal(
-        bucketId: artTheopyAIRaudiosRef.path,
-        fileId: generateAudioStorageFilename(sessionStep, maxAudioVersion),
-        localPath: audioPath,
-        fileKind: FileKind.audio,
-      );
-      print(
-          '(VC2)${step}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====${generateAudioStorageFilename(sessionStep, maxAudioVersion)}');
-      print(
-          '(VC3A)${step}~~~~${generatePhotoStorageFilename(sessionStep, maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
-      bool okPhoto = await copyStorageFiletoLocal(
-        bucketId: artTheopyAIRphotosRef.path,
-        fileId: generatePhotoStorageFilename(sessionStep, maxPhotoVersion),
-        localPath: photoPath,
-        fileKind: FileKind.photo,
-      );
-      // Image photoImage = Image.file(File(photoPath));
-      superImage.Image? image =
-          superImage.decodeImage(File(photoPath).readAsBytesSync());
-      superImage.Image? resizedImage =
-          superImage.copyResize(image!, width: 500, height: 500);
-      File(photoPath).writeAsBytesSync(superImage.encodeJpg(resizedImage));
-      print('(VC3P)${resizedImage.frameType}');
+      print('(QQ31B)${currentSessionStep!.reference!
+          .path}....${(currentSessionStep!.audio!.path ?? '').length}');
+      if (true /*(currentSessionStep!.audio!.path ?? '').length > 0*/) {
+        await setMaxVersionNumbersCurrentSessionStep();
+        final int maxAudioVersion = currentSessionStep!.maxAudioVersion!;
+        final maxPhotoVersion = currentSessionStep!.maxPhotoVersion!;
+        final String audioPath =
+            '${tempDirPath}/audio_${(step + 1).toString()}.wav';
+        final String photoPath =
+            '${tempDirPath}/photo_${(step + 1).toString()}.jpg';
+        final String videoPath =
+            '${tempDirPath}/video_${(step + 1).toString()}.mp4';
+        print('(VC1D)${maxAudioVersion}....${maxPhotoVersion}');
+        bool okAudio = await copyStorageFiletoLocal(
+          bucketId: artTheopyAIRaudiosRef.path,
+          fileId: generateAudioStorageFilename(sessionStep, maxAudioVersion),
+          localPath: audioPath,
+          fileKind: FileKind.audio,
+        );
+        print(
+            '(VC2)${step}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====${generateAudioStorageFilename(
+                sessionStep, maxAudioVersion)}');
+        print(
+            '(VC3A)${step}~~~~${generatePhotoStorageFilename(sessionStep,
+                maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
+        bool okPhoto = await copyStorageFiletoLocal(
+          bucketId: artTheopyAIRphotosRef.path,
+          fileId: generatePhotoStorageFilename(sessionStep, maxPhotoVersion),
+          localPath: photoPath,
+          fileKind: FileKind.photo,
+        );
+        // Image photoImage = Image.file(File(photoPath));
+        superImage.Image? image =
+        superImage.decodeImage(File(photoPath).readAsBytesSync());
+        superImage.Image? resizedImage =
+        superImage.copyResize(image!, width: 500, height: 500);
+        File(photoPath).writeAsBytesSync(superImage.encodeJpg(resizedImage));
+        print('(VC3P)${resizedImage.frameType}');
 
-      Image modifiedImage = Image(
-        image: ResizeImage(
-          FileImage(File(photoPath)),
-          width: 500,
-          height: 500,
-        ),
-      );
+        Image modifiedImage = Image(
+          image: ResizeImage(
+            FileImage(File(photoPath)),
+            width: 500,
+            height: 500,
+          ),
+        );
 
-      print(
-          '(VC4A)${step}~~~~${okPhoto}....${maxPhotoVersion},,,,${photoPath}<');
-      dir = Directory.fromRawPath(utf8Encoder!.convert(tempDirPath!));
-      await for (var entity in dir!.list(recursive: true, followLinks: false)) {
-        print('(VC4B)${entity.path}....${entity.statSync().size}');
-      }
-      final String command =
-          '-loop 1 -i ${photoPath} -i ${audioPath} -shortest ${videoPath}';
-      print('(VC4C)${command}');
-      String logString = 'Logs will appear here...';
+        print(
+            '(VC4A)${step}~~~~${okPhoto}....${maxPhotoVersion},,,,${photoPath}<');
+        dir = Directory.fromRawPath(utf8Encoder!.convert(tempDirPath!));
+        await for (var entity in dir!.list(
+            recursive: true, followLinks: false)) {
+          print('(VC4B)${entity.path}....${entity
+              .statSync()
+              .size}');
+        }
+        final String command =
+            '-loop 1 -i ${photoPath} -i ${audioPath} -shortest ${videoPath}';
+        print('(VC4C)${command}');
+        String logString = 'Logs will appear here...';
 
-      Session ffmpegSession = await FFmpegKit.execute(command);
-      print('(VC9A)${logString}');
+        Session ffmpegSession = await FFmpegKit.execute(command);
+        print('(VC9A)${logString}');
 
-      final output = await ffmpegSession.getOutput();
-      final returnCode = await ffmpegSession.getReturnCode();
-      final duration = await ffmpegSession.getDuration();
-      print(
-          '(VC9B)${returnCode!.toString()}....${returnCode.getValue()},,,,${output!.length}----${output.characters.length}>>>>${duration}');
-      //  setState(() {
-      logString += '\n✅ Processing completed!\n';
-      logString += 'Return code: $returnCode\n';
-      logString += 'Duration: ${duration}ms\n';
-      logString += 'Output: $output\n';
-      //  isProcessing = false;
-      //});
+        final output = await ffmpegSession.getOutput();
+        final returnCode = await ffmpegSession.getReturnCode();
+        final duration = await ffmpegSession.getDuration();
+        print(
+            '(VC9B)${returnCode!.toString()}....${returnCode
+                .getValue()},,,,${output!.length}----${output.characters
+                .length}>>>>${duration}');
+        //  setState(() {
+        logString += '\n✅ Processing completed!\n';
+        logString += 'Return code: $returnCode\n';
+        logString += 'Duration: ${duration}ms\n';
+        logString += 'Output: $output\n';
+        //  isProcessing = false;
+        //});
 
-      debugPrint('session: $output');
-      print('(VC9C)${logString}');
+        debugPrint('session: $output');
+        print('(VC9C)${logString}');
 
-      //  print('(VC5A)${ffMpegResponse.getReturnCode()}....${ffMpegResponse.getState()},,,,${videoPath}');
-      int maxVideoVersion = await getMaxVersionNumber(
-          bucketId: artTheopyAIRvideosRef.path!,
-          fileId: currentSession!.reference!.path!);
-      String videoStorageId =
-          generateVideoStorageFilename(currentSession!, maxVideoVersion + 1);
-      print('(VC9D)${maxVideoVersion}....${videoStorageId},,,,${videoPath}');
-      // await storeStorageFile(
-      //   bucketId: artTheopyAIRvideosRef.path,
-      //   storageFileId: videoStorageId,
-      //   localFilePath: videoPath,
-      // );
+        //  print('(VC5A)${ffMpegResponse.getReturnCode()}....${ffMpegResponse.getState()},,,,${videoPath}');
+        int maxVideoVersion = await getMaxVersionNumber(
+            bucketId: artTheopyAIRvideosRef.path!,
+            fileId: currentSession!.reference!.path!);
+        String videoStorageId =
+        generateVideoStorageFilename(currentSession!, maxVideoVersion + 1);
+        print('(VC9D)${maxVideoVersion}....${videoStorageId},,,,${videoPath}');
+        // await storeStorageFile(
+        //   bucketId: artTheopyAIRvideosRef.path,
+        //   storageFileId: videoStorageId,
+        //   localFilePath: videoPath,
+        // );
 
-      /*(Log log) {
+        /*(Log log) {
           // setState(() {
           logString += log.getMessage();
           // });
@@ -232,6 +244,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
           // });
           debugPrint('statistics: ${statistics.getSize()}');
         },*/
+      }
     }
   }
 
@@ -301,7 +314,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
               Row(children: [
                 FlutterFlowIconButton(
                   caption: 'Edit',
-                  tooltipMessage: 'Go to hyperbook map',
+                  tooltipMessage: 'Edit session',
                   borderColor: Colors.transparent,
                   borderRadius: 0.0,
                   borderWidth: 1.0,
@@ -344,7 +357,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                   sessionStepsList =
                       await listSessionStepList(justCurrentSession: true);
                   tempDirPath = await getTempDirPath();
-                  print('(VC1A)${tempDirPath}');
+                  print('(VC1A)${tempDirPath}....${sessionStepsList!.length}');
                   utf8Encoder = utf8.encoder;
                   dir =
                       Directory.fromRawPath(utf8Encoder!.convert(tempDirPath!));
