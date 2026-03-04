@@ -131,8 +131,8 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
   Future<void> generateStepVideo(int step) async {
     SessionStepsRecord sessionStep = sessionStepsList![step];
     currentSessionStep = sessionStepsList![step];
-    print('(QQ31)${currentSessionStep}....${(currentSessionStep!.audio!.path ?? '').length}');
-    if ((currentSessionStep!.audio!.path ?? '').length > 0) {
+    print('(QQ31)${currentSessionStep!.reference!.path}....${(currentSessionStep!.audio!.path ?? '').length}');
+    if (true/*(currentSessionStep!.audio!.path ?? '').length > 0*/) {
       await setMaxVersionNumbersCurrentSessionStep();
       final int maxAudioVersion = currentSessionStep!.maxAudioVersion!;
       final maxPhotoVersion = currentSessionStep!.maxPhotoVersion!;
@@ -142,7 +142,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
           '${tempDirPath}/photo_${(step + 1).toString()}.jpg';
       final String videoPath =
           '${tempDirPath}/video_${(step + 1).toString()}.mp4';
-      print('(VC1D)');
+      print('(VC1D)${maxAudioVersion}....${maxPhotoVersion}');
       bool okAudio = await copyStorageFiletoLocal(
         bucketId: artTheopyAIRaudiosRef.path,
         fileId: generateAudioStorageFilename(sessionStep, maxAudioVersion),
@@ -305,7 +305,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
               Row(children: [
                 FlutterFlowIconButton(
                   caption: 'Edit',
-                  tooltipMessage: 'Go to hyperbook map',
+                  tooltipMessage: 'Edit session',
                   borderColor: Colors.transparent,
                   borderRadius: 0.0,
                   borderWidth: 1.0,
@@ -347,7 +347,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                   sessionStepsList =
                       await listSessionStepList(justCurrentSession: true);
                   tempDirPath = await getTempDirPath();
-                  print('(VC1A)${tempDirPath}');
+                  print('(VC1A)${tempDirPath}....${sessionStepsList!.length}');
                   utf8Encoder = utf8.encoder;
                   dir =
                       Directory.fromRawPath(utf8Encoder!.convert(tempDirPath!));
@@ -373,8 +373,8 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                       await file.delete();
                     }
                   }
-                  for (int i = 0; i < 1/*sessionStepsList!.length*/; i++) {
-                    print('(QQ30)${i}');
+                  for (int i = 0; i < sessionStepsList!.length; i++) {
+                    print('(QQ30)${sessionStepsList!.length}....${i}');
                     await generateStepVideo(i);
                   }
                   Navigator.pop(context);

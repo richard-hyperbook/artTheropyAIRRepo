@@ -35,7 +35,7 @@ class AudioPlayer extends StatefulWidget {
 class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
   static const double _controlSize = 56;
   static const double _deleteBtnSize = 24;
-  int? maxVersion;
+  int? maxVersion = 0;
 
   final _audioPlayer = ap.AudioPlayer()..setReleaseMode(ReleaseMode.stop);
   late StreamSubscription<void> _playerStateChangedSubscription;

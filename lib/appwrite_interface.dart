@@ -1762,6 +1762,25 @@ Future<void> deleteStorageFile({
 
 Future<models.FileList> listStorageFiles({String? bucketId}) async {
   print(
+    '(XY6)${bucketId}....${kAttrStorageName}',
+  );
+  models.FileList fileList = models.FileList(total: 0, files: []);
+  try {
+    fileList = await storage.listFiles(
+      bucketId: bucketId!,
+      queries: [
+        Query.limit(kLimitStorageListDocuments),
+      ],
+    );
+    print('(XY7A)${fileList.files.length}');
+  } catch (e) {
+    //>print('(XY9)${e.toString()}');
+  }
+  return fileList;
+}
+
+Future<models.FileList> listStorageFilesOfCurrentStorageStep({String? bucketId}) async {
+  print(
     '(XY6)${bucketId}....${kAttrStorageName}----${currentSessionStep!.reference!.path}',
   );
   models.FileList fileList = models.FileList(total: 0, files: []);

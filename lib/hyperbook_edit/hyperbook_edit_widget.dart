@@ -457,7 +457,7 @@ class _HyperbookEditWidgetState extends State<HyperbookEditWidget> {
 
   backupHyperbook() async {
     models.FileList? backupFileList =
-        await listStorageFiles(bucketId: backupStorageRef.path);
+        await listStorageFilesOfCurrentStorageStep(bucketId: backupStorageRef.path);
     int maxVersion = 0;
     for (models.File file in backupFileList!.files) {
       String filename = file.name;
