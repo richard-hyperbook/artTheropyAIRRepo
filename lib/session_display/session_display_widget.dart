@@ -131,8 +131,9 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
   Future<void> generateStepVideo(int step) async {
     SessionStepsRecord sessionStep = sessionStepsList![step];
     currentSessionStep = sessionStepsList![step];
-    print('(QQ31)${currentSessionStep}....${(currentSessionStep!.audio!.path ?? '').length}');
-    if ((currentSessionStep!.audio!.path ?? '').length > 0) {
+    print(
+        '(QQ31)${currentSessionStep!.reference!.path}....${(currentSessionStep!.audio!.path ?? '').length}');
+    if (true /*(currentSessionStep!.audio!.path ?? '').length > 0*/) {
       await setMaxVersionNumbersCurrentSessionStep();
       final int maxAudioVersion = currentSessionStep!.maxAudioVersion!;
       final maxPhotoVersion = currentSessionStep!.maxPhotoVersion!;
@@ -186,43 +187,39 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
       print('(VC4C)${command}');
       String logString = 'Logs will appear here...';
 
-      var ffMpegResponse = await FFmpegKit.executeAsync(
-        command,
-        (Session session) async {
-          print('(VC9A)${logString}');
+      Session ffmpegSession = await FFmpegKit.execute(command);
+      print('(VC9A)${logString}');
 
-          final output = await session.getOutput();
-          final returnCode = await session.getReturnCode();
-          final duration = await session.getDuration();
-          print(
-              '(VC9B)${returnCode!.toString()}....${returnCode.getValue()},,,,${output!.length}----${output.characters.length}>>>>${duration}');
-          //  setState(() {
-          logString += '\n✅ Processing completed!\n';
-          logString += 'Return code: $returnCode\n';
-          logString += 'Duration: ${duration}ms\n';
-          logString += 'Output: $output\n';
-          //  isProcessing = false;
-          //});
+      final output = await ffmpegSession.getOutput();
+      final returnCode = await ffmpegSession.getReturnCode();
+      final duration = await ffmpegSession.getDuration();
+      print(
+          '(VC9B)${returnCode!.toString()}....${returnCode.getValue()},,,,${output!.length}----${output.characters.length}>>>>${duration}');
+      //  setState(() {
+      logString += '\n✅ Processing completed!\n';
+      logString += 'Return code: $returnCode\n';
+      logString += 'Duration: ${duration}ms\n';
+      logString += 'Output: $output\n';
+      //  isProcessing = false;
+      //});
 
-          debugPrint('session: $output');
-          print('(VC9C)${logString}');
+      debugPrint('session: $output');
+      print('(VC9C)${logString}');
 
-          //  print('(VC5A)${ffMpegResponse.getReturnCode()}....${ffMpegResponse.getState()},,,,${videoPath}');
-          int maxVideoVersion = await getMaxVersionNumber(
-              bucketId: artTheopyAIRvideosRef.path!,
-              fileId: currentSession!.reference!.path!);
-          String videoStorageId = generateVideoStorageFilename(
-              currentSession!, maxVideoVersion + 1);
-          print(
-              '(VC9D)${maxVideoVersion}....${videoStorageId},,,,${videoPath}');
-          await storeStorageFile(
-            bucketId: artTheopyAIRvideosRef.path,
-            storageFileId: videoStorageId,
-            localFilePath: videoPath,
-          );
+      //  print('(VC5A)${ffMpegResponse.getReturnCode()}....${ffMpegResponse.getState()},,,,${videoPath}');
+      int maxVideoVersion = await getMaxVersionNumber(
+          bucketId: artTheopyAIRvideosRef.path!,
+          fileId: currentSession!.reference!.path!);
+      String videoStorageId =
+          generateVideoStorageFilename(currentSession!, maxVideoVersion + 1);
+      print('(VC9D)${maxVideoVersion}....${videoStorageId},,,,${videoPath}');
+      // await storeStorageFile(
+      //   bucketId: artTheopyAIRvideosRef.path,
+      //   storageFileId: videoStorageId,
+      //   localFilePath: videoPath,
+      // );
 
-        },
-        (Log log) {
+      /*(Log log) {
           // setState(() {
           logString += log.getMessage();
           // });
@@ -234,8 +231,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
               '\n📊 Progress: ${statistics.getSize()} bytes, ${statistics.getTime()}ms\n';
           // });
           debugPrint('statistics: ${statistics.getSize()}');
-        },
-      );
+        },*/
     }
   }
 
@@ -343,6 +339,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                 buttonWidth: kIconButtonWidth,
                 icon: Icon(Icons.video_camera_back_outlined),
                 onPressed: () async {
+                  currentSession = sessions![index];
                   showAlertDialog(context);
                   sessionStepsList =
                       await listSessionStepList(justCurrentSession: true);
@@ -373,10 +370,48 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                       await file.delete();
                     }
                   }
-                  for (int i = 0; i < 1/*sessionStepsList!.length*/; i++) {
-                    print('(QQ30)${i}');
+                  for (int i = 0; i < sessionStepsList!.length; i++) {
+                    print('(QQ30)${sessionStepsList!.length}....${i}');
                     await generateStepVideo(i);
                   }
+                  final String videoPath = tempDirPath!;
+                  Directory videoDir = Directory(videoPath);
+                  String concatList = '';
+                  videoDir.listSync().forEach((e) {
+                    final size = e.statSync().size;
+                    print('(MV1)${size}....${e.path}');
+                    if((e.path).contains('video')) {
+                      concatList = concatList + "file '${e.path}'\n";
+                    }
+                  });
+                  print('(MV2)${videoDir.path}....${concatList}');
+                  final File concatFile = await File("${videoDir.path}/concat.txt").writeAsString(concatList);
+
+                  final String concatedVideo = "${videoDir.path}/video.mp4";
+                  final String concatCommand =
+                  "-f concat -safe 0 -i ${videoDir.path}/concat.txt -c copy ${concatedVideo}";
+                  print('(MV4)${concatedVideo}....${concatCommand}');
+                  Session ffmpegSession2 = await FFmpegKit.execute(concatCommand);
+                  print('(MV5)${concatCommand}');
+
+                  final output = await ffmpegSession2.getOutput();
+                  final returnCode = await ffmpegSession2.getReturnCode();
+                  final duration = await ffmpegSession2.getDuration();
+                  print(
+                      '(MV6)${returnCode!.toString()}....${returnCode},,,,${output!.length}----${output.characters.length}>>>>${duration}');
+                   videoDir.listSync().forEach((e) {
+                     final size = e.statSync().size;
+                     print('(MV7)${size}....${e.path}');
+                   });
+                  var response = await storeStorageFile(
+                    bucketId: artTheopyAIRvideosRef.path!,
+                    storageFileId: generateVideoStorageFilename(
+                      session, 0,
+                    ),
+                    localFilePath: concatedVideo,
+                  );
+                  print('(MV8)${response}');
+
                   Navigator.pop(context);
                   // String  command =
                   // " -y -framerate 1 -pattern_type sequence -i $pictureFilenames -c:v libx264 -r 30 -pix_fmt yuv420p ${generatedFile.path}";
