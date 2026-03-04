@@ -1,6 +1,6 @@
 import 'package:http/http.dart';
 
-enum EmailType { inviteUser, roleRequest, roleGrant }
+enum EmailType { inviteUser, roleRequest, roleGrant, customBody }
 
 Future<void> sendEmail({
   required EmailType emailType,
@@ -8,8 +8,9 @@ Future<void> sendEmail({
   required String senderEmail,
   required String hyperbookName,
   required String receiverEmail,
-  String receiverDisplayName = '',
+  String receiverDisplayName = 'Fred',
   String newRole = 'Unknown',
+  String body = '',
 }) async {
   final bodyJsonInviteUser =
       '''{ 
@@ -44,7 +45,7 @@ Future<void> sendEmail({
       }
       ''';
   final bodyJsonRoleGrant =
-      '''{ 
+  '''{ 
       "sender":{
       "name": "Hyperbook App",
       "email":"no_reply@hyperbook.co.uk"
@@ -59,6 +60,22 @@ Future<void> sendEmail({
       "htmlContent":"<html><head></head><body><p>Hello ${receiverDisplayName},</p> ${senderDisplayName} (${senderEmail}) has responded to your request for a change of role in hyperbook ${hyperbookName} to ${newRole}.  Open the Hyperbook App, login and find ${hyperbookName} in the list of hyperbooks.  You will find that you now can access ${hyperbookName} according to your new Role.</body></html>"
       }
       ''';
+  final bodyJsonCustomBody =
+  '''{ 
+      "sender":{
+      "name": "Art Therapy AIR",
+      "email":"no_reply@hyperbook.co.uk"
+      },
+      "to":[
+      {
+      "email":"${receiverEmail}",
+      "name":"${receiverDisplayName}"
+      }
+      ],
+      "subject":"A video is available from ${senderDisplayName}",
+      "htmlContent":"<html><head></head><body><p>Hello ${body},</p> </body></html>"
+      }
+      ''';
   String bodyJson = '';
   switch (emailType) {
     case EmailType.inviteUser:
@@ -70,7 +87,30 @@ Future<void> sendEmail({
     case EmailType.roleGrant:
       bodyJson = bodyJsonRoleGrant;
       break;
+    case EmailType.customBody:
+      bodyJson = bodyJsonCustomBody;
+      break;
   }
+
+
+  //"<html><head></head><body>XXX/body></html>"
+  //>//>print('(SE1)${senderEmail}****${receiverEmail}££££${receiverDisplayName}||||${newRole}');
+//OLD KEY: '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',
+
+  Response response = await post(
+    Uri.parse('https://api.brevo.com/v3/smtp/email'),
+    headers: <String, String>{
+      'accept': 'application/json',
+      'api-key':
+      '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',
+      'content-type': 'application/json;' 'charset=UTF-8',
+    },
+    //body: jsonEncode(<String, String>{'title': title}),
+    body: bodyJson,
+  );
+  print(
+      '(SE2)${response.body}****${response.statusCode}&&&&${response.request}@@@@${bodyJson}');
+
 
   //"<html><head></head><body>XXX/body></html>"
   //>//>print('(SE1)${senderEmail}****${receiverEmail}££££${receiverDisplayName}||||${newRole}');

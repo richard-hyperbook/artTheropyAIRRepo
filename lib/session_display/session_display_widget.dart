@@ -1,3 +1,5 @@
+// import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -133,11 +135,10 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
     currentSessionStep = sessionStepsList![step];
 
     print(
-        '(QQ31A)${currentSessionStep!.reference!.path}....${(currentSessionStep!
-            .audio!.path ?? '').length}');
+        '(QQ31A)${currentSessionStep!.reference!.path}....${(currentSessionStep!.audio!.path ?? '').length}');
     if (true /*(currentSessionStep!.audio!.path ?? '').length > 0*/) {
-      print('(QQ31B)${currentSessionStep!.reference!
-          .path}....${(currentSessionStep!.audio!.path ?? '').length}');
+      print(
+          '(QQ31B)${currentSessionStep!.reference!.path}....${(currentSessionStep!.audio!.path ?? '').length}');
       if (true /*(currentSessionStep!.audio!.path ?? '').length > 0*/) {
         await setMaxVersionNumbersCurrentSessionStep();
         final int maxAudioVersion = currentSessionStep!.maxAudioVersion!;
@@ -156,11 +157,9 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
           fileKind: FileKind.audio,
         );
         print(
-            '(VC2)${step}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====${generateAudioStorageFilename(
-                sessionStep, maxAudioVersion)}');
+            '(VC2)${step}~~~~${okAudio}....${maxAudioVersion},,,,${audioPath}====${generateAudioStorageFilename(sessionStep, maxAudioVersion)}');
         print(
-            '(VC3A)${step}~~~~${generatePhotoStorageFilename(sessionStep,
-                maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
+            '(VC3A)${step}~~~~${generatePhotoStorageFilename(sessionStep, maxPhotoVersion)}....${maxPhotoVersion},,,,${photoPath}====');
         bool okPhoto = await copyStorageFiletoLocal(
           bucketId: artTheopyAIRphotosRef.path,
           fileId: generatePhotoStorageFilename(sessionStep, maxPhotoVersion),
@@ -169,9 +168,9 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
         );
         // Image photoImage = Image.file(File(photoPath));
         superImage.Image? image =
-        superImage.decodeImage(File(photoPath).readAsBytesSync());
+            superImage.decodeImage(File(photoPath).readAsBytesSync());
         superImage.Image? resizedImage =
-        superImage.copyResize(image!, width: 500, height: 500);
+            superImage.copyResize(image!, width: 500, height: 500);
         File(photoPath).writeAsBytesSync(superImage.encodeJpg(resizedImage));
         print('(VC3P)${resizedImage.frameType}');
 
@@ -186,11 +185,9 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
         print(
             '(VC4A)${step}~~~~${okPhoto}....${maxPhotoVersion},,,,${photoPath}<');
         dir = Directory.fromRawPath(utf8Encoder!.convert(tempDirPath!));
-        await for (var entity in dir!.list(
-            recursive: true, followLinks: false)) {
-          print('(VC4B)${entity.path}....${entity
-              .statSync()
-              .size}');
+        await for (var entity
+            in dir!.list(recursive: true, followLinks: false)) {
+          print('(VC4B)${entity.path}....${entity.statSync().size}');
         }
         final String command =
             '-loop 1 -i ${photoPath} -i ${audioPath} -shortest ${videoPath}';
@@ -204,9 +201,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
         final returnCode = await ffmpegSession.getReturnCode();
         final duration = await ffmpegSession.getDuration();
         print(
-            '(VC9B)${returnCode!.toString()}....${returnCode
-                .getValue()},,,,${output!.length}----${output.characters
-                .length}>>>>${duration}');
+            '(VC9B)${returnCode!.toString()}....${returnCode.getValue()},,,,${output!.length}----${output.characters.length}>>>>${duration}');
         //  setState(() {
         logString += '\n✅ Processing completed!\n';
         logString += 'Return code: $returnCode\n';
@@ -223,7 +218,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
             bucketId: artTheopyAIRvideosRef.path!,
             fileId: currentSession!.reference!.path!);
         String videoStorageId =
-        generateVideoStorageFilename(currentSession!, maxVideoVersion + 1);
+            generateVideoStorageFilename(currentSession!, maxVideoVersion + 1);
         print('(VC9D)${maxVideoVersion}....${videoStorageId},,,,${videoPath}');
         // await storeStorageFile(
         //   bucketId: artTheopyAIRvideosRef.path,
@@ -393,18 +388,21 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                   videoDir.listSync().forEach((e) {
                     final size = e.statSync().size;
                     print('(MV1)${size}....${e.path}');
-                    if((e.path).contains('video')) {
+                    if ((e.path).contains('video')) {
                       concatList = concatList + "file '${e.path}'\n";
                     }
                   });
                   print('(MV2)${videoDir.path}....${concatList}');
-                  final File concatFile = await File("${videoDir.path}/concat.txt").writeAsString(concatList);
+                  final File concatFile =
+                      await File("${videoDir.path}/concat.txt")
+                          .writeAsString(concatList);
 
                   final String concatedVideo = "${videoDir.path}/video.mp4";
                   final String concatCommand =
-                  "-f concat -safe 0 -i ${videoDir.path}/concat.txt -c copy ${concatedVideo}";
+                      "-f concat -safe 0 -i ${videoDir.path}/concat.txt -c copy ${concatedVideo}";
                   print('(MV4)${concatedVideo}....${concatCommand}');
-                  Session ffmpegSession2 = await FFmpegKit.execute(concatCommand);
+                  Session ffmpegSession2 =
+                      await FFmpegKit.execute(concatCommand);
                   print('(MV5)${concatCommand}');
 
                   final output = await ffmpegSession2.getOutput();
@@ -412,14 +410,15 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                   final duration = await ffmpegSession2.getDuration();
                   print(
                       '(MV6)${returnCode!.toString()}....${returnCode},,,,${output!.length}----${output.characters.length}>>>>${duration}');
-                   videoDir.listSync().forEach((e) {
-                     final size = e.statSync().size;
-                     print('(MV7)${size}....${e.path}');
-                   });
+                  videoDir.listSync().forEach((e) {
+                    final size = e.statSync().size;
+                    print('(MV7)${size}....${e.path}');
+                  });
                   var response = await storeStorageFile(
                     bucketId: artTheopyAIRvideosRef.path!,
                     storageFileId: generateVideoStorageFilename(
-                      session, 0,
+                      session,
+                      0,
                     ),
                     localFilePath: concatedVideo,
                   );
@@ -441,50 +440,106 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                   buttonWidth: kIconButtonWidth,
                   icon: Icon(Icons.video_camera_back_outlined),
                   onPressed: () async {
-                    int maxVideoVersion = await getMaxVersionNumber(
-                        bucketId: artTheopyAIRvideosRef.path!,
-                        fileId: currentSession!.reference!.path!);
-                    String videoStorageId = generateVideoStorageFilename(
-                        currentSession!, maxVideoVersion);
-                    String tempDirPath = await getTempDirPath();
-                    String videoPlayPath = '${tempDirPath}/video_play.mp4';
-                    print(
-                        '(VC12)${maxVideoVersion}....${videoStorageId},,,,${videoPlayPath}');
+                    currentSession = session;
+                    tempDirPath = await getTempDirPath();
+                    final String videoStorageId =
+                        'video${currentSession!.reference!.path}_0.mp4';
+                    final String videoPlayPath = '${tempDirPath}/video.mp4';
                     bool okVideo = await copyStorageFiletoLocal(
                       bucketId: artTheopyAIRvideosRef.path,
                       fileId: videoStorageId,
                       localPath: videoPlayPath,
                       fileKind: FileKind.video,
                     );
-                    print('(VC13)${maxVideoVersion}....${videoPlayPath}');
+                    print('(VC13)${okVideo}....${videoPlayPath}');
                     videoController =
                         VideoPlayerController.file(File(videoPlayPath))
                           ..initialize().then((_) {
                             //    Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
                           });
-                    // setState(() {
-                    // });
                   }),
-              // SizedBox(
-              //   width: 300,
-              //   height: 200,
-              //   child:  Container(
-              //     decoration: BoxDecoration(border: BoxBorder.all(width: 1, color: Colors.black)),
-              //     child: FittedBox(
-              //     fit: BoxFit.fill,
-              //     child: SizedBox(
-              //       width: 290/*videoController.value.size.width ?? 0*/,
-              //       height: 190/*videoController.value.size.height ?? 0*/,
-              //       child: VideoPlayer(videoController),
-              //     ),
-              //   ),
-              //
-              //     /*AspectRatio(
-              //       aspectRatio: videoController.value.aspectRatio,
-              //       child: VideoPlayer(videoController),
-              //     ),*/
-              //   )
-              // )
+              Text('XXX'),
+              SizedBox(height: kIconButtonGap),
+              FlutterFlowIconButton(
+                  caption: 'Send email',
+                  tooltipMessage: 'Send email with link to video',
+                  borderColor: Colors.transparent,
+                  borderRadius: 0.0,
+                  borderWidth: 1.0,
+                  buttonSize: 40.0,
+                  buttonWidth: kIconButtonWidth,
+                  icon: Icon(Icons.video_camera_back_outlined),
+                  onPressed: () async {
+                    currentSession = session;
+                    String videoURL = '';
+                    models.FileList fileList = await listStorageFiles(
+                        bucketId: artTheopyAIRvideosRef.path);
+                    bool videoAvailable = false;
+                    if (fileList.files.length > 0) {
+                      for (int i = 0; i < fileList.files.length; i++) {
+                        String fileId = fileList.files[i].$id;
+                        if ((fileId.contains('video')) &&
+                            (fileId
+                                .contains(currentSession!.reference!.path!))) {
+                          videoAvailable = true;
+                          final String BUCKET_ID = artTheopyAIRvideosRef.path!;
+                          final String FILE_ID = fileId;
+                          final String PROJECT_ID = kProjectID;
+                          if (FILE_ID.length > 0) {
+                            videoURL =
+                                'https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${FILE_ID}/view?project=${PROJECT_ID}';
+                          }
+                        }
+                      }
+                    }
+                    print('(ES1)${videoURL}');
+                    showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(builder: (context, setState) {
+                            return AlertDialog(
+                              title: Text('Send Email'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  videoAvailable
+                                      ? Text(
+                                          'Send Email with link to the created Video?')
+                                      : Text('No video avialable')
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    context.pop();
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                                videoAvailable
+                                    ? TextButton(
+                                        onPressed: () async {
+                                          print('(ES2)${currentUser!.displayName}....${currentUser!.email!}====${videoURL}');
+
+                                          sendEmail(
+                                              emailType: EmailType.customBody,
+                                              senderDisplayName:
+                                                  currentUser!.displayName!,
+                                              senderEmail: currentUser!.email!,
+                                              receiverEmail:
+                                                  currentUser!.email!,
+                                              hyperbookName: '',
+                                              body:
+                                                  'Video available here: ${videoURL}');
+                                          context.pop();
+                                        },
+                                        child: const Text('Confirm'),
+                                      )
+                                    : Container(),
+                              ],
+                            );
+                          });
+                        });
+                  }),
               SizedBox(height: 100),
               Container(
                 //color: Colors.amber,
