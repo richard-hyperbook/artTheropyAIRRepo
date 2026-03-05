@@ -696,7 +696,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                           },
                                           text: 'Login',
                                           options: FFButtonOptions(
-                                            width: 140.0,
+                                            width: 120.0,
                                             height: 52.0,
                                             padding: const EdgeInsetsDirectional
                                                 .fromSTEB(0.0, 0.0, 0.0, 0.0),
@@ -790,7 +790,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             borderRadius: 0.0,
                                             borderWidth: 1.0,
                                             buttonSize: 40.0,
-                                            buttonWidth: kIconButtonWidth,
+                                            buttonWidth: kIconButtonWidth - 15,
 
                                             // borderRadius: 30,
                                             // borderWidth: 1,

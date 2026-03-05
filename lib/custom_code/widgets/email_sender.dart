@@ -1,4 +1,7 @@
 import 'package:http/http.dart';
+import '../../appwrite_interface.dart';
+import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart' as models;
 
 enum EmailType { inviteUser, roleRequest, roleGrant, customBody }
 
@@ -92,17 +95,15 @@ Future<void> sendEmail({
       break;
   }
 
-
-  //"<html><head></head><body>XXX/body></html>"
-  //>//>print('(SE1)${senderEmail}****${receiverEmail}££££${receiverDisplayName}||||${newRole}');
-//OLD KEY: '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',
-
-  Response response = await post(
+  models.Document doc = await getDocument(
+      collection: DocumentReference(path: '69a9253600091c44ad9f'),
+      document: DocumentReference(path:  '69a925d2001d220fb19e'));
+  final String value = doc.data['value'] as String;
+  var response = await post(
     Uri.parse('https://api.brevo.com/v3/smtp/email'),
     headers: <String, String>{
       'accept': 'application/json',
-      'api-key':
-      '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',
+      'api-key': value,
       'content-type': 'application/json;' 'charset=UTF-8',
     },
     //body: jsonEncode(<String, String>{'title': title}),
