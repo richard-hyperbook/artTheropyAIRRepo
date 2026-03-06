@@ -1,8 +1,15 @@
-import 'package:http/http.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart' as models;
+import '../../appwrite_interface.dart';
+import '../../localDB.dart';
+import '/../custom_code/widgets/toast.dart';
 
 enum EmailType { inviteUser, roleRequest, roleGrant, customBody }
 
 Future<void> sendEmail({
+  required BuildContext context,
   required EmailType emailType,
   required String senderDisplayName,
   required String senderEmail,
@@ -97,12 +104,14 @@ Future<void> sendEmail({
   //>//>print('(SE1)${senderEmail}****${receiverEmail}££££${receiverDisplayName}||||${newRole}');
 //OLD KEY: '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',
 
-  Response response = await post(
+  models.Document keyDocument = await getDocument(collection: infoRef, document: DocumentReference(path: '69a925d2001d220fb19e'));
+  String key = keyDocument.data[kInfoValue] as String;
+
+  http.Response response = await http.post(
     Uri.parse('https://api.brevo.com/v3/smtp/email'),
     headers: <String, String>{
       'accept': 'application/json',
-      'api-key':
-      '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',
+      'api-key': key,
       'content-type': 'application/json;' 'charset=UTF-8',
     },
     //body: jsonEncode(<String, String>{'title': title}),
@@ -110,6 +119,11 @@ Future<void> sendEmail({
   );
   print(
       '(SE2)${response.body}****${response.statusCode}&&&&${response.request}@@@@${bodyJson}');
+  if((response.statusCode >= 200) && (response.statusCode < 300)){
+    toast(context, 'Email sent', ToastKind.success);
+  } else {
+    toast(context, 'Email not sent, status: ${response.statusCode}', ToastKind.error);
+  }
 
 
   //"<html><head></head><body>XXX/body></html>"

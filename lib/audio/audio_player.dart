@@ -46,8 +46,10 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
   String? localPath;
 
   void localSetSource() async {
-    _audioPlayer.setSource(await _source());
-    print('(DE35)${_source()}');
+    if (maxVersion != 0) {
+      _audioPlayer.setSource(await _source());
+      print('(DE35)${await _source()}');
+    }
   }
 
   void resetPlayer(){
@@ -181,7 +183,7 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
 
     double width = widgetWidth - _controlSize - _deleteBtnSize;
     width -= _deleteBtnSize;
-    print('(AU44)${widgetWidth}....${position}');
+    print('(SS44A)${widgetWidth}....${position}');
 
     return SizedBox(
       width: width,
@@ -189,8 +191,10 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
         activeColor: Theme.of(context).primaryColor,
         inactiveColor: Theme.of(context).colorScheme.secondary,
         onChanged: (v) {
+          print('(SS44B)');
           if (duration != null) {
             final position = v * duration.inMilliseconds;
+            print('(SS44)${widgetWidth}....${position}');
             _audioPlayer.seek(Duration(milliseconds: position.round()));
           }
         },
@@ -205,21 +209,28 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
     //localSetSource();//???????????????
 
     final utf8Encoder = utf8.encoder;
-    Source localSource = await _source();
-    String localPath = await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!);
-    List<String> dirPath = localPath.split('/audio');
-    print('DE36A)${dirPath[0]}');
-    var dir = Directory.fromRawPath(utf8Encoder.convert(dirPath[0]));
-    await for (var entity in
-    dir.list(recursive: true, followLinks: false)) {
-      print('DE36B)${entity.path}');
-      // if(entity.path.contains('audio')) {
-      //   File file = File(entity.path);
-      //   await file.delete();
-      // }
+    Source localSource;
+    print('(AS)${maxVersion}');
+    if (maxVersion != 0) {
+      localSource = await _source();
+
+      String localPath = await getPath(sessionStepId: widget.sessionStepId!,
+          fileKind: FileKind.audio,
+          version: maxVersion!);
+      List<String> dirPath = localPath.split('/audio');
+      print('DE36A)${dirPath[0]}');
+      var dir = Directory.fromRawPath(utf8Encoder.convert(dirPath[0]));
+      await for (var entity in
+      dir.list(recursive: true, followLinks: false)) {
+        print('DE36B)${entity.path}');
+        // if(entity.path.contains('audio')) {
+        //   File file = File(entity.path);
+        //   await file.delete();
+        // }
+      }
+      print('(DE36C)${localSource.toString()}');
+      _audioPlayer.play(localSource);
     }
-    print('(DE36C)${localSource.toString()}');
-    _audioPlayer.play(localSource);
   }
 
   Future<void> pause() async {
@@ -237,7 +248,7 @@ class AudioPlayerState extends State<AudioPlayer> with AudioRecorderMixin {
 
   Future<Source> _source() async {
     //....${await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!)}
-    print('(DE34)${widget.sessionStepId}');
+    print('(AS2)${widget.sessionStepId}....${maxVersion}');
     return kIsWeb
         ? ap.UrlSource(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!))
         : ap.DeviceFileSource(await getPath(sessionStepId: widget.sessionStepId!, fileKind: FileKind.audio, version: maxVersion!));

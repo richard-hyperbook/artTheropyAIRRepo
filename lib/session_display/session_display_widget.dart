@@ -91,6 +91,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
     _model = createModel(context, () => SessionDisplayModel());
     enteredHyperbookTitleController = TextEditingController();
     enteredHyperbookTitleController.text = '';
+
     // hyperbookDisplayscrollController = ScrollController();
     // WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
@@ -244,6 +245,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
   }
 
   Widget displaySession(SessionsRecord session, int index) {
+    print('(VC50)${session.videoCreated}....${session.sessionModified},,,,${((session.videoCreated!) && (!session.sessionModified!))}');
     return Material(
       color: Colors.transparent,
       elevation: 5.0,
@@ -314,7 +316,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                   borderRadius: 0.0,
                   borderWidth: 1.0,
                   buttonSize: 40.0,
-                  buttonWidth: 150,
+                  buttonWidth: kIconButtonWidth,
                   icon: Icon(Icons.edit),
                   onPressed: () async {
                     FFAppState().update(() {});
@@ -331,14 +333,14 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                           duration: kStandardTransitionTime,
                           reverseDuration: kStandardReverseTransitionTime,
                           child: SessionStepDisplayWidget(),
-                        ));
+                        )).then((_) => setState(() {}));
                   },
                 ),
               ]),
               SizedBox(height: kIconButtonGap),
               FlutterFlowIconButton(
                 // showLoadingIndicator: true,
-                caption: 'Make video',
+                caption: ((session.videoCreated!) && (!session.sessionModified!))? 'Video available' : 'Make video',
                 tooltipMessage: 'Speech to text',
                 borderColor: Colors.transparent,
                 borderRadius: 0.0,
@@ -346,7 +348,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                 buttonSize: 40.0,
                 buttonWidth: kIconButtonWidth,
                 icon: Icon(Icons.video_camera_back_outlined),
-                onPressed: () async {
+                onPressed: ((sessions![index].videoCreated!)  && (!session.sessionModified!)) ? null : () async {
                   currentSession = sessions![index];
                   showAlertDialog(context);
                   sessionStepsList =
@@ -414,6 +416,18 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                     final size = e.statSync().size;
                     print('(MV7)${size}....${e.path}');
                   });
+                  models.FileList fileList = await listStorageFiles(bucketId: artTheopyAIRvideosRef.path);
+                  String fileId = '';
+                  for(int i = 0; i < fileList.files.length; i++){
+                    if((fileList.files[i].$id).contains(currentSession!.reference!.path!)){
+                      fileId = fileList.files[i].$id;
+                      break;
+                    }
+                  }
+                  print('(MV8)${fileId}');
+                  if(fileId.length > 0){
+                    await deleteStorageFile(bucketId:  artTheopyAIRvideosRef.path, fileId: fileId);
+                  }
                   var response = await storeStorageFile(
                     bucketId: artTheopyAIRvideosRef.path!,
                     storageFileId: generateVideoStorageFilename(
@@ -422,8 +436,16 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                     ),
                     localFilePath: concatedVideo,
                   );
-                  print('(MV8)${response}');
-
+                  print('(MV9)${concatedVideo}....${response}');
+                  await updateDocument(
+                      collection: sessionsRef,
+                      document: currentSession!.reference,
+                      data: {kSessionSessionModified: false,
+                             kSessionVideoCreated: true});
+                  setState(() {
+                    currentSession!.videoCreated = true;
+                    currentSession!.sessionModified = false;
+                  });
                   Navigator.pop(context);
                   // String  command =
                   // " -y -framerate 1 -pattern_type sequence -i $pictureFilenames -c:v libx264 -r 30 -pix_fmt yuv420p ${generatedFile.path}";
@@ -431,15 +453,17 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
               ),
               SizedBox(height: kIconButtonGap),
               FlutterFlowIconButton(
-                  caption: 'Play video',
-                  tooltipMessage: 'Play video',
+                  showLoadingIndicator: true,
+                  caption: (sessions![index].videoCreated!)? 'Load video' : 'Video not available',
+                  tooltipMessage: 'Load video',
                   borderColor: Colors.transparent,
                   borderRadius: 0.0,
                   borderWidth: 1.0,
                   buttonSize: 40.0,
                   buttonWidth: kIconButtonWidth,
-                  icon: Icon(Icons.video_camera_back_outlined),
-                  onPressed: () async {
+                  icon: Icon(Icons.visibility),
+                  onPressed: (!session.videoCreated!) ? null :
+                      () async {
                     currentSession = session;
                     tempDirPath = await getTempDirPath();
                     final String videoStorageId =
@@ -458,9 +482,9 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                             //    Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
                           });
                   }),
-              Text('XXX'),
               SizedBox(height: kIconButtonGap),
               FlutterFlowIconButton(
+                  showLoadingIndicator: true,
                   caption: 'Send email',
                   tooltipMessage: 'Send email with link to video',
                   borderColor: Colors.transparent,
@@ -468,7 +492,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                   borderWidth: 1.0,
                   buttonSize: 40.0,
                   buttonWidth: kIconButtonWidth,
-                  icon: Icon(Icons.video_camera_back_outlined),
+                  icon: Icon(Icons.email_outlined),
                   onPressed: () async {
                     currentSession = session;
                     String videoURL = '';
@@ -493,6 +517,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                       }
                     }
                     print('(ES1)${videoURL}');
+                    BuildContext enclosingContext = context;
                     showDialog<bool>(
                         context: context,
                         builder: (BuildContext context) {
@@ -518,9 +543,10 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                                 videoAvailable
                                     ? TextButton(
                                         onPressed: () async {
-                                          print('(ES2)${currentUser!.displayName}....${currentUser!.email!}====${videoURL}');
-
+                                          print(
+                                              '(ES2)${currentUser!.displayName}....${currentUser!.email!}====${videoURL}');
                                           sendEmail(
+                                            context: enclosingContext,
                                               emailType: EmailType.customBody,
                                               senderDisplayName:
                                                   currentUser!.displayName!,
@@ -683,6 +709,30 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
         });
   }
 
+  Future<List<SessionsRecord>> loadSessions() async {
+    List<SessionsRecord> sessionList =
+        await listSessionList(justCurrentUserAsTherapist: true);
+    models.FileList videoFileList =
+        await listStorageFiles(bucketId: artTheopyAIRvideosRef.path);
+    for (int i = 0; i < sessionList.length; i++) {
+      sessionList[i].videoCreated = false;
+      for (int j = 0; j < videoFileList.files.length; j++) {
+        print('(VC100)$i,,,,$j----${videoFileList.files[j].$id}....${sessionList[i].reference!.path!}****${videoFileList.files[j].$id.contains(sessionList[i].reference!.path!)}');
+        if (videoFileList.files[j].$id
+            .contains(sessionList[i].reference!.path!)) {
+          await updateDocument(
+              collection: sessionsRef,
+              document: currentSession!.reference,
+              data: {kSessionVideoCreated: true});
+          sessionList[i].videoCreated = true;
+        }
+        print('(VC51)');
+
+      }
+    }
+    return sessionList;
+  }
+
   @override
   Widget build(BuildContext context) {
     print('(AAT20)${currentUser}');
@@ -740,7 +790,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
     );
 
     return FutureBuilder<List<SessionsRecord>>(
-        future: listSessionList(justCurrentUserAsTherapist: true),
+        future: loadSessions(),
         builder: (BuildContext context, snapshot) {
           if (!snapshot.hasData) {
             // while data is loading:
@@ -1027,6 +1077,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                                           //#cachedHyperbookList.length,
                                           itemBuilder: (BuildContext context,
                                               int listViewIndex) {
+                                            print('(VC101)${sessions![listViewIndex].reference!.path}....${sessions![listViewIndex].videoCreated}');
                                             return displaySession(
                                                 sessions![listViewIndex],
                                                 listViewIndex);

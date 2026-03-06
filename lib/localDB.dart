@@ -17,6 +17,9 @@ const kDBcreatedAt = '\$createdAt';
 const kDBupdatedAt = '\$updatedAt';
 const kSessionClientId = 'clientId';
 const kSessionTherapistId = 'therapistId';
+const kSessionVideoCreated = 'videoCreated';
+const kSessionVideoLoaded = 'videoLoaded';
+const kSessionSessionModified = 'sessionModified';
 const kSessionStepSessionId = 'sessionId';
 const kSessionStepPhoto = 'photo';
 const kSessionStepAudio = 'audio';
@@ -34,6 +37,8 @@ const kTemplateName = 'name';
 const kTemplateQuestions = 'questions';
 const kTemplateIsMater = 'isMaster';
 const kTemplateCreatorId = 'creatorId';
+const kInfoKey = 'key';
+const kInfoValue = 'value';
 
 
 /*
@@ -110,7 +115,7 @@ const kAttrBackupHyperbook = 'hyperbook';
 const kAttrBackupConnectedUserList = 'connectedUserList';
 const kAttrBackupChapterList = 'chapterList';
 
-const double kIconButtonWidth = 150;
+const double kIconButtonWidth = 200;
 const double kIconButtonHeight = 40;
 const double kIconButtonGap = 20;
 

@@ -93,6 +93,7 @@ final DocumentReference sessionStepsRef = DocumentReference(
 );
 final DocumentReference sessionsRef = DocumentReference(path: 'sessions');
 final DocumentReference usersRef = DocumentReference(path: 'users');
+final DocumentReference infoRef = DocumentReference(path: '69a9253600091c44ad9f');
 final DocumentReference backupStorageRef = DocumentReference(
   path: '680746de003983073d29',
 );
@@ -274,6 +275,9 @@ class SessionsRecord {
   DocumentReference? clientId;
   DocumentReference? therapistId;
   String? clientDisplayName;
+  bool? videoCreated;
+  bool? videoLoaded;
+  bool? sessionModified;
   DateTime? $createdAt;
   DateTime? $updatedAt;
 
@@ -282,6 +286,9 @@ class SessionsRecord {
     this.clientId,
     this.therapistId,
     this.clientDisplayName,
+    required this.videoCreated,
+    required this.videoLoaded,
+    required this.sessionModified,
     this.$createdAt,
     this.$updatedAt,
   });
@@ -790,6 +797,9 @@ Future<SessionsRecord> createSession({
     reference: DocumentReference(path: doc.$id),
     clientId: clientId,
     therapistId: therapistId,
+    videoCreated: false,
+    videoLoaded: false,
+    sessionModified: false,
   );
   TemplatesRecord template = await getTemplate(document: templateId);
   List<String> questions = extractQuestions(template.questions);
@@ -802,7 +812,8 @@ Future<SessionsRecord> createSession({
         completed: false,
         transcription: null,
         index: i,
-        question: questions[i]);
+        question: questions[i],
+        );
     print('(QQ3)${ss}');
   }
   return session;
@@ -1150,6 +1161,9 @@ Future<List<SessionsRecord>> listSessionList({
       $createdAt: DateTime.parse(d.$createdAt),
       $updatedAt: DateTime.parse(d.$updatedAt),
       clientDisplayName: clientDisplayName,
+      videoCreated: d.data[kSessionVideoCreated] as bool?,
+      videoLoaded: d.data[kSessionVideoLoaded] as bool?,
+      sessionModified: d.data[kSessionSessionModified] as bool?,
     );
     hh.add(h);
   }
@@ -1307,6 +1321,9 @@ Future<SessionsRecord> getSession({DocumentReference? document}) async {
     ),
     $createdAt: DateTime.parse(d.$createdAt),
     $updatedAt: DateTime.parse(d.$updatedAt),
+    videoCreated: d.data[kSessionVideoCreated] as bool?,
+    videoLoaded: d.data[kSessionVideoLoaded] as bool?,
+    sessionModified: d.data[kSessionSessionModified] as bool?,
   );
   //>print('(N5005)${h}');
   return h;

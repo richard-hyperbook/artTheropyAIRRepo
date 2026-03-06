@@ -298,6 +298,7 @@ class _HyperbookEditWidgetState extends State<HyperbookEditWidget> {
       if (userList.isEmpty) {
         //%//>print('(N2012)${currentHyperbook!.reference}');
         sendEmail(
+          context: context,
             emailType: EmailType.inviteUser,
             senderDisplayName: currentUser!.displayName!,
             senderEmail: currentUser!.email!,

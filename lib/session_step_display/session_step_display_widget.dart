@@ -215,6 +215,11 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                       sessionStepId: sessionStep.reference!.path,
                       onStart: () async {
                         currentSessionStep = sessionStep;
+                        currentSession!.sessionModified = true;
+                        await updateDocument(
+                            collection: sessionsRef,
+                            document: currentSession!.reference,
+                            data: {kSessionSessionModified: true});
                         await setMaxVersionNumbersCurrentSessionStep();
                         print('(DE3A)${currentSessionStep!.reference!.path}....${currentSessionStep!.maxAudioVersion!}');
                         return currentSessionStep!.maxAudioVersion!;
@@ -316,6 +321,11 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                         currentSessionStep = sessionStep;
                         await setMaxVersionNumbersCurrentSessionStep();
                         insertPicture(context, sessionStep);
+                        currentSession!.sessionModified = true;
+                        await updateDocument(
+                            collection: sessionsRef,
+                            document: currentSession!.reference,
+                            data: {kSessionSessionModified: true});
                       },
                     ),
                     SizedBox(height: kIconButtonGap),
