@@ -462,7 +462,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                   buttonSize: 40.0,
                   buttonWidth: kIconButtonWidth,
                   icon: Icon(Icons.visibility),
-                  onPressed: (!session.videoCreated!) ? null :
+                  onPressed: /*(!session.videoCreated!) ? null :*/
                       () async {
                     currentSession = session;
                     tempDirPath = await getTempDirPath();
@@ -717,15 +717,18 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
     for (int i = 0; i < sessionList.length; i++) {
       sessionList[i].videoCreated = false;
       for (int j = 0; j < videoFileList.files.length; j++) {
-        print('(VC100)$i,,,,$j----${videoFileList.files[j].$id}....${sessionList[i].reference!.path!}****${videoFileList.files[j].$id.contains(sessionList[i].reference!.path!)}');
-        if (videoFileList.files[j].$id
-            .contains(sessionList[i].reference!.path!)) {
-          await updateDocument(
+        String v = videoFileList.files[j].$id;
+        String s = sessionList[i].reference!.path!;
+        bool c = v.contains(s);
+        print('(VC100A)$i,,,,$j----${v}....${s}****${c}');
+       /* if (c){
+          print('(VC100B)${sessionsRef}....${currentSession!.reference}****${kSessionVideoCreated})}');*/
+          /*await updateDocument(
               collection: sessionsRef,
               document: currentSession!.reference,
               data: {kSessionVideoCreated: true});
-          sessionList[i].videoCreated = true;
-        }
+          sessionList[i].videoCreated = true;*/
+       // }
         print('(VC51)');
 
       }

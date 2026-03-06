@@ -791,7 +791,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             borderWidth: 1.0,
                                             buttonSize: 40.0,
 
-                                            buttonWidth: kIconButtonWidth - 15,
+                                            buttonWidth: kIconButtonWidth - 50,
 
 
                                             // borderRadius: 30,

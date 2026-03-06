@@ -499,14 +499,14 @@ Future<void> updateDocument({
   Map<String, dynamic>? data,
 }) async {
   // appwriteDatabases = Databases(client!);
-  //>print('(N2011C)${data}////${collection!.path}++++${document!.path}');688c919e8a6d84adb201
+  print('(N2011C)${data}////${collection!.path}++++${document!.path}');
   models.Document doc = await appwriteDatabases!.updateDocument(
     databaseId: databaseRef.path!,
     collectionId: collection!.path!,
     documentId: document!.path!,
     data: data,
   );
-  // //>print('(N2021D)${document.path}');
+  print('(N2021D)${document.path}');
   return;
 }
 
