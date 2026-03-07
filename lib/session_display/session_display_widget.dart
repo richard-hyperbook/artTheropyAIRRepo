@@ -82,7 +82,7 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
 
   List<SessionsRecord>? sessions;
 
-  VideoPlayerController videoController = VideoPlayerController.file(File(''));
+  VideoPlayerController? videoController;// = VideoPlayerController.file(File(''));
 
   @override
   void initState() {
@@ -576,10 +576,10 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                     alignment: Alignment.center,
                     fit: BoxFit.cover,
                     child: SizedBox(
-                      height: videoController.value.size.height,
-                      width: videoController.value.size.width,
+                      height: videoController!.value.size.height,
+                      width: videoController!.value.size.width,
                       child: VideoPlayer(
-                        videoController,
+                        videoController!,
                       ),
                     ),
                   ),
@@ -815,13 +815,13 @@ class _SessionDisplayWidgetState extends State<SessionDisplayWidget>
                     floatingActionButton: FloatingActionButton(
                       onPressed: () {
                         setState(() {
-                          videoController.value.isPlaying
-                              ? videoController.pause()
-                              : videoController.play();
+                          videoController!.value.isPlaying
+                              ? videoController!.pause()
+                              : videoController!.play();
                         });
                       },
                       child: Icon(
-                        videoController.value.isPlaying
+                        videoController!.value.isPlaying
                             ? Icons.pause
                             : Icons.play_arrow,
                       ),
