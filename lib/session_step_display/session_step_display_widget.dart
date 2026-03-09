@@ -83,7 +83,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
 
   @override
   void initState() {
-    print('${currentSession}');
+    print('${sessions![currentSessionIndex]}');
     super.initState();
     _model = createModel(context, () => SessionStepDisplayModel());
     enteredHyperbookTitleController = TextEditingController();
@@ -110,7 +110,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
     models.DocumentList sessionStepList = await listDocumentsWithTwoQueries(
       collection: sessionStepsRef,
       attribute1: kSessionStepSessionId,
-      value1: currentSession!.reference!.path,
+      value1:     sessions![currentSessionIndex].reference!.path,
       attribute2: kSessionStepIndex,
       value2: index,
     );
@@ -124,7 +124,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
   }
 
   String imageNetworkPath = '';
-  String transcription = '';
+  // String transcription = '';
+  List<String> transcriptionList = [];
   //int? maxVersion;
 
   Widget displayThumbnail() {
@@ -215,10 +216,10 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                       sessionStepId: sessionStep.reference!.path,
                       onStart: () async {
                         currentSessionStep = sessionStep;
-                        currentSession!.sessionModified = true;
+                        sessions![currentSessionIndex].sessionModified = true;
                         await updateDocument(
                             collection: sessionsRef,
-                            document: currentSession!.reference,
+                            document: sessions![currentSessionIndex].reference,
                             data: {kSessionSessionModified: true});
                         await setMaxVersionNumbersCurrentSessionStep();
                         print('(DE3A)${currentSessionStep!.reference!.path}....${currentSessionStep!.maxAudioVersion!}');
@@ -321,10 +322,10 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                         currentSessionStep = sessionStep;
                         await setMaxVersionNumbersCurrentSessionStep();
                         insertPicture(context, sessionStep);
-                        currentSession!.sessionModified = true;
+                        sessions![currentSessionIndex].sessionModified = true;
                         await updateDocument(
                             collection: sessionsRef,
-                            document: currentSession!.reference,
+                            document: sessions![currentSessionIndex].reference,
                             data: {kSessionSessionModified: true});
                       },
                     ),
@@ -368,9 +369,12 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                         var respDynamic = jsonDecode(respAccessToken.body);
                         Map<String, dynamic> respObject =
                             respDynamic as Map<String, dynamic>;
-                        transcription = respObject['transcription']! as String;
+                        setState(() {
+                          transcriptionList[index] = respObject['transcription']! as String;
+                        });
+
                         print(
-                          '(PQ4)${respDynamic}....${respObject},,,,${transcription}',
+                          '(PQ4)${index}~~~~${respDynamic}....${respObject},,,,${transcriptionList[index]}',
                         );
                         if (respAccessToken.statusCode < 200 ||
                             respAccessToken.statusCode >= 300) {
@@ -390,7 +394,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
             ),
             SizedBox(
               width: MediaQuery.sizeOf(context).width * 0.9,
-              child: Text(transcription),
+              child: Text(transcriptionList[index]),
             ),
 
             ////////////////////
@@ -497,8 +501,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
 
   @override
   Widget build(BuildContext context) {
-    print('(SS2)${currentSession}`}');
-    print('(SS3)${currentSession!.clientDisplayName}');
+    print('(SS2)${sessions![currentSessionIndex]}`}');
+    print('(SS3)${sessions![currentSessionIndex].clientDisplayName}');
 
     MenuDetails hyperbookDisplayMenuDetails = MenuDetails(
       menuLabelList: ['Login'],
@@ -518,8 +522,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
         },
       ],
     );
-    print('(SS4)${currentSession}');
-    print('(SS5)${currentSession!.clientDisplayName}');
+    print('(SS4)${sessions![currentSessionIndex]}');
+    print('(SS5)${sessions![currentSessionIndex]!.clientDisplayName}');
 
     return FutureBuilder<List<SessionStepsRecord>>(
       future: listSessionStepList(justCurrentSession: true),
@@ -530,10 +534,17 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
         } else {
           print('(SS80)${snapshot}');
           sessionSteps = snapshot.data;
+
           print('(SS81)${sessionSteps}');
           print(
             '(SS82)${sessionSteps!.length}',
           );
+          if (transcriptionList.length < 1) {
+            transcriptionList.clear();
+            for (int i = 0; i < sessionSteps!.length; i++) {
+              transcriptionList.add('');
+            }
+          }
 
           return Title(
             title: 'steps_display',

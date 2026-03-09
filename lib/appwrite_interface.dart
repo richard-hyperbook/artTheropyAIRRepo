@@ -119,9 +119,13 @@ final DocumentReference constraintsRef = DocumentReference(path: '');
 UsersRecord? currentUser;
 String currentUserDisplayName = '';
 String currentUserEmail = '';
-SessionsRecord? currentSession;
+List<SessionsRecord>? sessions;
+// SessionsRecord? currentSession;
+int currentSessionIndex = -1;
 SessionStepsRecord? currentSessionStep;
-int? currentSessionStepIndex;
+int currentSessionStepIndex = -1;
+List<SessionStepsRecord>? sessionSteps;
+
 String? currentLocalAudioPath;
 UsersRecord? currentTherapist;
 UsersRecord? currentClient;
@@ -280,6 +284,7 @@ class SessionsRecord {
   bool? sessionModified;
   DateTime? $createdAt;
   DateTime? $updatedAt;
+
 
   SessionsRecord({
     this.reference,
@@ -1238,13 +1243,13 @@ Future<int> getMaxVersionNumber({
 Future<List<SessionStepsRecord>> listSessionStepList({
   bool justCurrentSession = true,
 }) async {
-  print('(SS12)${sessionStepsRef.path}....${currentSession!.reference!.path}');
+  print('(SS12)${sessionStepsRef.path}....${sessions![currentSessionIndex].reference!.path}');
   models.DocumentList docs;
   if (justCurrentSession) {
     docs = await listDocumentsWithOneQueryDocumentReference(
       collection: sessionStepsRef,
       attribute: kSessionStepSessionId,
-      value: currentSession!.reference,
+      value: sessions![currentSessionIndex].reference,
       orderByAttribute: kSessionStepIndex,
     );
   } else {
