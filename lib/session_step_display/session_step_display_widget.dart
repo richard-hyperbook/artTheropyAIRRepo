@@ -190,17 +190,18 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                 style: FlutterFlowTheme.of(context).bodyMedium,
               ),
             ),
-            SingleChildScrollView(
+            // SingleChildScrollView(
               // key: infoCount == 1
               //     ? intro!.keys[3]
               //     : UniqueKey(),
-              scrollDirection: Axis.horizontal,
-              child: Text(
-                softWrap: false,
+              // scrollDirection: Axis.horizontal,
+              // child:
+              Text(
+                softWrap: true,
                 'Question: ${sessionStep.question}',
                 style: FlutterFlowTheme.of(context).bodyMedium,
               ),
-            ),
+            //),
 
             ///////////////////////////////
             Container(
@@ -310,6 +311,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                     FlutterFlowIconButton(
                       showLoadingIndicator: true,
                       caption: 'Select photo',
+                      captionFontSize: basicFontSize,
                       tooltipMessage: 'Select photo from gallery',
                       borderColor: Colors.transparent,
                       borderRadius: 0.0,
@@ -333,6 +335,7 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
                     FlutterFlowIconButton(
                       showLoadingIndicator: true,
                       caption: 'Transcribe',
+                      captionFontSize: basicFontSize,
                       tooltipMessage: 'Speech to text',
                       borderColor: Colors.transparent,
                       borderRadius: 0.0,
@@ -394,7 +397,8 @@ class _SessionStepDisplayWidgetState extends State<SessionStepDisplayWidget>
             ),
             SizedBox(
               width: MediaQuery.sizeOf(context).width * 0.9,
-              child: Text(transcriptionList[index]),
+              child: Text(transcriptionList[index],
+              style: TextStyle(fontSize: basicFontSize, fontWeight: FontWeight.bold)),
             ),
 
             ////////////////////

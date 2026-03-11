@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../app_state.dart';
+import '../appwrite_interface.dart';
 
 const String kThemeModeKey = '__theme_mode__';
 // SharedPreferences? globalSharedPrefs;
@@ -307,14 +308,14 @@ class ThemeTypography extends Typography {
         'Inter',
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
-        fontSize: 14.0,
+        fontSize: basicFontSize,
       );
   String get bodySmallFamily => 'Inter';
   TextStyle get bodySmall => GoogleFonts.getFont(
         'Inter',
         color: theme.secondaryText,
         fontWeight: FontWeight.w600,
-        fontSize: 14.0,
+        fontSize: basicFontSize,
       );
 }
 

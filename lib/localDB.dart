@@ -117,7 +117,7 @@ const kAttrBackupChapterList = 'chapterList';
 
 const double kIconButtonWidth = 200;
 const double kIconButtonHeight = 40;
-const double kIconButtonGap = 20;
+const double kIconButtonGap = 10;
 
 const kAttrStorageName = 'name';
 const kAttrStorageId = '\$id';

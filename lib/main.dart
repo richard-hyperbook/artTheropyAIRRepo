@@ -201,7 +201,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     /*M*/ //>//>print('(M3)');
-
+    if(MediaQuery.sizeOf(context).width > 500) {
+      basicFontSize = 25;
+    } else {
+      basicFontSize = 15;
+    }
     return MaterialApp.router(
       title: 'hyperbook',
       debugShowCheckedModeBanner: false,

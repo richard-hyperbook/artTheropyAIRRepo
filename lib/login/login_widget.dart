@@ -70,7 +70,7 @@ class _LoginWidgetState extends State<LoginWidget> {
     double logoSize = (MediaQuery.sizeOf(context).width < 1000) ? 50 : 100;
 
     MenuDetails loginMenuDetails = MenuDetails(menuLabelList: [
-      'Sessions',
+      'AIRs',
       'Profile',
       'Upgrade',
       'Sales'

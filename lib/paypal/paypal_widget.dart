@@ -151,9 +151,14 @@ class _PayPalWidgetState extends State<PayPalWidget> {
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
-    String? userId = currentUser!.reference!.path;
-    bool isNotLoggedIn = (currentUser!.userLevel == kUserLevelNotLoggedIn);
-    print('(PQ30)${userId}&&&&${isNotLoggedIn}');
+    String? userId;
+    bool isLoggedIn = false;
+      if(currentUser != null) {
+        userId = currentUser!.reference!.path;
+        isLoggedIn =
+            (currentUser!.userLevel != kUserLevelNotLoggedIn);
+      }
+      print('(PQ30)${currentUser},,,,${isLoggedIn}....${userId}');
     return Scaffold(
         key: scaffoldKey,
         resizeToAvoidBottomInset: true,
@@ -202,7 +207,8 @@ class _PayPalWidgetState extends State<PayPalWidget> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          FFButtonWidget(
+                          /// DO NOT REMOVE THIS BUTTON
+                         /* FFButtonWidget(
                             onPressed: () async {
                               getPayPalListOfActiveSubs();
                             },
@@ -229,9 +235,9 @@ class _PayPalWidgetState extends State<PayPalWidget> {
                               ),
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                          ),
+                          ),*/
                           SizedBox(height:40),
-                          (isNotLoggedIn)
+                          (!isLoggedIn)
                               ? Container(
                                   decoration: BoxDecoration(
                                       border: Border.all(

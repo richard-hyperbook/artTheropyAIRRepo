@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:record/record.dart';
 
 import '../../platform/audio_recorder_platform.dart';
+import '../../appwrite_interface.dart';
 
 class Recorder extends StatefulWidget {
   final void Function(String path) onStop;
@@ -233,8 +234,9 @@ class _RecorderState extends State<Recorder> with AudioRecorderMixin {
     if (_recordState != RecordState.stop) {
       return _buildTimer();
     }
-
     return const Text("Waiting to record");
+    return Text("Waiting to record", style: TextStyle(fontSize: basicFontSize, fontWeight: FontWeight.bold));
+
   }
 
   Widget _buildTimer() {

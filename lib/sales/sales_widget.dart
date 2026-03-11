@@ -31,8 +31,7 @@ import 'package:http/http.dart' as http;
 
 import '/../custom_code/widgets/toast.dart';
 // import '../../map_display/map_display_widget.dart';
-import '../../hyperbook_edit/hyperbook_edit_widget.dart';
-import '../../chapter_display/chapter_display_widget.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -209,7 +208,7 @@ class _SalesWidgetState extends State<SalesWidget> {
          onClicked;
           //context.pushNamed('changePassword');
         },
-        text: 'Read/Write\nHyperbooks',
+        text: '',
         options: FFButtonOptions(
           maxLines: 2,
           width: 170.0,
@@ -236,7 +235,7 @@ class _SalesWidgetState extends State<SalesWidget> {
 
     Widget svgLogo() {
       return SvgPicture.asset(
-        'assets/images/hyperbooklogosvg10.svg',
+        'assets/images/paintbrush2.svg',
         width: kLogoWidth,
         height: kLogoHeight,
       );
@@ -245,7 +244,7 @@ class _SalesWidgetState extends State<SalesWidget> {
     Widget svgLogoButton() {
       return Column(children: [
         svgLogo(),
-        salesButton('Read/Write Hyperbooks',
+        salesButton('',
             (){
               Navigator.push(
                   context,
@@ -262,7 +261,7 @@ class _SalesWidgetState extends State<SalesWidget> {
       return AnimatedTextKit(
           repeatForever: true,
           animatedTexts: [
-            ScaleAnimatedText('Hyperbook App',
+            ScaleAnimatedText('AIR',
                 textStyle: kPanelTextStyle, duration: Duration(seconds: 5)),
           ],
           controller: animatedTextController);
@@ -285,9 +284,7 @@ class _SalesWidgetState extends State<SalesWidget> {
                   child: Wrap(children: [
                     RichText(
                         text: TextSpan(
-                            text: '''
-Are you one of a group of people with ideas that grow organically?
-Why not try the ''',
+                            text: '',
                             style: kPanelTextStyle,
                             children: [
                               TextSpan(
@@ -295,8 +292,7 @@ Why not try the ''',
                                 style: kPanelTextStyleLarger,
                               ),
                               TextSpan(
-                                  text:
-                                      ' which will allow everyone to contribute, and which will automatically draw a map illustrating how the ideas fit together.'),
+                                  text: ''),
                             ])),
                   ]),
                 ),
@@ -316,35 +312,27 @@ Why not try the ''',
       return Container(
         width: kBlurb1Width,
         height: kBlurbHeight,
-        child: Text(
-          // 'A hyperbook is a document that is not constrained to a linear or hierarchical structure.  The creative process can be individual or collaborative, the Hyperbook App supplies all that is needed to ensure that the writing and reading of hyperbooks is productive and intuitive.',
-          'A hyperbook is an online document composed of chapters.  In contrast to most electronic documents, it is not organised as either as a linear stream, nor as a hierarchy (with sections, subsections, etc.). Rather, the chapters of a hyperbook appear a as a network where each chapter is represented as a node (usually a small square) and the connections between chapters are shown as arrows.',
+        child: Text('',
           style: kPanelTextStyle,
         ),
       );
     }
 
     Widget map() {
-      return Image.network(
+      return Text('AIR');/*Image.network(
         // 'assets/images/Map4.png',
         //  'https://tin.syi.mybluehost.me/images/Map4.png',
         'https://fra.cloud.appwrite.io/v1/storage/buckets/69764619000a02b4adae/files/6976464200277abd2680/view?project=696ddda6001b28f2352e&mode=admin',
         width: kMapWidth,
         height: kMapHeight,
-      );
+      );*/
     }
 
     Widget blurb2() {
       return Container(
         width: kBlurb2Width,
         height: kBlurbHeight,
-        child: Text(
-          '''
-Some hyperbooks (including the Hyperbook tutorial) can be read by visiting the Hyperbook App website (https://hyperbook.co.uk)  or by downloading the Hyperbook App from the Google Play Store or the Apple App Store (soon).  However, to benefit from all that hyperbooks have to offer, please sign up for a free account.  This will enable you to:
-* read any hyperbook that has been made public by its author (or moderator)
-* Contribute to hyperbooks
-* Start your own hyperbook and invite others to contribute''',
-          style: kPanelTextStyleSmaller,
+        child: Text('',style: kPanelTextStyleSmaller,
         ),
       );
     }
@@ -356,11 +344,7 @@ Some hyperbooks (including the Hyperbook tutorial) can be read by visiting the H
           Container(
             width: kBlurb1Width,
             height: kBlurbHeight,
-            child: Text(
-              '''
-Sign up for a Hyperbook App account and you will be able to read all publicly available hyperbooks, read and contribute to hyperbooks created by others, and create 2 hyperbooks of your own.
-Each hyperbook you create can be read and extended by up to 5 others.  To remove these limits, a subscription is required to become a Pro member.  
-''',
+            child: Text('',
               style: kPanelTextStyleSmaller,
             ),
           ),
@@ -512,7 +496,7 @@ Each hyperbook you create can be read and extended by up to 5 others.  To remove
           backgroundColor: FlutterFlowTheme.of(context).primary,
           automaticallyImplyLeading: false,
           title: Text(
-            'Hyperbook App',
+            'Art Therapy AIR',
             style: FlutterFlowTheme.of(context).headlineMedium.override(
                   fontFamily: 'Rubik',
                   color: Colors.white,
@@ -525,7 +509,7 @@ Each hyperbook you create can be read and extended by up to 5 others.  To remove
                 //# await loadCachedChaptersReadReferencesCachedHyperbookIndex(
                 //#     hyperbook: tutorialHyperbook, user: currentUser);
                 // localDB.setTutorialAsWorkingHyperbook();
-                toast(context, 'Please wait while Hyperbook Tutorial loads',
+                toast(context, '',
                     ToastKind.success);
 
                 // localDB.setTutorialAsWorkingHyperbook();
@@ -539,7 +523,7 @@ Each hyperbook you create can be read and extended by up to 5 others.  To remove
                     ));
               },
               child: SvgPicture.asset(
-                'assets/images/hyperbooklogosvg10.svg',
+                'assets/images/paintbrush2.svg',
                 width: 40,
                 height: 40,
               ),

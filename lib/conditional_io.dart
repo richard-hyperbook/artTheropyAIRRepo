@@ -5,8 +5,8 @@ bool determineIsIncomingResetPassword(){
   return false;
 }
 
-Widget showPayPalButton(String userId){
-  throw UnimplementedError('Unsupported');
+Widget showPayPalButton(String userId) {
+  return Text('Please use web app');
 }
 
 void webListenForMessage(){

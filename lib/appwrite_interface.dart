@@ -39,6 +39,7 @@ import 'package:universal_html/html.dart' as html;
 import 'dart:io';
 import 'dart:convert';
 import '../app_state.dart';
+import 'package:video_player/video_player.dart';
 
 // part 'appwrite_interface.g.dart';
 
@@ -120,11 +121,14 @@ UsersRecord? currentUser;
 String currentUserDisplayName = '';
 String currentUserEmail = '';
 List<SessionsRecord>? sessions;
+List<SessionsRecord>? oldSessions;
 // SessionsRecord? currentSession;
 int currentSessionIndex = -1;
 SessionStepsRecord? currentSessionStep;
 int currentSessionStepIndex = -1;
 List<SessionStepsRecord>? sessionSteps;
+
+double basicFontSize = 15;
 
 String? currentLocalAudioPath;
 UsersRecord? currentTherapist;
@@ -282,6 +286,7 @@ class SessionsRecord {
   bool? videoCreated;
   bool? videoLoaded;
   bool? sessionModified;
+  VideoPlayerController? videoController;
   DateTime? $createdAt;
   DateTime? $updatedAt;
 
